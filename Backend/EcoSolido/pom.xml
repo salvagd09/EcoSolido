@@ -6,16 +6,12 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.0.6</version>
-<<<<<<< HEAD
 		<relativePath/>
-=======
 		<relativePath/> <!-- lookup parent from repository -->
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 	</parent>
 	<groupId>com.DisenoProductos</groupId>
 	<artifactId>EcoSolido</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-<<<<<<< HEAD
 	<name>EcoSolido</name>
 	<description>API EcoSolido</description>
 
@@ -79,14 +75,12 @@
             <version>4.0.6</version>
             <scope>compile</scope>
         </dependency>
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< HEAD
-=======
+
         <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,7 +88,6 @@
             <version>4.0.6</version>
             <scope>compile</scope>
         </dependency>
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 	</dependencies>
 
 	<build>
