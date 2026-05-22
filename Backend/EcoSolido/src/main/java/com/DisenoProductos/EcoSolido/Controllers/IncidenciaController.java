@@ -1,5 +1,6 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
+<<<<<<< HEAD
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
@@ -43,4 +44,7 @@ public class IncidenciaController {
                                 "Error inesperado al generar la descripción: " + e.getMessage(),
                                 e));
     }
+=======
+public class IncidenciaController {
+>>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 }
