@@ -1,0 +1,19 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.app__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background: var(--color-bg);
+}
+
+@media (max-width: 768px) {
+  .app__body {
+    flex-direction: column;
+  }
+}

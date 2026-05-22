@@ -1,0 +1,65 @@
+.ai-modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.ai-modal {
+  background: #fff;
+  border: 2px solid var(--color-border);
+  padding: 28px 32px 32px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+.ai-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.ai-modal__message {
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.ai-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.ai-modal__btn {
+  min-width: 80px;
+  padding: 8px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.ai-modal__btn--yes {
+  background: var(--color-btn-success);
+}
+
+.ai-modal__btn--yes:hover {
+  background: var(--color-btn-success-hover);
+}
+
+.ai-modal__btn--no {
+  background: var(--color-btn-danger);
+}
+
+.ai-modal__btn--no:hover {
+  background: var(--color-btn-danger-hover);
+}
