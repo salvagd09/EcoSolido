@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -16,7 +16,7 @@
 @media (max-width: 768px) {
   .app__body {
     flex-direction: column;
-=======
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -199,6 +199,5 @@
   &::after {
     right: 0;
     border-right-color: var(--border);
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
   }
 }
