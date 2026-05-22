@@ -44,5 +44,4 @@ public class IncidenciaController {
                                 e));
     }
 public class IncidenciaController {
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 }
