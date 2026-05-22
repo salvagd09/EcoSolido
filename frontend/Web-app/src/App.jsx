@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import Header from './components/Header'
 import RegistrarIncidencias from './components/RegistrarIncidencias'
 import Sidebar from './components/Sidebar'
@@ -13,7 +13,7 @@ function App() {
         <RegistrarIncidencias />
       </div>
     </div>
-=======
+
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
@@ -132,7 +132,6 @@ function App() {
       <div className="ticks"></div>
       <section id="spacer"></section>
     </>
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
   )
 }
 
