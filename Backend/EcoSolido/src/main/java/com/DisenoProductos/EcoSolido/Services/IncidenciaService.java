@@ -1,6 +1,5 @@
 package com.DisenoProductos.EcoSolido.Services;
 
-<<<<<<< HEAD
 import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +43,4 @@ public class IncidenciaService {
         String esperado = MENSAJE_FOTOS_NO_VISIBLES.toLowerCase();
         return normalizado.equals(esperado) || normalizado.startsWith("lo siento, no pude ver muy bien");
     }
-=======
-public class IncidenciaService {
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 }

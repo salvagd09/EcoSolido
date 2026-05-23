@@ -1,6 +1,5 @@
 package com.DisenoProductos.EcoSolido.Integrations;
 
-<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -9,31 +8,20 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-=======
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class HuggingFaceIntegration {
-<<<<<<< HEAD
 
     private static final String MODELO_VISION = "meta-llama/Llama-3.2-11B-Vision-Instruct";
 
-=======
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
     @Value("${huggingface.api.key}")
     private String apiKey;
 
     @Value("${huggingface.api.url}")
     private String apiUrl;
 
-<<<<<<< HEAD
     private final WebClient webClient = WebClient.builder().build();
 
     public String describirFotos(List<String> urlsFoto) {
@@ -71,8 +59,8 @@ public class HuggingFaceIntegration {
                     .onStatus(HttpStatusCode::isError, clientResponse ->
                             clientResponse.bodyToMono(String.class)
                                     .defaultIfEmpty("sin detalle")
-                                    .flatMap(body -> Mono.error(new IllegalStateException(
-                                            "Error de Hugging Face (" + clientResponse.statusCode() + "): " + body))))
+                                    .flatMap(errorBody -> Mono.error(new IllegalStateException(
+                                            "Error de Hugging Face (" + clientResponse.statusCode() + "): " + errorBody))))
                     .bodyToMono(Map.class)
                     .block();
 
@@ -105,42 +93,5 @@ public class HuggingFaceIntegration {
                     "HF_TOKEN no está configurado. En PowerShell ejecuta: $env:HF_TOKEN=\"tu_token\" "
                             + "antes de iniciar el backend. Obtén el token en huggingface.co/settings/tokens");
         }
-=======
-    private final WebClient webClient = WebClient.create();
-
-    public String describirFoto(String urlFoto) {
-
-        Map<String, Object> body = Map.of(
-                "model", "CohereLabs/aya-vision-32b:cohere",
-                "messages", List.of(
-                        Map.of(
-                                "role", "user",
-                                "content", List.of(
-                                        Map.of(
-                                                "type", "text",
-                                                "text", "Describe esta imagen en español en 2 oraciones como si fuera el reporte de una incidencia urbana."
-                                        ),
-                                        Map.of(
-                                                "type", "image_url",
-                                                "image_url", Map.of("url", urlFoto)
-                                        )
-                                )
-                        )
-                )
-        );
-
-        Map response = webClient.post()
-                .uri(apiUrl)
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(Map.class)
-                .block();
-
-        List<Map> choices = (List<Map>) response.get("choices");
-        Map message = (Map) choices.get(0).get("message");
-        return (String) message.get("content");
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
     }
 }
