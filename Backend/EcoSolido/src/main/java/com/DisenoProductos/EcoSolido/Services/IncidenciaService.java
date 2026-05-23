@@ -2,6 +2,7 @@ package com.DisenoProductos.EcoSolido.Services;
 
 import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
 import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
+import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
 import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
@@ -22,7 +23,10 @@ public class IncidenciaService  {
     public CloudinaryIntegration cloudinaryIntegration;
     @Autowired
     public HuggingFaceIntegration huggingFaceIntegration;
-    public IncidenciaEntity registrarIncidencia(IncidenciaEntity incidencia, List<MultipartFile> fotos) throws IOException {
+    public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO, List<MultipartFile> fotos) throws IOException {
+        IncidenciaEntity incidencia=new IncidenciaEntity();
+        incidencia.setDescripcion(incidenciaDTO.getDescripcion());
+        incidencia.setCategoria(incidenciaDTO.getCategoria());
         List<IncidenciaFotoEntity> fotosEntidad=new ArrayList<>();
         for(MultipartFile foto:fotos){
             Map resultado=cloudinaryIntegration.subir(foto);
@@ -40,7 +44,7 @@ public class IncidenciaService  {
         try{
             return huggingFaceIntegration.describirFoto(urlFoto);
         } catch(Exception e){
-            return "Lo siento, no pude ver muy bien las fotos por lo cual no puedo describirlas. ¿Podrías volver a pasarlas o cambiar de fotos?";
+                throw new HuggingFaceException("No se pudo describir la foto.");
         }
     }
 }

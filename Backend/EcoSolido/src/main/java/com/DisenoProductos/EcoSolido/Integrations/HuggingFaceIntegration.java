@@ -1,6 +1,7 @@
 package com.DisenoProductos.EcoSolido.Integrations;
 
 
+import com.DisenoProductos.EcoSolido.Services.HuggingFaceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,9 +20,9 @@ public class HuggingFaceIntegration {
     private final WebClient webClient = WebClient.create();
 
     public String describirFoto(String urlFoto) {
-
+       try{
         Map<String, Object> body = Map.of(
-                "model", "CohereLabs/aya-vision-32b:cohere",
+                "model", "google/gema-4-31B-it",
                 "messages", List.of(
                         Map.of(
                                 "role", "user",
@@ -51,5 +52,7 @@ public class HuggingFaceIntegration {
         List<Map> choices = (List<Map>) response.get("choices");
         Map message = (Map) choices.get(0).get("message");
         return (String) message.get("content");
-    }
+    }catch(Exception e){
+        throw new HuggingFaceException("No se ha podido establecer la foto.",e);
+       }}
 }
