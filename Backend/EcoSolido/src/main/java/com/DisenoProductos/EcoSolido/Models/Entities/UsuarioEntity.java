@@ -7,24 +7,24 @@ import jakarta.persistence.*;
 public class UsuarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_ciudadano")
-    private Integer idCiudadano;
-    @Column(name="nombre_completo")
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
+    @Column(name = "nombre_completo")
     private String nombreCompleto;
-    @Column(name="apellido_completo")
+    @Column(name = "apellido_completo")
     private String apellidoConpleto;
     private String dni;
     private String telefono;
-    @Column(name="nombre_usuario")
+    @Column(name = "nombre_usuario")
     private String nombreUsuario;
     private String contrasena;
-    @Column(name="pregunta_seguridad")
+    @Column(name = "pregunta_seguridad")
     private String preguntaSeguridad;
-    public Integer getIdCiudadano() {
-        return idCiudadano;
+    public Integer getIdUsuario() {
+        return idUsuario;
     }
-    public void setIdCiudadano(Integer idCiudadano) {
-        this.idCiudadano = idCiudadano;
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
     public String getNombreCompleto() {
         return nombreCompleto;
