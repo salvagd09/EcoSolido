@@ -1,4 +1,6 @@
 package com.DisenoProductos.EcoSolido.Repositories;
 
-public interface IncidenciaRepository {
-}
+import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface IncidenciaRepository extends JpaRepository<IncidenciaEntity,Integer> { }

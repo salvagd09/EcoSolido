@@ -1,50 +1,50 @@
 package com.DisenoProductos.EcoSolido.Services;
 
-<<<<<<< HEAD
+import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
 import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
+import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
+import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
+import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
+import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
+import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
+import java.io.IOException;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class IncidenciaService {
-
-    public static final String MENSAJE_FOTOS_NO_VISIBLES =
-            "Lo siento, no pude ver muy bien las fotos por lo cual no puedo describirlas. "
-                    + "¿Podrías volver a pasarlas o cambiar de fotos?";
-
-    private final HuggingFaceIntegration huggingFaceIntegration;
-
-    public IncidenciaService(HuggingFaceIntegration huggingFaceIntegration) {
-        this.huggingFaceIntegration = huggingFaceIntegration;
-    }
-
-    public String generarDescripcionDesdeFotos(List<String> imagenesBase64) {
-        if (imagenesBase64 == null || imagenesBase64.isEmpty()) {
-            throw new IllegalArgumentException("Debe enviar al menos una imagen.");
+public class IncidenciaService  {
+    @Autowired
+    public IncidenciaRepository incidenciaRepository;
+    @Autowired
+    public CloudinaryIntegration cloudinaryIntegration;
+    @Autowired
+    public HuggingFaceIntegration huggingFaceIntegration;
+    public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO, List<MultipartFile> fotos) throws IOException {
+        IncidenciaEntity incidencia=new IncidenciaEntity();
+        incidencia.setDescripcion(incidenciaDTO.getDescripcion());
+        incidencia.setCategoria(incidenciaDTO.getCategoria());
+        List<IncidenciaFotoEntity> fotosEntidad=new ArrayList<>();
+        for(MultipartFile foto:fotos){
+            Map resultado=cloudinaryIntegration.subir(foto);
+            IncidenciaFotoEntity fotoEntidad=new IncidenciaFotoEntity();
+            fotoEntidad.setUrlFoto((String) resultado.get("secure_url"));
+            fotoEntidad.setPublicId((String) resultado.get("public_id"));
+            fotoEntidad.setIncidencia(incidencia);
+            fotosEntidad.add(fotoEntidad);
         }
-
-        for (String img : imagenesBase64) {
-            if (img == null || !img.startsWith("data:image/")) {
-                throw new IllegalArgumentException("Formato de imagen inválido.");
-            }
-        }
-
-        String resultado = huggingFaceIntegration.describirFotos(imagenesBase64).trim();
-
-        if (esFotosNoVisibles(resultado)) {
-            return MENSAJE_FOTOS_NO_VISIBLES;
-        }
-
-        return resultado;
+        incidencia.setFotos(fotosEntidad);
+        incidencia.setEstado(IncidenciaEstados.PENDIENTE);
+        return incidenciaRepository.save(incidencia);
     }
-
-    private boolean esFotosNoVisibles(String texto) {
-        String normalizado = texto.trim().toLowerCase();
-        String esperado = MENSAJE_FOTOS_NO_VISIBLES.toLowerCase();
-        return normalizado.equals(esperado) || normalizado.startsWith("lo siento, no pude ver muy bien");
+    public String generarDescripcion(String urlFoto){
+        try{
+            return huggingFaceIntegration.describirFoto(urlFoto);
+        } catch(Exception e){
+                throw new HuggingFaceException("No se pudo describir la foto.");
+        }
     }
-=======
-public class IncidenciaService {
->>>>>>> 8cb61bc0232d14d29006225ed16cb6e026b18069
 }
