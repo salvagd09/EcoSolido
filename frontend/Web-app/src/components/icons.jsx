@@ -1,0 +1,112 @@
+export function IconRegistro() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="5" y="3" width="12" height="16" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M9 8h6M9 11h6M9 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M15 5v3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function IconSeguimiento() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="4" y="4" width="11" height="14" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M7 9h5M7 12h5M7 15h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="17" cy="15" r="4" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M19.5 17.5L21.5 19.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconEducacion() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M7 7.5l5-2.5 5 2.5-5 2.5-5-2.5z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7 7.5v4c0 1.5 2.2 3 5 3s5-1.5 5-3v-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path d="M12 14.5v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M9 20h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconUsuario() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="14" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="16" cy="13" r="4" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M9 24c0-3.3 3.1-6 7-6s7 2.7 7 6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+export function IconSalir() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect x="6" y="8" width="10" height="16" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M16 16h10M22 16l-3-3M22 16l-3 3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function IconIA() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="5" y="6" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="9" cy="11" r="1" fill="currentColor" />
+      <circle cx="15" cy="11" r="1" fill="currentColor" />
+      <path d="M9 15h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M12 3v3M8 4l1 2M16 4l-1 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconCerrar() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconNube() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 16a4 4 0 0 0 0-8 5 5 0 0 0-9.6 2 3.5 3.5 0 0 0 .1 7h9.5z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 12v8M9 15l3 3 3-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
