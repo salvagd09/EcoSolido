@@ -1,5 +1,6 @@
 package com.DisenoProductos.EcoSolido.Models.Entities;
 
+import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -19,11 +20,18 @@ public class IncidenciaEntity {
     @ManyToOne
     @JoinColumn(name="id_ciudadano")
     private UsuarioEntity usuario;
+    private IncidenciaEstados estado;
     @OneToMany(mappedBy="incidencia",cascade=CascadeType.ALL)
     @Size(min=1,message="Debe adjuntar al menos 1 foto")
     private List<IncidenciaFotoEntity> fotos;
     public Integer getIdIncidencia() {
         return idIncidencia;
+    }
+    public IncidenciaEstados getEstado() {
+        return estado;
+    }
+    public void setEstado(IncidenciaEstados estado) {
+        this.estado = estado;
     }
     public void setIdIncidencia(Integer idIncidencia) {
         this.idIncidencia = idIncidencia;
