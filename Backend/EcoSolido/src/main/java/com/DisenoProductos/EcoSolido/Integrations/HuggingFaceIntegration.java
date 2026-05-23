@@ -1,17 +1,20 @@
 package com.DisenoProductos.EcoSolido.Integrations;
 
-
-import com.DisenoProductos.EcoSolido.Services.HuggingFaceException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class HuggingFaceIntegration {
-    @Value("${huggingface.api.key}")
+
+@Value("${huggingface.api.key}")
     private String apiKey;
 
     @Value("${huggingface.api.url}")
