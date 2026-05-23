@@ -12,7 +12,7 @@ public class IncidenciaFotoEntity {
     /*
     * Para que se conecte correctamente con cloudinary*/
     @Column(name="public_id")
-    private Integer publicId;
+    private String publicId;
     @Column(name="url_foto")
     private String urlFoto;
     @ManyToOne
@@ -31,11 +31,11 @@ public class IncidenciaFotoEntity {
         this.urlFoto = urlFoto;
     }
 
-    public Integer getPublicId() {
+    public String getPublicId() {
         return publicId;
     }
 
-    public void setPublicId(Integer publicId) {
+    public void setPublicId(String publicId) {
         this.publicId = publicId;
     }
 
