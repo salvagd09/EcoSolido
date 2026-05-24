@@ -1,7 +1,9 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
-import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
+import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +31,13 @@ public class IncidenciaController {
         }
     }
     @PostMapping("/generar-descripcion")
-    public ResponseEntity<?> generarDescripcion(@RequestParam("urlFoto") String urlFoto){
-        if(urlFoto==null || urlFoto.isBlank()){
+    public ResponseEntity<?> generarDescripcion(@RequestBody DescribirFotosRequestDTO request){
+        if(request.getImagenes() == null || request.getImagenes().isEmpty()){
             return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto");
         }
         try {
-            String descripcion = incidenciaService.generarDescripcion(urlFoto);
-            return ResponseEntity.ok(Map.of("descripcion", descripcion));
+            String descripcion = incidenciaService.generarDescripcion(request.getImagenes());
+            return ResponseEntity.ok(new DescribirFotosResponseDTO(descripcion));
         } catch (Exception e) {
             throw e;
         }

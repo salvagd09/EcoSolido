@@ -9,6 +9,8 @@ import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
 import java.io.IOException;
 import java.util.Map;
+
+import com.DisenoProductos.EcoSolido.Services.HuggingFaceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,11 +42,11 @@ public class IncidenciaService  {
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
         return incidenciaRepository.save(incidencia);
     }
-    public String generarDescripcion(String urlFoto){
+    public String generarDescripcion(List<String> urlFotos){
         try{
-            return huggingFaceIntegration.describirFoto(urlFoto);
+            return huggingFaceIntegration.describirFotos(urlFotos);
         } catch(Exception e){
-                throw new HuggingFaceException("No se pudo describir la foto.");
+                throw new HuggingFaceException("No se pudo describir la foto.",e);
         }
     }
 }
