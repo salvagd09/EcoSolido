@@ -5,18 +5,21 @@ const MAX_LADO_PX = 1280
 const CALIDAD_JPEG = 0.82
 
 function extraerMensajeError(cuerpo, status) {
-  if (status === 502 || status === 503) {
+  if (status === 502) {
     return (
-      'No se pudo conectar con el backend (puerto 8080). ' +
+      'No se pudo conectar con el backend. ' +
       'Abre una terminal en Backend/EcoSolido y ejecuta: .\\mvnw.cmd spring-boot:run'
     )
   }
 
   if (status === 503) {
-    return (
-      cuerpo ||
-      'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
-    )
+    try {
+      const data = JSON.parse(cuerpo)
+      if (data.message) return data.message
+      if (data.error) return data.error
+    } catch {
+      return cuerpo || 'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
+    }
   }
 
   if (!cuerpo) {
@@ -32,30 +35,30 @@ function extraerMensajeError(cuerpo, status) {
 }
 
 export async function describirFotosConIA(imagenesBase64) {
-  const response = await fetch(`${API_BASE}/api/incidencias/describir-fotos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imagenes: imagenesBase64 }),
-  })
+    const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imagenes: imagenesBase64 })
+    })
 
-  const cuerpo = await response.text()
+    const cuerpo = await response.text()
 
-  if (!response.ok) {
-    throw new Error(extraerMensajeError(cuerpo, response.status))
-  }
-
-  try {
-    const data = JSON.parse(cuerpo)
-    if (!data.descripcion) {
-      throw new Error('La IA no devolvió una descripción.')
+    if (!response.ok) {
+        throw new Error(extraerMensajeError(cuerpo, response.status))
     }
-    return data.descripcion
-  } catch (err) {
-    if (err instanceof Error && err.message === 'La IA no devolvió una descripción.') {
-      throw err
+
+    try {
+        const data = JSON.parse(cuerpo)
+        if (!data.descripcion) {
+            throw new Error('La IA no devolvió una descripción.')
+        }
+        return data.descripcion
+    } catch (err) {
+        if (err instanceof Error && err.message === 'La IA no devolvió una descripción.') {
+            throw err
+        }
+        throw new Error('Respuesta inválida del servidor.', { cause: err })
     }
-    throw new Error('Respuesta inválida del servidor.', { cause: err })
-  }
 }
 
 export function comprimirImagenParaIA(file) {
@@ -97,7 +100,52 @@ export function comprimirImagenParaIA(file) {
 export async function prepararImagenesParaIA(archivos) {
   return Promise.all(archivos.map((file) => comprimirImagenParaIA(file)))
 }
+export async function subirFotosACloudinary(archivos) {
+    const formData = new FormData()
+    archivos.forEach((file) => formData.append('fotos', file))
 
+    const response = await fetch(`${API_BASE}/incidencias/subir-fotos`, {
+        method: 'POST',
+        body: formData,
+    })
+
+    const cuerpo = await response.text()
+
+    if (!response.ok) {
+        throw new Error(extraerMensajeError(cuerpo, response.status))
+    }
+
+    const data = JSON.parse(cuerpo)
+    return data.urls
+}
+export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos) {
+    const formData = new FormData()
+    const incidenciaBlob = new Blob(
+        [JSON.stringify({ categoria, descripcion })],
+        { type: 'application/json' }
+    )
+    formData.append('incidencia', incidenciaBlob)
+      if (urlsFotos.length > 0) {
+        // Ya están en Cloudinary, solo enviar URLs
+        urlsFotos.forEach((url) => formData.append('urlsFotos', url))
+    } else {
+        // No usó IA, subir archivos directamente
+        archivos.forEach((file) => formData.append('fotos', file))
+    }
+    
+    const response = await fetch(`${API_BASE}/incidencias/registrar`, {
+        method: 'POST',
+        body: formData,
+    })
+
+    const cuerpo = await response.text()
+
+    if (!response.ok) {
+        throw new Error(extraerMensajeError(cuerpo, response.status))
+    }
+
+    return cuerpo
+}
 export function esErrorTecnicoIA(mensaje) {
   if (!mensaje) return true
   const m = mensaje.toLowerCase()
@@ -114,4 +162,4 @@ export function esErrorTecnicoIA(mensaje) {
   )
 }
 
-export { MENSAJE_FOTOS_NO_VISIBLES }
+export { MENSAJE_FOTOS_NO_VISIBLES } 
