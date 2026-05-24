@@ -267,8 +267,7 @@ export default function RegistrarIncidencias() {
                 <strong>No se pudo conectar con la IA:</strong>
                 <p>{errorTecnico}</p>
                 <p className="registrar__ia-tecnico-hint">
-                  En PowerShell, antes de <code>spring-boot:run</code>:{' '}
-                  <code>$env:HF_TOKEN=&quot;tu_token&quot;</code>
+                  Verifica que el backend esté ejecutándose y que la API Key de Google Vision esté configurada correctamente.
                 </p>
               </div>
             )}

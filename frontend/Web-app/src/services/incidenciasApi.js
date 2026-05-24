@@ -5,18 +5,21 @@ const MAX_LADO_PX = 1280
 const CALIDAD_JPEG = 0.82
 
 function extraerMensajeError(cuerpo, status) {
-  if (status === 502 || status === 503) {
+  if (status === 502) {
     return (
-      'No se pudo conectar con el backend (puerto 8080). ' +
+      'No se pudo conectar con el backend. ' +
       'Abre una terminal en Backend/EcoSolido y ejecuta: .\\mvnw.cmd spring-boot:run'
     )
   }
 
   if (status === 503) {
-    return (
-      cuerpo ||
-      'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
-    )
+    try {
+      const data = JSON.parse(cuerpo)
+      if (data.message) return data.message
+      if (data.error) return data.error
+    } catch {
+    }
+    return cuerpo || 'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
   }
 
   if (!cuerpo) {
@@ -32,10 +35,13 @@ function extraerMensajeError(cuerpo, status) {
 }
 
 export async function describirFotosConIA(imagenesBase64) {
-  const response = await fetch(`${API_BASE}/api/incidencias/describir-fotos`, {
+  const formData = new FormData()
+  const blob = await (await fetch(imagenesBase64[0])).blob()
+  formData.append('foto', blob, 'foto.jpg')
+
+  const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imagenes: imagenesBase64 }),
+    body: formData,
   })
 
   const cuerpo = await response.text()
@@ -114,4 +120,4 @@ export function esErrorTecnicoIA(mensaje) {
   )
 }
 
-export { MENSAJE_FOTOS_NO_VISIBLES }
+export { MENSAJE_FOTOS_NO_VISIBLES } 

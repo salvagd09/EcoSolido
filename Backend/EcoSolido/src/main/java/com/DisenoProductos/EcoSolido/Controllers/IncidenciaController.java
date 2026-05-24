@@ -29,15 +29,15 @@ public class IncidenciaController {
         }
     }
     @PostMapping("/generar-descripcion")
-    public ResponseEntity<?> generarDescripcion(@RequestParam("urlFoto") String urlFoto){
-        if(urlFoto==null || urlFoto.isBlank()){
+    public ResponseEntity<?> generarDescripcion(@RequestParam("foto") MultipartFile foto){
+        if(foto==null || foto.isEmpty()){
             return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto");
         }
         try {
-            String descripcion = incidenciaService.generarDescripcion(urlFoto);
+            String descripcion = incidenciaService.generarDescripcion(foto);
             return ResponseEntity.ok(Map.of("descripcion", descripcion));
         } catch (Exception e) {
             throw e;
         }
     }
-}
+} 

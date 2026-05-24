@@ -11,6 +11,11 @@ export default defineConfig({
         changeOrigin: true,
         timeout: 120000,
       },
+      '/incidencias': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        timeout: 120000,
+      },
     },
   },
 })  
