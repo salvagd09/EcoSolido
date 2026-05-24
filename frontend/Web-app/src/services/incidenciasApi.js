@@ -1,0 +1,117 @@
+import { MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
+
+const API_BASE = import.meta.env.VITE_API_URL ?? ''
+const MAX_LADO_PX = 1280
+const CALIDAD_JPEG = 0.82
+
+function extraerMensajeError(cuerpo, status) {
+  if (status === 502 || status === 503) {
+    return (
+      'No se pudo conectar con el backend (puerto 8080). ' +
+      'Abre una terminal en Backend/EcoSolido y ejecuta: .\\mvnw.cmd spring-boot:run'
+    )
+  }
+
+  if (status === 503) {
+    return (
+      cuerpo ||
+      'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
+    )
+  }
+
+  if (!cuerpo) {
+    return `Error del servidor (${status}).`
+  }
+
+  try {
+    const data = JSON.parse(cuerpo)
+    return data.message ?? data.error ?? cuerpo
+  } catch {
+    return cuerpo
+  }
+}
+
+export async function describirFotosConIA(imagenesBase64) {
+  const response = await fetch(`${API_BASE}/api/incidencias/describir-fotos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imagenes: imagenesBase64 }),
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  try {
+    const data = JSON.parse(cuerpo)
+    if (!data.descripcion) {
+      throw new Error('La IA no devolvió una descripción.')
+    }
+    return data.descripcion
+  } catch (err) {
+    if (err instanceof Error && err.message === 'La IA no devolvió una descripción.') {
+      throw err
+    }
+    throw new Error('Respuesta inválida del servidor.', { cause: err })
+  }
+}
+
+export function comprimirImagenParaIA(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+
+      let { width, height } = img
+      const maxLado = Math.max(width, height)
+
+      if (maxLado > MAX_LADO_PX) {
+        const escala = MAX_LADO_PX / maxLado
+        width = Math.round(width * escala)
+        height = Math.round(height * escala)
+      }
+
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+
+      const dataUrl = canvas.toDataURL('image/jpeg', CALIDAD_JPEG)
+      resolve(dataUrl)
+    }
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('No se pudo procesar la imagen.'))
+    }
+
+    img.src = url
+  })
+}
+
+export async function prepararImagenesParaIA(archivos) {
+  return Promise.all(archivos.map((file) => comprimirImagenParaIA(file)))
+}
+
+export function esErrorTecnicoIA(mensaje) {
+  if (!mensaje) return true
+  const m = mensaje.toLowerCase()
+  return (
+    m.includes('hf_token') ||
+    m.includes('hugging face') ||
+    m.includes('backend') ||
+    m.includes('puerto 8080') ||
+    m.includes('502') ||
+    m.includes('503') ||
+    m.includes('error del servidor') ||
+    m.includes('error inesperado') ||
+    m.includes('error de hugging')
+  )
+}
+
+export { MENSAJE_FOTOS_NO_VISIBLES }

@@ -1,19 +1,13 @@
-package com.DisenoProductos.EcoSolido.Services;
+package com.DisenoProductos.EcoSolido.Integrations;
 
-import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
-import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
-import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
-import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
-import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
-import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
-import java.io.IOException;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.DisenoProductos.EcoSolido.Services.HuggingFaceException;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class IncidenciaService  {
