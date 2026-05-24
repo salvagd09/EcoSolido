@@ -10,7 +10,7 @@ public class IncidenciaFotoEntity {
     @Column(name="id_foto")
     private Integer idFoto;
     /*
-    * Para que se conecte correctamente con cloudinary*/
+     * Para que se conecte correctamente con cloudinary*/
     @Column(name="public_id")
     private String publicId;
     @Column(name="url_foto")
