@@ -16,6 +16,8 @@
 @media (max-width: 768px) {
   .app__body {
     flex-direction: column;
+  }
+}
 
 .counter {
   font-size: 16px;

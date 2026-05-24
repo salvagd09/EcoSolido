@@ -25,18 +25,33 @@ public class IncidenciaService  {
     public CloudinaryIntegration cloudinaryIntegration;
     @Autowired
     public HuggingFaceIntegration huggingFaceIntegration;
-    public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO, List<MultipartFile> fotos) throws IOException {
-        IncidenciaEntity incidencia=new IncidenciaEntity();
+    public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
+                                                List<MultipartFile> fotos,
+                                                List<String> urlsFotos) throws IOException {
+        IncidenciaEntity incidencia = new IncidenciaEntity();
         incidencia.setDescripcion(incidenciaDTO.getDescripcion());
         incidencia.setCategoria(incidenciaDTO.getCategoria());
-        List<IncidenciaFotoEntity> fotosEntidad=new ArrayList<>();
-        for(MultipartFile foto:fotos){
-            Map resultado=cloudinaryIntegration.subir(foto);
-            IncidenciaFotoEntity fotoEntidad=new IncidenciaFotoEntity();
-            fotoEntidad.setUrlFoto((String) resultado.get("secure_url"));
-            fotoEntidad.setPublicId((String) resultado.get("public_id"));
-            fotoEntidad.setIncidencia(incidencia);
-            fotosEntidad.add(fotoEntidad);
+
+        List<IncidenciaFotoEntity> fotosEntidad = new ArrayList<>();
+
+        if (urlsFotos != null && !urlsFotos.isEmpty()) {
+            // Usó IA, ya están en Cloudinary
+            for (String url : urlsFotos) {
+                IncidenciaFotoEntity fotoEntidad = new IncidenciaFotoEntity();
+                fotoEntidad.setUrlFoto(url);
+                fotoEntidad.setIncidencia(incidencia);
+                fotosEntidad.add(fotoEntidad);
+            }
+        } else {
+            // No usó IA, subir fotos a Cloudinary
+            for (MultipartFile foto : fotos) {
+                Map resultado = cloudinaryIntegration.subir(foto);
+                IncidenciaFotoEntity fotoEntidad = new IncidenciaFotoEntity();
+                fotoEntidad.setUrlFoto((String) resultado.get("secure_url"));
+                fotoEntidad.setPublicId((String) resultado.get("public_id"));
+                fotoEntidad.setIncidencia(incidencia);
+                fotosEntidad.add(fotoEntidad);
+            }
         }
         incidencia.setFotos(fotosEntidad);
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
@@ -48,5 +63,13 @@ public class IncidenciaService  {
         } catch(Exception e){
                 throw new HuggingFaceException("No se pudo describir la foto.",e);
         }
+    }
+    public List<String> subirFotos(List<MultipartFile> fotos) throws IOException {
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile foto : fotos) {
+            Map resultado = cloudinaryIntegration.subir(foto);
+            urls.add((String) resultado.get("secure_url"));
+        }
+        return urls;
     }
 }

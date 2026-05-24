@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 import {
   describirFotosConIA,
   esErrorTecnicoIA,
-  prepararImagenesParaIA,
+  subirFotosACloudinary,
+  registrarIncidencia
 } from '../services/incidenciasApi'
 import { esRespuestaFotosNoVisibles, MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 import AIConfirmModal from './AIConfirmModal'
@@ -20,10 +21,10 @@ const CATEGORIAS = [
   'Otro',
 ]
 
-const SLOTS_FOTOS = 1
+const MAX_FOTOS=5
 
 function crearSlotsVacios() {
-  return Array.from({ length: SLOTS_FOTOS }, () => ({ preview: null, file: null }))
+  return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
 }
 
 export default function RegistrarIncidencias() {
@@ -36,6 +37,7 @@ export default function RegistrarIncidencias() {
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [warningMessage, setWarningMessage] = useState('')
   const [generandoIA, setGenerandoIA] = useState(false)
+  const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('')
   const fileInputRefs = useRef([])
 
@@ -53,44 +55,47 @@ export default function RegistrarIncidencias() {
   }
 
   function handleFotoChange(index, event) {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const files = Array.from(event.target.files ?? [])
+    if (!files.length) return
 
-    const preview = URL.createObjectURL(file)
+    const nuevosSlots = files.map((file) => ({
+        preview: URL.createObjectURL(file),
+        file
+    }))
+
     setFotos((prev) => {
-      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      const next = [...prev]
-      next[index] = { preview, file }
-      return next
+        // Liberar previews anteriores
+        prev.forEach((slot) => {
+            if (slot.preview) URL.revokeObjectURL(slot.preview)
+        })
+        // Limitar al máximo permitido
+        return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
     })
+
     if (descripcionEsErrorIA) {
-      setDescripcion('')
-      limpiarEstadoErrorIA()
+        setDescripcion('')
+        limpiarEstadoErrorIA()
     }
     setErrorTecnico('')
     event.target.value = ''
-  }
-
-  function handleEliminarFoto(index) {
+}
+function handleEliminarFoto(index) {
     setFotos((prev) => {
-      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      const next = [...prev]
-      next[index] = { preview: null, file: null }
-      return next
+        if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
+        return prev.filter((_, i) => i !== index)
     })
     if (descripcionEsErrorIA) {
-      setDescripcion('')
-      limpiarEstadoErrorIA()
+        setDescripcion('')
+        limpiarEstadoErrorIA()
     }
     setErrorTecnico('')
-  }
-
+}
   function handleDescripcionChange(event) {
     setDescripcion(event.target.value)
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     if (descripcionEsErrorIA) {
       alert('Genera una descripción válida o cambia las fotos antes de registrar.')
@@ -111,7 +116,18 @@ export default function RegistrarIncidencias() {
       setShowWarningModal(true)
       return
     }
-    setShowSuccessModal(true)
+      try {
+        await registrarIncidencia(
+            categoria,
+            descripcion,
+            urlsCloudinary,                          // URLs si usó IA
+            fotosSubidas.map((slot) => slot.file)
+        )
+        setShowSuccessModal(true)
+    } catch (err) {
+        setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
+        setShowWarningModal(true)
+    }
   }
 
   function handleGenerarIA() {
@@ -130,30 +146,31 @@ export default function RegistrarIncidencias() {
     setErrorTecnico('')
 
     try {
-      const imagenesBase64 = await prepararImagenesParaIA(
-        fotosSubidas.map((slot) => slot.file)
-      )
-      const texto = (await describirFotosConIA(imagenesBase64)).trim()
+        // Subir fotos a Cloudinary y obtener URLs
+        const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
+        setUrlsCloudinary(urls)
 
-      if (esRespuestaFotosNoVisibles(texto)) {
-        mostrarMensajeFotosNoVisibles()
-      } else {
-        setDescripcion(texto)
-      }
+        // Enviar URLs a la IA
+        const texto = (await describirFotosConIA(urls)).trim()
+
+        if (esRespuestaFotosNoVisibles(texto)) {
+            mostrarMensajeFotosNoVisibles()
+        } else {
+            setDescripcion(texto)
+        }
     } catch (err) {
-      const mensaje = err instanceof Error ? err.message : 'Error desconocido con la IA.'
-
-      if (esErrorTecnicoIA(mensaje)) {
-        setErrorTecnico(mensaje)
-        setDescripcion('')
-        limpiarEstadoErrorIA()
-      } else {
-        mostrarMensajeFotosNoVisibles()
-      }
+        const mensaje = err instanceof Error ? err.message : 'Error desconocido con la IA.'
+        if (esErrorTecnicoIA(mensaje)) {
+            setErrorTecnico(mensaje)
+            setDescripcion('')
+            limpiarEstadoErrorIA()
+        } else {
+            mostrarMensajeFotosNoVisibles()
+        }
     } finally {
-      setGenerandoIA(false)
+        setGenerandoIA(false)
     }
-  }
+}
 
   function resetFormulario() {
     fotos.forEach((slot) => {
@@ -164,6 +181,7 @@ export default function RegistrarIncidencias() {
     setDescripcion('')
     limpiarEstadoErrorIA()
     setErrorTecnico('')
+    setUrlsCloudinary([])
     fileInputRefs.current = []
   }
 
@@ -179,51 +197,50 @@ export default function RegistrarIncidencias() {
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
           <fieldset className="registrar__fotos">
-            <legend>Fotos a presentar:</legend>
-            <div className="registrar__fotos-container">
-              {fotos.map((slot, index) => (
-                <div key={index} className="foto-slot">
-                  <input
-                    ref={(el) => {
-                      fileInputRefs.current[index] = el
-                    }}
-                    type="file"
-                    accept="image/*"
-                    className="foto-slot__input"
-                    onChange={(e) => handleFotoChange(index, e)}
-                    aria-label={`Subir foto ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    className="foto-slot__btn"
-                    onClick={() => fileInputRefs.current[index]?.click()}
-                  >
-                    {slot.preview ? (
-                      <>
-                        <img src={slot.preview} alt={`Foto ${index + 1}`} className="foto-slot__preview" />
-                        <button
-                          type="button"
-                          className="foto-slot__remove"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleEliminarFoto(index)
-                          }}
-                          aria-label={`Quitar foto ${index + 1}`}
-                        >
-                          ×
-                        </button>
-                      </>
-                    ) : (
-                      <div className="foto-slot__upload-area">
-                        <IconNube />
-                        <span className="foto-slot__upload-text">Ingresa una foto</span>
-                      </div>
-                    )}
-                  </button>
-                </div>
-              ))}
+    <legend>Fotos a presentar:</legend>
+    <div className="registrar__fotos-container">
+        <input
+            ref={(el) => { fileInputRefs.current[0] = el }}
+            type="file"
+            accept="image/*"
+            multiple
+            className="foto-slot__input"
+            onChange={(e) => handleFotoChange(0, e)}
+            aria-label="Subir fotos"
+        />
+        <button
+            type="button"
+            className="foto-slot__btn"
+            onClick={() => fileInputRefs.current[0]?.click()}
+        >
+            <div className="foto-slot__upload-area">
+                <IconNube />
+                <span className="foto-slot__upload-text">
+                    {fotosSubidas.length > 0
+                        ? `${fotosSubidas.length} foto(s) seleccionada(s)`
+                        : 'Ingresa una o más fotos'}
+                </span>
             </div>
-          </fieldset>
+        </button>
+
+        {/* Previsualización de todas las fotos */}
+        <div className="registrar__fotos-preview">
+            {fotosSubidas.map((slot, index) => (
+                <div key={index} className="foto-slot">
+                    <img src={slot.preview} alt={`Foto ${index + 1}`} className="foto-slot__preview" />
+                    <button
+                        type="button"
+                        className="foto-slot__remove"
+                        onClick={() => handleEliminarFoto(index)}
+                        aria-label={`Quitar foto ${index + 1}`}
+                    >
+                        ×
+                    </button>
+                </div>
+            ))}
+        </div>
+    </div>
+</fieldset>
 
           <div className="registrar__field">
             <label htmlFor="categoria">Selecciona una categoría</label>
@@ -267,8 +284,7 @@ export default function RegistrarIncidencias() {
                 <strong>No se pudo conectar con la IA:</strong>
                 <p>{errorTecnico}</p>
                 <p className="registrar__ia-tecnico-hint">
-                  En PowerShell, antes de <code>spring-boot:run</code>:{' '}
-                  <code>$env:HF_TOKEN=&quot;tu_token&quot;</code>
+                  Verifica que el backend esté ejecutándose y que la API Key de Google Vision esté configurada correctamente.
                 </p>
               </div>
             )}
