@@ -19,7 +19,7 @@ public class IncidenciaController {
     public IncidenciaService incidenciaService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<?> logroRegistrarIncidencia(@RequestPart("incidencia") @Valid IncidenciaRequestDTO incidenciaDTO, @RequestPart("fotos") List<MultipartFile> fotos,@RequestParam(value = "urlsFotos", required = false) List<String> urlsFotos) throws Exception {
+    public ResponseEntity<?> logroRegistrarIncidencia(@RequestPart("incidencia") @Valid IncidenciaRequestDTO incidenciaDTO, @RequestPart(value = "fotos", required=false) List<MultipartFile> fotos,@RequestParam(value = "urlsFotos", required = false) List<String> urlsFotos) throws Exception {
         if ((fotos == null || fotos.isEmpty()) && (urlsFotos == null || urlsFotos.isEmpty())) {
             return ResponseEntity.badRequest()
                     .body("No se ha podido registrar su incidencia. Debe colocar al menos 1 foto");
