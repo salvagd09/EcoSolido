@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,24 +21,26 @@ public class HuggingFaceIntegration {
 
     private final WebClient webClient = WebClient.create();
 
-    public String describirFoto(String urlFoto) {
-        try{
+    public String describirFotos(List<String> urlFotos) {
+        try {
+            List<Map<String, Object>> content = new ArrayList<>();
+
+            content.add(Map.of(
+                    "type", "text",
+                    "text", "Describe estas imágenes en español en 2 oraciones como si fuera el reporte de una incidencia urbana."
+            ));
+
+            for (String url : urlFotos) {
+                content.add(Map.of(
+                        "type", "image_url",
+                        "image_url", Map.of("url", url)
+                ));
+            }
+
             Map<String, Object> body = Map.of(
-                    "model", "google/gema-4-31B-it",
+                    "model", "google/gemma-4-31B-it",
                     "messages", List.of(
-                            Map.of(
-                                    "role", "user",
-                                    "content", List.of(
-                                            Map.of(
-                                                    "type", "text",
-                                                    "text", "Describe esta imagen en español en 2 oraciones como si fuera el reporte de una incidencia urbana."
-                                            ),
-                                            Map.of(
-                                                    "type", "image_url",
-                                                    "image_url", Map.of("url", urlFoto)
-                                            )
-                                    )
-                            )
+                            Map.of("role", "user", "content", content)
                     )
             );
 
@@ -53,7 +56,9 @@ public class HuggingFaceIntegration {
             List<Map> choices = (List<Map>) response.get("choices");
             Map message = (Map) choices.get(0).get("message");
             return (String) message.get("content");
-        }catch(Exception e){
-            throw new HuggingFaceException("No se ha podido establecer la foto.",e);
-        }}
+
+        } catch (Exception e) {
+            throw new HuggingFaceException("No se pudo describir las fotos.", e);
+        }
+    }
 }
