@@ -1,7 +1,7 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
-import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
+import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,7 @@ public class IncidenciaController {
             throw e;
         }
     }
+    
     @PostMapping("/generar-descripcion")
     public ResponseEntity<?> generarDescripcion(@RequestParam("foto") MultipartFile foto){
         if(foto==null || foto.isEmpty()){
@@ -40,4 +41,4 @@ public class IncidenciaController {
             throw e;
         }
     }
-} 
+}

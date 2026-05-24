@@ -9,6 +9,7 @@ import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
 import java.io.IOException;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ public class IncidenciaService  {
     public CloudinaryIntegration cloudinaryIntegration;
     @Autowired
     public GoogleVisionIntegration googleVisionIntegration;
+    
     public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO, List<MultipartFile> fotos) throws IOException {
         IncidenciaEntity incidencia=new IncidenciaEntity();
         incidencia.setDescripcion(incidenciaDTO.getDescripcion());
@@ -40,6 +42,7 @@ public class IncidenciaService  {
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
         return incidenciaRepository.save(incidencia);
     }
+    
     public String generarDescripcion(String urlFoto){
         System.out.println("=== IncidenciaService: Generando descripción para URL: " + urlFoto);
         try{
@@ -52,6 +55,7 @@ public class IncidenciaService  {
             throw new HuggingFaceException("No se pudo describir la foto: " + e.getMessage());
         }
     }
+    
     public String generarDescripcion(MultipartFile foto){
         try {
             Map resultado = cloudinaryIntegration.subir(foto);
@@ -62,4 +66,4 @@ public class IncidenciaService  {
             throw new HuggingFaceException("No se pudo procesar la foto: " + e.getMessage());
         }
     }
-} 
+}
