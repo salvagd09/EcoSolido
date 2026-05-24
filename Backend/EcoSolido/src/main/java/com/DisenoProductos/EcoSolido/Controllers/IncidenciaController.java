@@ -1,6 +1,6 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
-import com.DisenoProductos.EcoSolido.Integrations.IncidenciaService;
+import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
