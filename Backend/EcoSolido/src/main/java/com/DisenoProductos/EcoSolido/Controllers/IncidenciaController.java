@@ -1,48 +1,43 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/incidencias")
+@RequestMapping("/incidencias")
 public class IncidenciaController {
+    @Autowired
+    public IncidenciaService incidenciaService;
 
-    private final IncidenciaService incidenciaService;
-
-    public IncidenciaController(IncidenciaService incidenciaService) {
-        this.incidenciaService = incidenciaService;
+    @PostMapping("/registrar")
+    public ResponseEntity<?> logroRegistrarIncidencia(@RequestPart("incidencia") @Valid IncidenciaRequestDTO incidenciaDTO, @RequestPart("fotos") List<MultipartFile> fotos) throws Exception {
+        if(fotos==null || fotos.isEmpty()){
+            return ResponseEntity.badRequest().body("No se ha podido registrar su incidencia. Debe colocar al menos 1 foto");
+        }
+        try{
+            incidenciaService.registrarIncidencia(incidenciaDTO,fotos);
+            return ResponseEntity.ok("Su incidencia ha sido registrada exitosamente y ha sido establecida como Pendiente en el panel de 'Seguimiento de Incidencias'");
+        } catch(Exception e){
+            throw e;
+        }
     }
-
-    @GetMapping("/health")
-    public Mono<Map<String, String>> health() {
-        return Mono.just(Map.of("status", "ok", "servicio", "EcoSolido"));
+    @PostMapping("/generar-descripcion")
+    public ResponseEntity<?> generarDescripcion(@RequestParam("urlFoto") String urlFoto){
+        if(urlFoto==null || urlFoto.isBlank()){
+            return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto");
+        }
+        try {
+            String descripcion = incidenciaService.generarDescripcion(urlFoto);
+            return ResponseEntity.ok(Map.of("descripcion", descripcion));
+        } catch (Exception e) {
+            throw e;
+        }
     }
-
-    @PostMapping("/describir-fotos")
-    public Mono<DescribirFotosResponseDTO> describirFotos(@RequestBody DescribirFotosRequestDTO request) {
-        return Mono.fromCallable(() -> {
-                    String descripcion = incidenciaService.generarDescripcionDesdeFotos(request.getImagenes());
-                    return new DescribirFotosResponseDTO(descripcion);
-                })
-                .subscribeOn(Schedulers.boundedElastic())
-                .onErrorMap(IllegalArgumentException.class, e ->
-                        new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e))
-                .onErrorMap(IllegalStateException.class, e ->
-                        new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e))
-                .onErrorMap(Exception.class, e ->
-                        new ResponseStatusException(
-                                HttpStatus.INTERNAL_SERVER_ERROR,
-                                "Error inesperado al generar la descripción: " + e.getMessage(),
-                                e));
-    }
-
 }
-

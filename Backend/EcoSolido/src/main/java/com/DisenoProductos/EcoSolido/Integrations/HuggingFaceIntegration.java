@@ -24,6 +24,10 @@ public class HuggingFaceIntegration {
 
     private final WebClient webClient = WebClient.builder().build();
 
+    public String describirFoto(String urlFoto) {
+        return describirFotos(List.of(urlFoto));
+    }
+
     public String describirFotos(List<String> urlsFoto) {
         validarConfiguracion();
 
