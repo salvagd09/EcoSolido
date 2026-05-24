@@ -43,4 +43,6 @@ public class IncidenciaController {
                                 "Error inesperado al generar la descripción: " + e.getMessage(),
                                 e));
     }
+
 }
+
