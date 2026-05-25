@@ -16,10 +16,12 @@ public class IncidenciaEntity {
     private Integer idIncidencia;
     private String categoria;
     private String descripcion;
-    private LocalDateTime fecha;
+    @Column(name="fecha")
+    private LocalDateTime fecha=LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name="id_ciudadano")
     private UsuarioEntity usuario;
+    @Enumerated(EnumType.STRING)
     private IncidenciaEstados estado;
     @OneToMany(mappedBy="incidencia",cascade=CascadeType.ALL)
     @Size(min=1,message="Debe adjuntar al menos 1 foto")

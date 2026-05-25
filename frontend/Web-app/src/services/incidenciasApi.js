@@ -18,8 +18,8 @@ function extraerMensajeError(cuerpo, status) {
       if (data.message) return data.message
       if (data.error) return data.error
     } catch {
+      return cuerpo || 'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
     }
-    return cuerpo || 'Servicio de IA no disponible. Configura HF_TOKEN antes de iniciar el backend.'
   }
 
   if (!cuerpo) {
@@ -104,6 +104,55 @@ export async function prepararImagenesParaIA(archivos) {
   return Promise.all(archivos.map((file) => comprimirImagenParaIA(file)))
 }
 
+export async function subirFotosACloudinary(archivos) {
+  const formData = new FormData()
+  archivos.forEach((file) => formData.append('fotos', file))
+
+  const response = await fetch(`${API_BASE}/incidencias/subir-fotos`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  const data = JSON.parse(cuerpo)
+  return data.urls
+}
+
+export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos) {
+  const formData = new FormData()
+  const incidenciaBlob = new Blob(
+    [JSON.stringify({ categoria, descripcion })],
+    { type: 'application/json' }
+  )
+  formData.append('incidencia', incidenciaBlob)
+  
+  if (urlsFotos.length > 0) {
+    // Ya están en Cloudinary, solo enviar URLs
+    urlsFotos.forEach((url) => formData.append('urlsFotos', url))
+  } else {
+    // No usó IA, subir archivos directamente
+    archivos.forEach((file) => formData.append('fotos', file))
+  }
+  
+  const response = await fetch(`${API_BASE}/incidencias/registrar`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  return cuerpo
+}
+
 export function esErrorTecnicoIA(mensaje) {
   if (!mensaje) return true
   const m = mensaje.toLowerCase()
@@ -120,4 +169,4 @@ export function esErrorTecnicoIA(mensaje) {
   )
 }
 
-export { MENSAJE_FOTOS_NO_VISIBLES } 
+export { MENSAJE_FOTOS_NO_VISIBLES }
