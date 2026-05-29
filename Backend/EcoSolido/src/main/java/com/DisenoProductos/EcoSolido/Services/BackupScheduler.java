@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Component
 public class BackupScheduler {
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void ejecutarBackup() {
         System.out.println("✅ Scheduler disparado: " + LocalDateTime.now());
         try {
-            File dirBackup = new File("../Database/Backup/");
+            File dirBackup = new File("../../Database/Backup/");
             if (!dirBackup.exists()) dirBackup.mkdirs();
             System.out.println("Ruta absoluta: " + dirBackup.getAbsolutePath());
 
-            String rutaBackup = "../Database/Backup/backup_" + LocalDate.now() + ".sql";
+            String rutaBackup = "../../Database/Backup/backup_" + LocalDate.now() + ".sql";
 
             ProcessBuilder pb = new ProcessBuilder(
-                    "mysqldump",
+                    "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe",
                     "-u", "root",
                     "-pMinuevaContra1",  // ✅ pegado
                     "EcoSolido"
