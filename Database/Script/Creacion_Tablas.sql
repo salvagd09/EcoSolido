@@ -1,4 +1,6 @@
 USE EcoSolido;
+Select * from incidencia;
+Select * from incidencia_foto;
 CREATE TABLE usuario (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre_completo      VARCHAR(255) NOT NULL,

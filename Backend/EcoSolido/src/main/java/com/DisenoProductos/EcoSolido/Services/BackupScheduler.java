@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Component
     public class BackupScheduler {
-        @Scheduled(cron = "0 0 0 * * *") // Cada día a medianoche
+        @Scheduled(cron = "0 * * * * *") // Cada día a medianoche
         public void ejecutarBackup() {
             try {
                 // Ruta relativa a la raíz del proyecto
@@ -18,7 +18,7 @@ import java.time.LocalDate;
                 ProcessBuilder pb = new ProcessBuilder(
                         "mysqldump",
                         "-u", "root",
-                        "-ptu_password",     // Sin espacio entre -p y la contraseña
+                        "-p", "MinuevaContra1",     // Sin espacio entre -p y la contraseña
                         "EcoSolido"
                 );
 
