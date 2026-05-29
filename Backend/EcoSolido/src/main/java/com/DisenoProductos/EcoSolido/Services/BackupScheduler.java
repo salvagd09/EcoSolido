@@ -1,34 +1,44 @@
 package com.DisenoProductos.EcoSolido.Services;
 
-
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
-    public class BackupScheduler {
-        @Scheduled(cron = "0 * * * * *") // Cada día a medianoche
-        public void ejecutarBackup() {
-            try {
-                // Ruta relativa a la raíz del proyecto
-                String rutaBackup = "../Database/Backup/backup_" +
-                        LocalDate.now() + ".sql";
+public class BackupScheduler {
 
-                ProcessBuilder pb = new ProcessBuilder(
-                        "mysqldump",
-                        "-u", "root",
-                        "-p", "MinuevaContra1",     // Sin espacio entre -p y la contraseña
-                        "EcoSolido"
-                );
+    @Scheduled(cron = "0 * * * * *")
+    public void ejecutarBackup() {
+        System.out.println("✅ Scheduler disparado: " + LocalDateTime.now());
+        try {
+            File dirBackup = new File("../Database/Backup/");
+            if (!dirBackup.exists()) dirBackup.mkdirs();
+            System.out.println("Ruta absoluta: " + dirBackup.getAbsolutePath());
 
-                pb.redirectOutput(new java.io.File(rutaBackup));
-                pb.redirectErrorStream(true);
-                Process process = pb.start();
-                process.waitFor();
+            String rutaBackup = "../Database/Backup/backup_" + LocalDate.now() + ".sql";
 
-            } catch (Exception e) {
-                System.err.println("Error al generar backup: " + e.getMessage());
+            ProcessBuilder pb = new ProcessBuilder(
+                    "mysqldump",
+                    "-u", "root",
+                    "-pMinuevaContra1",  // ✅ pegado
+                    "EcoSolido"
+            );
+
+            pb.redirectOutput(new File(rutaBackup));
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                System.out.println("✅ Backup generado: " + rutaBackup);
+            } else {
+                System.err.println("❌ mysqldump falló con código: " + exitCode);
             }
+
+        } catch (Exception e) {
+            System.err.println("Error al generar backup: " + e.getMessage());
         }
     }
+}
