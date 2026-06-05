@@ -21,7 +21,9 @@ const CATEGORIAS = [
   'Otro',
 ]
 
-const MAX_FOTOS=5
+const MAX_FOTOS = 5
+const MAX_TAMANO_MB = 1 // Tamaño máximo por foto en MB
+const MAX_CARACTERES = 500 // Límite de caracteres para la descripción
 
 function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
@@ -31,6 +33,7 @@ export default function RegistrarIncidencias() {
   const [fotos, setFotos] = useState(crearSlotsVacios)
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
+  const [caracteresRestantes, setCaracteresRestantes] = useState(MAX_CARACTERES)
   const [descripcionEsErrorIA, setDescripcionEsErrorIA] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showAIModal, setShowAIModal] = useState(false)
@@ -90,8 +93,10 @@ function handleEliminarFoto(index) {
     }
     setErrorTecnico('')
 }
-  function handleDescripcionChange(event) {
-    setDescripcion(event.target.value)
+function handleDescripcionChange(event) {
+    const nuevoValor = event.target.value
+    setDescripcion(nuevoValor)
+    setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length)
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
 
@@ -196,8 +201,11 @@ function handleEliminarFoto(index) {
 
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
-          <fieldset className="registrar__fotos">
+    <fieldset className="registrar__fotos">
     <legend>Fotos a presentar:</legend>
+    <p className="registrar__fotos-info">
+      Máximo {MAX_FOTOS} fotos, tamaño máximo {MAX_TAMANO_MB} MB por foto.
+    </p>
     <div className="registrar__fotos-container">
         <input
             ref={(el) => { fileInputRefs.current[0] = el }}
@@ -262,18 +270,23 @@ function handleEliminarFoto(index) {
             </div>
           </div>
 
-          <div className="registrar__field">
+          <div className="registrar__field registrar__field--descripcion">
             <label htmlFor="descripcion">Descripción sobre la incidencia:</label>
-            <textarea
-              id="descripcion"
-              rows={7}
-              value={descripcion}
-              onChange={handleDescripcionChange}
-              placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
-              disabled={generandoIA}
-              className={descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}
-              aria-invalid={descripcionEsErrorIA}
-            />
+            <div className="registrar__textarea-wrapper">
+              <textarea
+                id="descripcion"
+                rows={7}
+                value={descripcion}
+                onChange={handleDescripcionChange}
+                placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
+                disabled={generandoIA}
+                className={descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}
+                aria-invalid={descripcionEsErrorIA}
+              />
+              <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
+                {caracteresRestantes} caracteres restantes
+              </span>
+            </div>
             {generandoIA && (
               <span className="registrar__ia-loading" role="status">
                 Analizando las fotos con IA...

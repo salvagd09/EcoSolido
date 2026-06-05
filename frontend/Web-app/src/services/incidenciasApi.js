@@ -35,30 +35,33 @@ function extraerMensajeError(cuerpo, status) {
 }
 
 export async function describirFotosConIA(imagenesBase64) {
-    const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imagenes: imagenesBase64 })
-    })
+  const formData = new FormData()
+  const blob = await (await fetch(imagenesBase64[0])).blob()
+  formData.append('foto', blob, 'foto.jpg')
 
-    const cuerpo = await response.text()
+  const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
+    method: 'POST',
+    body: formData,
+  })
 
-    if (!response.ok) {
-        throw new Error(extraerMensajeError(cuerpo, response.status))
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  try {
+    const data = JSON.parse(cuerpo)
+    if (!data.descripcion) {
+      throw new Error('La IA no devolvió una descripción.')
     }
-
-    try {
-        const data = JSON.parse(cuerpo)
-        if (!data.descripcion) {
-            throw new Error('La IA no devolvió una descripción.')
-        }
-        return data.descripcion
-    } catch (err) {
-        if (err instanceof Error && err.message === 'La IA no devolvió una descripción.') {
-            throw err
-        }
-        throw new Error('Respuesta inválida del servidor.', { cause: err })
+    return data.descripcion
+  } catch (err) {
+    if (err instanceof Error && err.message === 'La IA no devolvió una descripción.') {
+      throw err
     }
+    throw new Error('Respuesta inválida del servidor.', { cause: err })
+  }
 }
 
 export function comprimirImagenParaIA(file) {
@@ -100,52 +103,56 @@ export function comprimirImagenParaIA(file) {
 export async function prepararImagenesParaIA(archivos) {
   return Promise.all(archivos.map((file) => comprimirImagenParaIA(file)))
 }
+
 export async function subirFotosACloudinary(archivos) {
-    const formData = new FormData()
-    archivos.forEach((file) => formData.append('fotos', file))
+  const formData = new FormData()
+  archivos.forEach((file) => formData.append('fotos', file))
 
-    const response = await fetch(`${API_BASE}/incidencias/subir-fotos`, {
-        method: 'POST',
-        body: formData,
-    })
+  const response = await fetch(`${API_BASE}/incidencias/subir-fotos`, {
+    method: 'POST',
+    body: formData,
+  })
 
-    const cuerpo = await response.text()
+  const cuerpo = await response.text()
 
-    if (!response.ok) {
-        throw new Error(extraerMensajeError(cuerpo, response.status))
-    }
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
 
-    const data = JSON.parse(cuerpo)
-    return data.urls
+  const data = JSON.parse(cuerpo)
+  return data.urls
 }
+
 export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos) {
-    const formData = new FormData()
-    const incidenciaBlob = new Blob(
-        [JSON.stringify({ categoria, descripcion })],
-        { type: 'application/json' }
-    )
-    formData.append('incidencia', incidenciaBlob)
-      if (urlsFotos.length > 0) {
-        // Ya están en Cloudinary, solo enviar URLs
-        urlsFotos.forEach((url) => formData.append('urlsFotos', url))
-    } else {
-        // No usó IA, subir archivos directamente
-        archivos.forEach((file) => formData.append('fotos', file))
-    }
-    
-    const response = await fetch(`${API_BASE}/incidencias/registrar`, {
-        method: 'POST',
-        body: formData,
-    })
+  const formData = new FormData()
+  const incidenciaBlob = new Blob(
+    [JSON.stringify({ categoria, descripcion })],
+    { type: 'application/json' }
+  )
+  formData.append('incidencia', incidenciaBlob)
+  
+  if (urlsFotos.length > 0) {
+    // Ya están en Cloudinary, solo enviar URLs
+    urlsFotos.forEach((url) => formData.append('urlsFotos', url))
+  } else {
+    // No usó IA, subir archivos directamente
+    archivos.forEach((file) => formData.append('fotos', file))
+  }
+  
+  const response = await fetch(`${API_BASE}/incidencias/registrar`, {
+    method: 'POST',
+    body: formData,
+  })
 
-    const cuerpo = await response.text()
+  const cuerpo = await response.text()
 
-    if (!response.ok) {
-        throw new Error(extraerMensajeError(cuerpo, response.status))
-    }
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
 
-    return cuerpo
+  return cuerpo
 }
+
 export function esErrorTecnicoIA(mensaje) {
   if (!mensaje) return true
   const m = mensaje.toLowerCase()
@@ -162,4 +169,4 @@ export function esErrorTecnicoIA(mensaje) {
   )
 }
 
-export { MENSAJE_FOTOS_NO_VISIBLES } 
+export { MENSAJE_FOTOS_NO_VISIBLES }

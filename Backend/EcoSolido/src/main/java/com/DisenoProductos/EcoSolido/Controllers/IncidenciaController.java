@@ -1,8 +1,6 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +27,20 @@ public class IncidenciaController {
         incidenciaService.registrarIncidencia(incidenciaDTO, fotos, urlsFotos);
         return ResponseEntity.ok("Su incidencia ha sido registrada exitosamente y ha sido establecida como Pendiente en el panel de 'Seguimiento de Incidencias'");
     }
+    
     @PostMapping("/generar-descripcion")
-    public ResponseEntity<?> generarDescripcion(@RequestBody DescribirFotosRequestDTO request){
-        if(request.getImagenes() == null || request.getImagenes().isEmpty()){
+    public ResponseEntity<?> generarDescripcion(@RequestParam("foto") MultipartFile foto){
+        if(foto==null || foto.isEmpty()){
             return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto");
         }
         try {
-            String descripcion = incidenciaService.generarDescripcion(request.getImagenes());
-            return ResponseEntity.ok(new DescribirFotosResponseDTO(descripcion));
+            String descripcion = incidenciaService.generarDescripcion(foto);
+            return ResponseEntity.ok(Map.of("descripcion", descripcion));
         } catch (Exception e) {
             throw e;
         }
     }
+
     @PostMapping("/subir-fotos")
     public ResponseEntity<?> subirFotos(@RequestPart("fotos") List<MultipartFile> fotos) {
         if (fotos == null || fotos.isEmpty()) {
@@ -55,5 +55,4 @@ public class IncidenciaController {
                     .body("Error al subir las fotos.");
         }
     }
-
 }

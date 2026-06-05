@@ -36,6 +36,40 @@
   text-align: left;
 }
 
+/* Tablet */
+@media (max-width: 1024px) {
+  .registrar {
+    padding: 28px 36px 40px;
+  }
+
+  .registrar__title {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .registrar__form {
+    gap: 20px;
+  }
+
+  .registrar__fotos-info {
+    font-size: 0.8rem;
+  }
+
+  .registrar__field label {
+    font-size: 0.85rem;
+  }
+
+  .registrar__btn {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    min-width: 160px;
+  }
+
+  .registrar__fotos {
+    padding: 0;
+  }
+}
+
 .registrar__fotos {
   border: none;
   margin: 0;
@@ -44,12 +78,19 @@
 
 .registrar__fotos legend {
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding: 0;
   font-size: 0.95rem;
   color: var(--color-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.registrar__fotos-info {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 
 .registrar__fotos-container {
@@ -150,6 +191,14 @@
   gap: 8px;
 }
 
+.registrar__field--descripcion {
+  position: relative;
+}
+
+.registrar__textarea-wrapper {
+  position: relative;
+}
+
 .registrar__field label {
   font-weight: 600;
   font-size: 0.9rem;
@@ -196,6 +245,25 @@
   min-height: 160px;
   line-height: 1.6;
   max-width: 100%;
+  padding-bottom: 32px;
+}
+
+.registrar__textarea-wrapper .registrar__contador {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  background: var(--color-bg-white);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  z-index: 1;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+[data-theme="dark"] .registrar__textarea-wrapper .registrar__contador {
+  background: var(--color-bg);
 }
 
 .registrar__textarea--ia-error {
@@ -258,6 +326,25 @@
 .registrar__ia-tecnico-hint {
   font-size: 0.85rem;
   color: var(--color-text-secondary);
+}
+
+.registrar__descripcion-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.registrar__contador {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  align-self: flex-end;
+}
+
+.registrar__contador--alerta {
+  color: var(--color-btn-warning);
+  font-weight: 600;
 }
 
 .registrar__ia-tecnico code {
@@ -329,6 +416,7 @@
   transform: translateY(0);
 }
 
+/* Móvil */
 @media (max-width: 768px) {
   .registrar {
     padding: 24px 20px 36px;
@@ -337,19 +425,125 @@
   }
 
   .registrar__title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
+    margin-bottom: 20px;
+  }
+
+  .registrar__fotos legend {
+    font-size: 0.85rem;
+  }
+
+  .registrar__fotos-info {
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+  }
+
+  .foto-slot__btn {
+    min-height: 120px;
+  }
+
+  .foto-slot__upload-text {
+    font-size: 0.85rem;
+  }
+
+  .foto-slot__preview {
+    min-height: 120px;
+  }
+
+  .registrar__field {
+    gap: 6px;
+  }
+
+  .registrar__field label {
+    font-size: 0.8rem;
+  }
+
+  .registrar__field select,
+  .registrar__field textarea {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .registrar__field textarea {
+    min-height: 120px;
+    padding-bottom: 28px;
+  }
+
+  .registrar__textarea-wrapper .registrar__contador {
+    font-size: 0.75rem;
+    bottom: 8px;
+    right: 10px;
+  }
+
+  .registrar__ia-loading {
+    font-size: 0.85rem;
+  }
+
+  .registrar__ia-tecnico {
+    padding: 12px 14px;
+    font-size: 0.85rem;
   }
 
   .registrar__actions {
     flex-direction: column;
     gap: 12px;
+    padding-top: 4px;
   }
 
   .registrar__btn {
     width: 100%;
+    padding: 12px 20px;
+    font-size: 0.9rem;
   }
 
   .modal {
     margin-right: 0 !important;
+  }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+  .registrar {
+    padding: 20px 16px 32px;
+  }
+
+  .registrar__title {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
+  .registrar__fotos legend {
+    font-size: 0.8rem;
+  }
+
+  .foto-slot__btn {
+    min-height: 100px;
+  }
+
+  .foto-slot__upload-area {
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .foto-slot__upload-text {
+    font-size: 0.8rem;
+  }
+
+  .foto-slot__remove {
+    width: 24px;
+    height: 24px;
+    font-size: 0.85rem;
+  }
+
+  .registrar__field select,
+  .registrar__field textarea {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .registrar__btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    min-width: 140px;
   }
 }
