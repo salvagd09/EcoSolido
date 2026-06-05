@@ -1,7 +1,7 @@
 package com.DisenoProductos.EcoSolido.Services;
 
 import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
-import com.DisenoProductos.EcoSolido.Integrations.GoogleVisionIntegration;
+import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
@@ -23,8 +23,7 @@ public class IncidenciaService  {
     @Autowired
     public CloudinaryIntegration cloudinaryIntegration;
     @Autowired
-    public GoogleVisionIntegration googleVisionIntegration;
-
+    public HuggingFaceIntegration huggingFaceIntegration;
     public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
                                                 List<MultipartFile> fotos,
                                                 List<String> urlsFotos) throws IOException {
@@ -57,31 +56,13 @@ public class IncidenciaService  {
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
         return incidenciaRepository.save(incidencia);
     }
-    
-    public String generarDescripcion(MultipartFile foto){
-        try {
-            Map resultado = cloudinaryIntegration.subir(foto);
-            String urlFoto = (String) resultado.get("secure_url");
-            System.out.println("=== Foto subida a Cloudinary: " + urlFoto);
-            return generarDescripcion(urlFoto);
-        } catch(Exception e){
-            throw new HuggingFaceException("No se pudo procesar la foto: " + e.getMessage());
-        }
-    }
-
-    public String generarDescripcion(String urlFoto){
-        System.out.println("=== IncidenciaService: Generando descripción para URL: " + urlFoto);
+    public String generarDescripcion(List<String> urlFotos){
         try{
-            String resultado = googleVisionIntegration.describirFoto(urlFoto);
-            System.out.println("=== IncidenciaService: Descripción generada exitosamente");
-            return resultado;
+            return huggingFaceIntegration.describirFotos(urlFotos);
         } catch(Exception e){
-            System.out.println("=== IncidenciaService: Error al generar descripción: " + e.getMessage());
-            e.printStackTrace();
-            throw new HuggingFaceException("No se pudo describir la foto: " + e.getMessage());
+                throw new HuggingFaceException("No se pudo describir la foto.",e);
         }
     }
-
     public List<String> subirFotos(List<MultipartFile> fotos) throws IOException {
         List<String> urls = new ArrayList<>();
         for (MultipartFile foto : fotos) {
