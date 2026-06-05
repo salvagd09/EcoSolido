@@ -1,28 +1,15 @@
-package com.DisenoProductos.EcoSolido.Models.Entities;
+package com.DisenoProductos.EcoSolido.Models.DTOs;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name="usuario")
-public class UsuarioEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
+public class CrearUsuarioRequestDTO {
     private Integer idUsuario;
-    @Column(name = "nombre_completo")
     private String nombreCompleto;
-    @Column(name = "apellido_completo")
     private String apellidoCompleto;
     private String dni;
     private String telefono;
-    @Column(name="correo_electronico")
     private String correoElectronico;
-    @Column(name = "nombre_usuario")
     private String nombreUsuario;
     private String contrasena;
-    @Column(name = "pregunta_seguridad")
     private String preguntaSeguridad;
-    @Column(name="respuesta_pregunta")
     private String respuestaPregunta;
     public Integer getIdUsuario() {
         return idUsuario;
