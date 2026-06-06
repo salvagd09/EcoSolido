@@ -3,7 +3,6 @@ import { MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 const API_BASE = import.meta.env.VITE_API_URL ?? ''
 const MAX_LADO_PX = 1280
 const CALIDAD_JPEG = 0.82
-
 function extraerMensajeError(cuerpo, status) {
   if (status === 502) {
     return (
@@ -38,10 +37,13 @@ export async function describirFotosConIA(imagenesBase64) {
   const formData = new FormData()
   const blob = await (await fetch(imagenesBase64[0])).blob()
   formData.append('foto', blob, 'foto.jpg')
-
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
     method: 'POST',
-    body: formData,
+        headers: {
+        'Authorization': `Bearer ${token}` 
+    },
+    body: formData
   })
 
   const cuerpo = await response.text()
@@ -107,10 +109,13 @@ export async function prepararImagenesParaIA(archivos) {
 export async function subirFotosACloudinary(archivos) {
   const formData = new FormData()
   archivos.forEach((file) => formData.append('fotos', file))
-
+  const token = localStorage.getItem("token");
   const response = await fetch(`${API_BASE}/incidencias/subir-fotos`, {
     method: 'POST',
-    body: formData,
+    headers: {
+        'Authorization': `Bearer ${token}` 
+    },
+    body: formData
   })
 
   const cuerpo = await response.text()
@@ -130,7 +135,7 @@ export async function registrarIncidencia(categoria, descripcion, urlsFotos, arc
     { type: 'application/json' }
   )
   formData.append('incidencia', incidenciaBlob)
-  
+  const token = localStorage.getItem("token");
   if (urlsFotos.length > 0) {
     // Ya están en Cloudinary, solo enviar URLs
     urlsFotos.forEach((url) => formData.append('urlsFotos', url))
@@ -141,7 +146,10 @@ export async function registrarIncidencia(categoria, descripcion, urlsFotos, arc
   
   const response = await fetch(`${API_BASE}/incidencias/registrar`, {
     method: 'POST',
-    body: formData,
+        headers: {
+        'Authorization': `Bearer ${token}` 
+    },
+    body: formData
   })
 
   const cuerpo = await response.text()
