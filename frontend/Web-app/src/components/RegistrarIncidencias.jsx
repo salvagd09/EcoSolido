@@ -215,10 +215,7 @@ export default function RegistrarIncidencias() {
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}>
-            <legend>Fotos a presentar:</legend>
-            <p className="registrar__fotos-info">
-              Máximo {MAX_FOTOS} fotos, tamaño máximo {MAX_TAMANO_MB} MB por foto.
-            </p>
+            <legend>Fotos a presentar: <span style={{ color: '#ff7a00' }}>*</span></legend>
             <div className="registrar__fotos-container">
               <input
                 ref={(el) => { fileInputRefs.current[0] = el }}
@@ -261,10 +258,13 @@ export default function RegistrarIncidencias() {
                 ))}
               </div>
             </div>
+            <p className="registrar__fotos-info">
+              Solo se pueden ingresar hasta 5 fotos con un tamaño total que no debe superar los 20 MB entre todas
+            </p>
           </fieldset>
 
           <div className="registrar__field">
-            <label htmlFor="categoria">Selecciona una categoría</label>
+            <label htmlFor="categoria">Selecciona una categoría <span style={{ color: '#ff7a00' }}>*</span>:</label>
             <div className="registrar__select-wrap">
               <select
                 id="categoria"
@@ -300,6 +300,7 @@ export default function RegistrarIncidencias() {
                 {caracteresRestantes} caracteres restantes
               </span>
             </div>
+            <span style={{ color: '#ff7a00' }}>*Campo Obligatorio</span>
             {generandoIA && (
               <span className="registrar__ia-loading" role="status">
                 Analizando las fotos con IA...

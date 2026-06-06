@@ -8,30 +8,35 @@
 }
 
 :root {
-  /* Paleta de Colores EcoSolido */
-  --color-text: #1a1a2e;
-  --color-text-secondary: #6b7280;
-  --color-border: #e5e7eb;
-  --color-border-focus: #2196f3;
-  --color-bg: #f9fafb;
-  --color-bg-white: #ffffff;
-  --color-sidebar-active: #e3f2fd;
+  /* Paleta de Colores EcoSolido - Sostenibilidad y Gestión Ambiental */
+  --color-text: #111111;
+  --color-text-secondary: #37474F;
+  --color-border: #BDBDBD;
+  --color-border-focus: #2E7D32;
+  --color-bg: #F5F4EF;
+  --color-bg-white: #FFFFFF;
+  --color-sidebar-active: rgba(46, 125, 50, 0.15);
+  --color-header-bg: #2E7D32;
+  --color-sidebar-bg: #2E7D32;
 
-  --color-btn-primary: #1b5e20;
-  --color-btn-primary-hover: #154a19;
+  --color-btn-primary: #2E7D32;
+  --color-btn-primary-hover: #1b5e20;
 
-  --color-btn-ia: #2196f3;
-  --color-btn-ia-hover: #1976d2;
+  --color-btn-ia: #37474F;
+  --color-btn-ia-hover: #263238;
 
-  --color-btn-success: #1b5e20;
-  --color-btn-success-hover: #154a19;
-  --color-btn-danger: #dc2626;
-  --color-btn-danger-hover: #b91c1c;
-  --color-btn-secondary: #6b7280;
-  --color-btn-secondary-hover: #4b5563;
+  --color-btn-success: #2E7D32;
+  --color-btn-success-hover: #1b5e20;
+  --color-btn-danger: #FF746C;
+  --color-btn-danger-hover: #e66059;
+  --color-btn-warning: #FF8F0F;
+  --color-btn-secondary: #37474F;
+  --color-btn-secondary-hover: #263238;
 
+  --color-required: #FF746C;
   --color-accent-green-light: #e8f5e9;
-  --color-accent-blue-light: #e3f2fd;
+  --color-accent-orange-light: #FFF3E0;
+  --color-accent-blue-light: #ECEFF1;
   --color-accent-red-light: #fef2f2;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -57,26 +62,29 @@
   --color-text: #e5e7eb;
   --color-text-secondary: #9ca3af;
   --color-border: #374151;
-  --color-border-focus: #60a5fa;
+  --color-border-focus: #2E7D32;
   --color-bg: #111827;
   --color-bg-white: #1f2937;
-  --color-sidebar-active: #1e3a5f;
+  --color-sidebar-active: rgba(46, 125, 50, 0.2);
 
-  --color-btn-primary: #22c55e;
-  --color-btn-primary-hover: #16a34a;
+  --color-btn-primary: #2E7D32;
+  --color-btn-primary-hover: #1b5e20;
 
-  --color-btn-ia: #3b82f6;
-  --color-btn-ia-hover: #2563eb;
+  --color-btn-ia: #37474F;
+  --color-btn-ia-hover: #263238;
 
-  --color-btn-success: #22c55e;
-  --color-btn-success-hover: #16a34a;
-  --color-btn-danger: #ef4444;
-  --color-btn-danger-hover: #dc2626;
-  --color-btn-secondary: #6b7280;
-  --color-btn-secondary-hover: #4b5563;
+  --color-btn-success: #2E7D32;
+  --color-btn-success-hover: #1b5e20;
+  --color-btn-danger: #FF746C;
+  --color-btn-danger-hover: #e66059;
+  --color-btn-warning: #FF8F0F;
+  --color-btn-secondary: #37474F;
+  --color-btn-secondary-hover: #263238;
 
+  --color-required: #FF746C;
   --color-accent-green-light: #166534;
-  --color-accent-blue-light: #1e3a5f;
+  --color-accent-orange-light: #E65100;
+  --color-accent-blue-light: #37474F;
   --color-accent-red-light: #7f1d1d;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -107,6 +115,20 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+/* Campos obligatorios - Color coral */
+.required-asterisk {
+  color: var(--color-required);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.required-label {
+  color: var(--color-required);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: -4px;
 }
 
  
