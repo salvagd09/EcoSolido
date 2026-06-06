@@ -34,17 +34,16 @@ function extraerMensajeError(cuerpo, status) {
 }
 
 export async function describirFotosConIA(imagenesBase64) {
-  const formData = new FormData()
-  const blob = await (await fetch(imagenesBase64[0])).blob()
-  formData.append('foto', blob, 'foto.jpg')
   const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
-    method: 'POST',
+    const response = await fetch(`${API_BASE}/incidencias/generar-descripcion`, {
+        method: 'POST',
         headers: {
-        'Authorization': `Bearer ${token}` 
-    },
-    body: formData
-  })
+            'Content-Type': 'application/json',  
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ imagenes: imagenesBase64 })  // ← JSON con el array de base64
+    })
+
 
   const cuerpo = await response.text()
 
