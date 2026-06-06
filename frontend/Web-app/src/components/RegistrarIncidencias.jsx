@@ -259,7 +259,7 @@ export default function RegistrarIncidencias() {
               </div>
             </div>
             <p className="registrar__fotos-info">
-              Solo se pueden ingresar hasta 5 fotos con un tamaño total que no debe superar los 20 MB entre todas
+              Solo se pueden ingresar hasta 5 fotos con un tamaño total que no debe superar los 50 MB entre todas
             </p>
           </fieldset>
 
@@ -284,7 +284,7 @@ export default function RegistrarIncidencias() {
           </div>
 
           <div className="registrar__field registrar__field--descripcion">
-            <label htmlFor="descripcion">Descripción sobre la incidencia:</label>
+            <label htmlFor="descripcion">Descripción sobre la incidencia: <span style={{ color: '#ff7a00' }}>*</span></label>
             <div className="registrar__textarea-wrapper">
               <textarea
                 id="descripcion"

@@ -240,6 +240,7 @@ export default function RestablecerContra() {
                                     type={usarTelefono ? "tel" : "email"}
                                     id={usarTelefono ? "telefono" : "correo"}
                                     placeholder={usarTelefono ? "Ingresa tu número de teléfono" : "Ingresa tu correo electrónico"}
+                                    maxLength={usarTelefono? "9":"500"}
                                     value={usarTelefono ? telOCel : correo}
                                     onChange={(e) => usarTelefono ? setTelOCel(e.target.value) : setCorreo(e.target.value)}
                                     required

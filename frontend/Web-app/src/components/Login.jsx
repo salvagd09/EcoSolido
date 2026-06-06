@@ -26,6 +26,7 @@ export default function Login() {
             }
             const data = await respuesta.json();
             localStorage.setItem("token", data.token);
+            localStorage.setItem("nombreUsuario", data.nombreUsuario);
             navigate("/registro");
         } catch (error) {
             setError(error.message);

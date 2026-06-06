@@ -11,6 +11,7 @@ export default function Header({ onMenuClick }) {
     return temaGuardado === 'oscuro'
   })
   const navigate = useNavigate()
+  const nombreUsuario = localStorage.getItem("nombreUsuario") 
   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function Header({ onMenuClick }) {
         </button>
         <button type="button" className="header__icon-btn" aria-label="Perfil de usuario">
           <IconUsuario />
+          <span className="header__username">{nombreUsuario}</span>
         </button>
         <button
           type="button"
