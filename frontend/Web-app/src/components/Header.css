@@ -79,7 +79,9 @@
   transition: opacity 0.2s, transform 0.2s;
   border-radius: var(--radius-sm);
 }
-
+.header__username{
+  margin-left:10px;
+}
 .header__icon-btn:hover {
   opacity: 1;
   transform: scale(1.05);
@@ -103,7 +105,9 @@
   .header__logo {
     font-size: 1.35rem;
   }
-
+  .header_username{
+    margin-left:10px;
+  }
   .header__actions {
     gap: 12px;
   }

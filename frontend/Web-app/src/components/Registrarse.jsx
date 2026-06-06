@@ -9,10 +9,12 @@ export default function Registrarse() {
         apellido: '',
         email: '',
         telefono: '',
+        DNI:'',
         nombreUsuario: '',
         contrasena: '',
         confirmarContrasena: '',
-        tipoUsuario: 'ciudadano'
+        pregunta:'',
+        respuesta:''
     });
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
@@ -46,13 +48,15 @@ export default function Registrarse() {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    nombre: formData.nombre,
-                    apellido: formData.apellido,
-                    email: formData.email,
+                    nombreCompleto: formData.nombre,
+                    apellidoCompleto: formData.apellido,
+                    dni:formData.DNI,
                     telefono: formData.telefono,
+                    correoElectronico: formData.email,
                     nombreUsuario: formData.nombreUsuario,
                     contrasena: formData.contrasena,
-                    tipoUsuario: formData.tipoUsuario
+                    preguntaSeguridad:formData.pregunta,
+                    respuestaPregunta:formData.respuesta
                 })
             });
 
@@ -75,7 +79,7 @@ export default function Registrarse() {
             <div className="registrarse__container">
                 <div className="registrarse__logo">
                     <svg className="registrarse__logo-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                     <h1 className="registrarse__title">EcoSólido</h1>
                     <p className="registrarse__subtitle">Crea tu cuenta para gestionar incidencias</p>
@@ -97,9 +101,9 @@ export default function Registrarse() {
                     <div className="registrarse__row">
                         <div className="registrarse__field">
                             <label htmlFor="nombre">Nombre</label>
-                            <input 
-                                type="text" 
-                                id="nombre" 
+                            <input
+                                type="text"
+                                id="nombre"
                                 name="nombre"
                                 placeholder="Tu nombre"
                                 value={formData.nombre}
@@ -109,9 +113,9 @@ export default function Registrarse() {
                         </div>
                         <div className="registrarse__field">
                             <label htmlFor="apellido">Apellido</label>
-                            <input 
-                                type="text" 
-                                id="apellido" 
+                            <input
+                                type="text"
+                                id="apellido"
                                 name="apellido"
                                 placeholder="Tu apellido"
                                 value={formData.apellido}
@@ -123,9 +127,9 @@ export default function Registrarse() {
 
                     <div className="registrarse__field">
                         <label htmlFor="email">Correo electrónico</label>
-                        <input 
-                            type="email" 
-                            id="email" 
+                        <input
+                            type="email"
+                            id="email"
                             name="email"
                             placeholder="tu@email.com"
                             value={formData.email}
@@ -136,34 +140,70 @@ export default function Registrarse() {
 
                     <div className="registrarse__field">
                         <label htmlFor="telefono">Teléfono</label>
-                        <input 
-                            type="tel" 
-                            id="telefono" 
+                        <input
+                            type="tel"
+                            id="telefono"
                             name="telefono"
+                            maxLength="9"
                             placeholder="Tu número de teléfono"
                             value={formData.telefono}
                             onChange={handleChange}
                             required
                         />
                     </div>
-
+                    <div className="registrarse__field">
+                        <label htmlFor="DNI">DNI</label>
+                        <input
+                            type="text"
+                            id="DNI"
+                            name="DNI"
+                            maxLength="8"
+                            placeholder="Establece el DNI"
+                            value={formData.DNI}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                     <div className="registrarse__field">
                         <label htmlFor="nombreUsuario">Nombre de usuario</label>
-                        <input 
-                            type="text" 
-                            id="nombreUsuario" 
+                        <input
+                            type="text"
+                            id="nombreUsuario"
                             name="nombreUsuario"
                             placeholder="Elige un nombre de usuario"
                             value={formData.nombreUsuario}
                             onChange={handleChange}
                             required
                         />
-                    </div>
-
+                    </div>  
                     <div className="registrarse__field">
+                        <label htmlFor="pregunta">Pregunta de seguridad</label>
+                        <input
+                            type="text"
+                            id="pregunta"
+                            name="pregunta"
+                            placeholder="Deben ser respondibles con 1 o 3 palabras como máximo"
+                            value={formData.pregunta}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="registrarse__field">
+                        <label htmlFor="respuesta">Respuesta</label>
+                        <input
+                            type="text"
+                            id="respuesta"
+                            name="respuesta"
+                            placeholder="Solo coloque la respuesta"
+                            value={formData.respuesta}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    {/*<div className="registrarse__field">
                         <label htmlFor="tipoUsuario">Tipo de usuario</label>
-                        <select 
-                            id="tipoUsuario" 
+                        <select
+                            id="tipoUsuario"
                             name="tipoUsuario"
                             value={formData.tipoUsuario}
                             onChange={handleChange}
@@ -172,13 +212,13 @@ export default function Registrarse() {
                             <option value="tecnico">Técnico</option>
                             <option value="administrador">Administrador</option>
                         </select>
-                    </div>
+                    </div>*/}
 
                     <div className="registrarse__field">
                         <label htmlFor="contrasena">Contraseña</label>
-                        <input 
-                            type="password" 
-                            id="contrasena" 
+                        <input
+                            type="password"
+                            id="contrasena"
                             name="contrasena"
                             placeholder="Mínimo 6 caracteres"
                             value={formData.contrasena}
@@ -189,9 +229,9 @@ export default function Registrarse() {
 
                     <div className="registrarse__field">
                         <label htmlFor="confirmarContrasena">Confirmar contraseña</label>
-                        <input 
-                            type="password" 
-                            id="confirmarContrasena" 
+                        <input
+                            type="password"
+                            id="confirmarContrasena"
                             name="confirmarContrasena"
                             placeholder="Repite tu contraseña"
                             value={formData.confirmarContrasena}
@@ -209,8 +249,8 @@ export default function Registrarse() {
 
                 <div className="registrarse__links">
                     <p>¿Ya tienes cuenta?</p>
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         className="registrarse__link"
                         onClick={() => navigate("/login")}
                     >
