@@ -22,7 +22,6 @@ const CATEGORIAS = [
 ]
 
 const MAX_FOTOS = 5
-const MAX_TAMANO_MB = 10 // Tamaño máximo por foto en MB
 const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
 
 function crearSlotsVacios() {
@@ -43,7 +42,11 @@ export default function RegistrarIncidencias() {
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('')
   const [isDragging, setIsDragging] = useState(false);
-
+  const [camposError, setCamposError] = useState({
+      categoria: false,
+      fotos: false,
+      descripcion: false
+  })
 
   const fileInputRefs = useRef([])
   const fotosSubidas = fotos.filter((f) => f.file)
@@ -81,6 +84,7 @@ export default function RegistrarIncidencias() {
       setDescripcion('')
       limpiarEstadoErrorIA()
     }
+    setCamposError(prev => ({ ...prev, fotos: false })) 
     setErrorTecnico('')
     event.target.value = ''
   }
@@ -99,11 +103,18 @@ export default function RegistrarIncidencias() {
     const nuevoValor = event.target.value
     setDescripcion(nuevoValor)
     setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length)
+    setCamposError(prev => ({ ...prev, descripcion: false }))
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
+    const errores = {
+        categoria: !categoria,
+        fotos: !tieneFotos,
+        descripcion: !descripcion.trim()
+    }
+    setCamposError(errores)
     if (descripcionEsErrorIA) {
       alert('Genera una descripción válida o cambia las fotos antes de registrar.')
       return
@@ -228,7 +239,7 @@ export default function RegistrarIncidencias() {
               />
               <button
                 type="button"
-                className="foto-slot__btn"
+                className={`foto-slot__btn ${camposError.fotos ? "campo-error" : ""}`}
                 onClick={() => fileInputRefs.current[0]?.click()}
               >
                 <div className="foto-slot__upload-area">
@@ -265,11 +276,13 @@ export default function RegistrarIncidencias() {
 
           <div className="registrar__field">
             <label htmlFor="categoria">Selecciona una categoría <span style={{ color: '#ff7a00' }}>*</span>:</label>
-            <div className="registrar__select-wrap">
+            <div  className="registrar__select-wrap" >
               <select
                 id="categoria"
+                className={`${camposError.categoria ? "campo-error" : ""}`}
                 value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
+                onChange={(e) => {setCategoria(e.target.value)
+                  setCamposError(prev => ({ ...prev, categoria: false }))}}
               >
                 <option value="" disabled>
                   Seleccione una opción
@@ -293,7 +306,7 @@ export default function RegistrarIncidencias() {
                 onChange={handleDescripcionChange}
                 placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
                 disabled={generandoIA}
-                className={descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}
+                 className={`${descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}${camposError.descripcion ? 'campo-error' : ''}`}
                 aria-invalid={descripcionEsErrorIA}
               />
               <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
