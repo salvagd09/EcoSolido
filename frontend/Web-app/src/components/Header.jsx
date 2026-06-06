@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
 import { IconSalir, IconUsuario, IconSol, IconLuna, IconMenu } from './icons'
 import './Header.css'
+import CerrarSesionModal from './CerrarSesionModal'
+import { useNavigate } from 'react-router-dom'
 
 export default function Header({ onMenuClick }) {
   const [temaOscuro, setTemaOscuro] = useState(() => {
     const temaGuardado = localStorage.getItem('tema')
     return temaGuardado === 'oscuro'
   })
-
+  const navigate = useNavigate();
+   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {
@@ -22,7 +25,13 @@ export default function Header({ onMenuClick }) {
   function toggleTema() {
     setTemaOscuro(prev => !prev)
   }
-
+  function handleCerrarSesion() {
+    setShowCerrarSModal(true)
+  }
+  function handleConfirmarCierre(){
+    localStorage.removeItem("token") 
+    navigate("/login", { replace: true })
+  }
   return (
     <header className="header">
       <button
@@ -48,9 +57,15 @@ export default function Header({ onMenuClick }) {
         <button type="button" className="header__icon-btn" aria-label="Perfil de usuario">
           <IconUsuario />
         </button>
-        <button type="button" className="header__icon-btn" aria-label="Cerrar sesión">
+        <button type="button" className="header__icon-btn" aria-label="Cerrar sesión" onClick={handleCerrarSesion}>
           <IconSalir />
         </button>
+         {showCerrarSModal && (
+                  <CerrarSesionModal
+                    onConfirm={handleConfirmarCierre}
+                    onCancel={() => setShowCerrarSModal(false)}
+                  />
+                )}
       </div>
     </header>
   )
