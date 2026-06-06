@@ -6,16 +6,19 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(245, 244, 239, 0.8);
+  backdrop-filter: blur(4px);
 }
 
 .ai-modal {
-  background: #fff;
+  background: var(--color-bg-white);
   border: 2px solid var(--color-border);
   padding: 28px 32px 32px;
   max-width: 480px;
   width: 100%;
   text-align: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
 .ai-modal__title {
@@ -23,12 +26,14 @@
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1.35;
+  color: var(--color-text);
 }
 
 .ai-modal__message {
   margin: 0 0 24px;
   font-size: 0.95rem;
   line-height: 1.45;
+  color: var(--color-text-secondary);
 }
 
 .ai-modal__actions {
@@ -43,23 +48,28 @@
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  border: 2px solid var(--color-border);
-  border-radius: 2px;
+  border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .ai-modal__btn--yes {
-  background: var(--color-btn-success);
+  background: var(--color-btn-primary);
 }
 
 .ai-modal__btn--yes:hover {
-  background: var(--color-btn-success-hover);
+  background: var(--color-btn-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .ai-modal__btn--no {
-  background: var(--color-btn-danger);
+  background: var(--color-btn-secondary);
 }
 
 .ai-modal__btn--no:hover {
-  background: var(--color-btn-danger-hover);
+  background: var(--color-btn-secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }

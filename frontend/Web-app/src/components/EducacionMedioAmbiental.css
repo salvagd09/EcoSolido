@@ -103,7 +103,7 @@
   top: 12px;
   left: 12px;
   padding: 4px 12px;
-  background: rgba(27, 94, 32, 0.9);
+  background: var(--color-btn-primary);
   color: #ffffff;
   border-radius: 20px;
   font-size: 0.75rem;

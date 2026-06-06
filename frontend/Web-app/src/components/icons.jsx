@@ -1,3 +1,35 @@
+export function IconPlanetaFeliz() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      {/* Océano */}
+      <circle cx="24" cy="24" r="20" fill="#4FC3F7" />
+      {/* Continentes */}
+      <path
+        d="M10 18c3-1 6 1 9 0s5-3 8-2 4 4 7 3v6c-3 1-5-1-8 0s-4 3-7 2-5-2-8-1-4 1-6 0c-1-3 0-6 2-8z"
+        fill="#66BB6A"
+      />
+      <path
+        d="M14 32c2-1 4 0 6 1s4 2 6 1 3-2 5-1v3c-2 1-4 0-6-1s-4-1-6 0-4 1-6 0c-1-1-1-2 1-3z"
+        fill="#66BB6A"
+      />
+      {/* Ojos felices */}
+      <circle cx="18" cy="22" r="1.8" fill="#212121" />
+      <circle cx="30" cy="22" r="1.8" fill="#212121" />
+      {/* Mejillas */}
+      <circle cx="14.5" cy="26" r="2" fill="#FF8A80" opacity="0.7" />
+      <circle cx="33.5" cy="26" r="2" fill="#FF8A80" opacity="0.7" />
+      {/* Sonrisa */}
+      <path
+        d="M18 28c1.5 2.5 4 4 6 4s4.5-1.5 6-4"
+        stroke="#212121"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  )
+}
+
 export function IconRegistro() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">

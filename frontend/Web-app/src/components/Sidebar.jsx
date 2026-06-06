@@ -16,14 +16,14 @@ const MENU_ITEMS = [
     label: 'Seguimiento de Incidencias', 
     icon: IconSeguimiento, 
     path: '/seguimiento',
-    enabled: true
+    enabled: false
   },
   { 
     id: 'educacion', 
     label: 'Educación Medio Ambiental', 
     icon: IconEducacion, 
     path: '/educacion',
-    enabled: true
+    enabled: false
   },
 ]
 

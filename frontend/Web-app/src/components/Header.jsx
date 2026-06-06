@@ -3,14 +3,16 @@ import { IconSalir, IconUsuario, IconSol, IconLuna, IconMenu } from './icons'
 import './Header.css'
 import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
+import logo from '../assets/LOGO ECOSOLIDO.png'
 
 export default function Header({ onMenuClick }) {
   const [temaOscuro, setTemaOscuro] = useState(() => {
     const temaGuardado = localStorage.getItem('tema')
     return temaGuardado === 'oscuro'
   })
-  const navigate = useNavigate();
-   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
+  const navigate = useNavigate()
+  const [showCerrarSModal, setShowCerrarSModal] = useState(false)
+
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {
@@ -25,13 +27,16 @@ export default function Header({ onMenuClick }) {
   function toggleTema() {
     setTemaOscuro(prev => !prev)
   }
+
   function handleCerrarSesion() {
     setShowCerrarSModal(true)
   }
-  function handleConfirmarCierre(){
-    localStorage.removeItem("token") 
-    navigate("/login", { replace: true })
+
+  function handleConfirmarCierre() {
+    localStorage.removeItem('token')
+    navigate('/login', { replace: true })
   }
+
   return (
     <header className="header">
       <button
@@ -43,7 +48,10 @@ export default function Header({ onMenuClick }) {
       >
         <IconMenu />
       </button>
-      <h1 className="header__logo">EcoSólido</h1>
+      <div className="header__logo-container">
+        <img src={logo} alt="Logo" className="header__logo-img" />
+        <h1 className="header__logo">EcoSólido</h1>
+      </div>
       <div className="header__actions">
         <button
           type="button"
@@ -57,15 +65,20 @@ export default function Header({ onMenuClick }) {
         <button type="button" className="header__icon-btn" aria-label="Perfil de usuario">
           <IconUsuario />
         </button>
-        <button type="button" className="header__icon-btn" aria-label="Cerrar sesión" onClick={handleCerrarSesion}>
+        <button
+          type="button"
+          className="header__icon-btn"
+          aria-label="Cerrar sesión"
+          onClick={handleCerrarSesion}
+        >
           <IconSalir />
         </button>
-         {showCerrarSModal && (
-                  <CerrarSesionModal
-                    onConfirm={handleConfirmarCierre}
-                    onCancel={() => setShowCerrarSModal(false)}
-                  />
-                )}
+        {showCerrarSModal && (
+          <CerrarSesionModal
+            onConfirm={handleConfirmarCierre}
+            onCancel={() => setShowCerrarSModal(false)}
+          />
+        )}
       </div>
     </header>
   )

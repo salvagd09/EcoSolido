@@ -21,17 +21,16 @@ function App() {
     setMenuAbierto(false)
   }
 
-  // Verifica si hay token guardado
-  const estaAutenticado = !!localStorage.getItem("token")
+  // Verificar autenticación del usuario
+  const token = localStorage.getItem('token')
+  const estaAutenticado = !!token
 
   return (
     <Router>
       <Routes>
-        {/* Ruta pública — sin Header ni Sidebar */}
         <Route path="/login" element={<Login />} />
         <Route path="/registrarse" element={<Registrarse />} /> 
         <Route path="/restablecer" element={<RestablecerContra/>}/>
-        {/* Rutas privadas — con Header y Sidebar */}
         <Route path="/*" element={
           estaAutenticado ? (
             <div className="app">
@@ -50,8 +49,6 @@ function App() {
             <Navigate to="/login" replace />
           )
         } />
-        {/* Redirige raíz al login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   )
