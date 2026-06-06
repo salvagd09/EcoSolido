@@ -4,7 +4,7 @@ import './RestablecerContraseña.css'
 
 export default function RestablecerContra() {
     const navigate = useNavigate();
-    
+
     // Estados para el flujo de múltiples pasos
     const [paso, setPaso] = useState(1); // 1: verificar, 2: pregunta seguridad, 3: verificar respuesta, 4: nueva contraseña
     const [telOCel, setTelOCel] = useState("");
@@ -16,7 +16,8 @@ export default function RestablecerContra() {
     const [confirmarContrasena, setConfirmarContrasena] = useState("");
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-
+    const [verContra, setVerContra] = useState(false)
+    const [verContraRepetida, setVerContraRepetida] = useState(false)
     // Paso 1: Verificar correo o teléfono
     const handleVerificar = async (e) => {
         e.preventDefault();
@@ -30,8 +31,8 @@ export default function RestablecerContra() {
         }
 
         try {
-            const body = usarTelefono 
-                ? { telefono: campo } 
+            const body = usarTelefono
+                ? { telefono: campo }
                 : { correo: campo };
 
             const respuesta = await fetch("http://localhost:8080/usuario/verificar-cor-o-tel", {
@@ -45,8 +46,8 @@ export default function RestablecerContra() {
                 throw new Error(errorText);
             }
 
-            const data = await respuesta.json();
-            
+            {/*const data = await respuesta.json();*/ }
+
             // Si es teléfono, guardamos para usar después
             if (usarTelefono) {
                 setTelOCel(campo);
@@ -64,8 +65,8 @@ export default function RestablecerContra() {
     // Paso 2: Obtener pregunta de seguridad
     const handleObtenerPreguntaSeguridad = async (campo) => {
         try {
-            const params = usarTelefono 
-                ? `?telefono=${encodeURIComponent(campo)}` 
+            const params = usarTelefono
+                ? `?telefono=${encodeURIComponent(campo)}`
                 : `?correo=${encodeURIComponent(campo)}`;
 
             const respuesta = await fetch(`http://localhost:8080/usuario/pregunta-seguridad${params}`, {
@@ -98,7 +99,7 @@ export default function RestablecerContra() {
         }
 
         try {
-            const body = usarTelefono 
+            const body = usarTelefono
                 ? { telefono: telOCel, respuesta: respuestaSeguridad }
                 : { correo: correo, respuesta: respuestaSeguridad };
 
@@ -182,7 +183,7 @@ export default function RestablecerContra() {
             <div className="restablecer__container">
                 <div className="restablecer__logo">
                     <svg className="restablecer__logo-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                     <h1 className="restablecer__title">EcoSólido</h1>
                     <p className="restablecer__subtitle">Recupera tu contraseña</p>
@@ -215,14 +216,14 @@ export default function RestablecerContra() {
                         </div>
 
                         <div className="restablecer__toggle">
-                            <button 
+                            <button
                                 type="button"
                                 className={`restablecer__toggle-btn ${usarTelefono ? 'active' : ''}`}
                                 onClick={() => setUsarTelefono(true)}
                             >
                                 Teléfono
                             </button>
-                            <button 
+                            <button
                                 type="button"
                                 className={`restablecer__toggle-btn ${!usarTelefono ? 'active' : ''}`}
                                 onClick={() => setUsarTelefono(false)}
@@ -236,11 +237,11 @@ export default function RestablecerContra() {
                                 <label htmlFor={usarTelefono ? "telefono" : "correo"}>
                                     {usarTelefono ? "Teléfono o celular" : "Correo electrónico"}
                                 </label>
-                                <input 
+                                <input
                                     type={usarTelefono ? "tel" : "email"}
                                     id={usarTelefono ? "telefono" : "correo"}
                                     placeholder={usarTelefono ? "Ingresa tu número de teléfono" : "Ingresa tu correo electrónico"}
-                                    maxLength={usarTelefono? "9":"500"}
+                                    maxLength={usarTelefono ? "9" : "500"}
                                     value={usarTelefono ? telOCel : correo}
                                     onChange={(e) => usarTelefono ? setTelOCel(e.target.value) : setCorreo(e.target.value)}
                                     required
@@ -271,7 +272,7 @@ export default function RestablecerContra() {
                         <form className="restablecer__form" onSubmit={handleVerificarRespuesta}>
                             <div className="restablecer__field">
                                 <label htmlFor="respuesta">Tu respuesta</label>
-                                <input 
+                                <input
                                     type="text"
                                     id="respuesta"
                                     placeholder="Escribe tu respuesta"
@@ -303,26 +304,49 @@ export default function RestablecerContra() {
                         <form className="restablecer__form" onSubmit={handleRestablecerContrasena}>
                             <div className="restablecer__field">
                                 <label htmlFor="nuevaContrasena">Nueva contraseña</label>
-                                <input 
-                                    type="password"
-                                    id="nuevaContrasena"
-                                    placeholder="Mínimo 6 caracteres"
-                                    value={nuevaContrasena}
-                                    onChange={(e) => setNuevaContrasena(e.target.value)}
-                                    required
-                                />
+                                <div className="restablecer_contra_wrapper">
+                                    <input
+                                        type={verContra ? "text" : "password"}
+                                        id="nuevaContrasena"
+                                        placeholder="Mínimo 6 caracteres"
+                                        value={nuevaContrasena}
+                                        onChange={(e) => setNuevaContrasena(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="restabalecer_contra_toogle_pass"
+                                        onClick={() => setVerContra(prev => !prev)}
+                                        aria-label={verContra ? "Ocultar contraseña" : "Ver contraseña"}
+                                    >
+                                        <span className="material-symbols-outlined">
+                                            {verContra ? "visibility" : "visibility_off"}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="restablecer__field">
                                 <label htmlFor="confirmarContrasena">Confirmar nueva contraseña</label>
-                                <input 
-                                    type="password"
-                                    id="confirmarContrasena"
-                                    placeholder="Repite tu nueva contraseña"
-                                    value={confirmarContrasena}
-                                    onChange={(e) => setConfirmarContrasena(e.target.value)}
-                                    required
-                                />
+                                <div className="restablecer_contra_wrapper">
+                                    <input
+                                        type={verContraRepetida ? "text" : "password"}
+                                        id="confirmarContrasena"
+                                        placeholder="Repite tu nueva contraseña"
+                                        value={confirmarContrasena}
+                                        onChange={(e) => setConfirmarContrasena(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="restabalecer_contra_toogle_pass"
+                                        onClick={() => setVerContraRepetida(prev => !prev)}
+                                        aria-label={verContraRepetida ? "Ocultar contraseña" : "Ver contraseña"}>
+                                        <span className="material-symbols-outlined">
+                                            {verContraRepetida ? "visibility" : "visibility_off"}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="restablecer__actions">
@@ -339,8 +363,8 @@ export default function RestablecerContra() {
 
                 <div className="restablecer__links">
                     <p>¿Recordaste tu contraseña?</p>
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         className="restablecer__link"
                         onClick={() => navigate("/login")}
                     >
