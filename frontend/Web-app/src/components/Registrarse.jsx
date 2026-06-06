@@ -9,16 +9,17 @@ export default function Registrarse() {
         apellido: '',
         email: '',
         telefono: '',
-        DNI:'',
+        DNI: '',
         nombreUsuario: '',
         contrasena: '',
         confirmarContrasena: '',
-        pregunta:'',
-        respuesta:''
+        pregunta: '',
+        respuesta: ''
     });
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-
+    const [verContra, setVerContra] = useState(false)
+    const [verContraRepetida, setVerContraRepetida] = useState(false)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -50,13 +51,13 @@ export default function Registrarse() {
                 body: JSON.stringify({
                     nombreCompleto: formData.nombre,
                     apellidoCompleto: formData.apellido,
-                    dni:formData.DNI,
+                    dni: formData.DNI,
                     telefono: formData.telefono,
                     correoElectronico: formData.email,
                     nombreUsuario: formData.nombreUsuario,
                     contrasena: formData.contrasena,
-                    preguntaSeguridad:formData.pregunta,
-                    respuestaPregunta:formData.respuesta
+                    preguntaSeguridad: formData.pregunta,
+                    respuestaPregunta: formData.respuesta
                 })
             });
 
@@ -175,7 +176,7 @@ export default function Registrarse() {
                             onChange={handleChange}
                             required
                         />
-                    </div>  
+                    </div>
                     <div className="registrarse__field">
                         <label htmlFor="pregunta">Pregunta de seguridad</label>
                         <input
@@ -216,28 +217,53 @@ export default function Registrarse() {
 
                     <div className="registrarse__field">
                         <label htmlFor="contrasena">Contraseña</label>
-                        <input
-                            type="password"
-                            id="contrasena"
-                            name="contrasena"
-                            placeholder="Mínimo 6 caracteres"
-                            value={formData.contrasena}
-                            onChange={handleChange}
-                            required
-                        />
+                        <div className="registrarse_input_wrapper">
+                            <input
+                                type={verContra ? "text" : "password"}
+                                id="contrasena"
+                                name="contrasena"
+                                placeholder="Mínimo 6 caracteres"
+                                value={formData.contrasena}
+                                onChange={handleChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="registrarse_toogle_pass"
+                                onClick={() => setVerContra(prev => !prev)}
+                                aria-label={verContra ? "Ocultar contraseña" : "Ver contraseña"}
+                            >
+                                <span className="material-symbols-outlined">
+                                    {verContra ? "visibility" : "visibility_off"}
+                                </span>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="registrarse__field">
                         <label htmlFor="confirmarContrasena">Confirmar contraseña</label>
-                        <input
-                            type="password"
-                            id="confirmarContrasena"
-                            name="confirmarContrasena"
-                            placeholder="Repite tu contraseña"
-                            value={formData.confirmarContrasena}
-                            onChange={handleChange}
-                            required
-                        />
+                        <div className="registrarse_input_wrapper">
+                            <input
+                                type={verContraRepetida ? "text" : "password"}
+                                id="confirmarContrasena"
+                                name="confirmarContrasena"
+                                placeholder="Repite tu contraseña"
+                                value={formData.confirmarContrasena}
+                                onChange={handleChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="registrarse_toogle_pass"
+                                onClick={() => setVerContraRepetida(prev => !prev)}
+                                aria-label={verContra ? "Ocultar contraseña" : "Ver contraseña"}
+                            >
+                                <span className="material-symbols-outlined">
+                                    {verContraRepetida ? "visibility" : "visibility_off"}
+                                </span>
+                            </button>
+                        </div>
+
                     </div>
 
                     <div className="registrarse__actions">
