@@ -15,6 +15,7 @@ public class IncidenciaEntity {
     @Column(name="id_incidencia")
     private Integer idIncidencia;
     private String categoria;
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
     @Column(name="fecha")
     private LocalDateTime fecha=LocalDateTime.now();

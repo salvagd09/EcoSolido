@@ -47,7 +47,7 @@ function App() {
               </div>
             </div>
           ) : (
-            <Navigate to="/login" replace />  // ← redirige si no hay token
+            <Navigate to="/login" replace />
           )
         } />
         {/* Redirige raíz al login */}
