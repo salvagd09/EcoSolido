@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
@@ -22,19 +22,26 @@ function App() {
   }
 
   // Verificar autenticación del usuario
-  const token = localStorage.getItem('token')
-  const estaAutenticado = !!token
-
+  const [estaAutenticado, setEstaAutenticado] = useState(
+        !!localStorage.getItem("token")  // ← valor inicial
+    )
+    useEffect(() => {
+        const verificar = () => {
+            setEstaAutenticado(!!localStorage.getItem("token"))
+        }
+        window.addEventListener("storage", verificar)
+        return () => window.removeEventListener("storage", verificar)
+    }, [])
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login onLogin={() => setEstaAutenticado(true)}/>} />
         <Route path="/registrarse" element={<Registrarse />} /> 
         <Route path="/restablecer" element={<RestablecerContra/>}/>
         <Route path="/*" element={
           estaAutenticado ? (
             <div className="app">
-              <Header onMenuClick={toggleMenu} />
+              <Header onMenuClick={toggleMenu} onLogout={() => setEstaAutenticado(false)}/>
               <div className="app__body">
                 <Sidebar isOpen={menuAbierto} onClose={cerrarMenu} />
                 <Routes>

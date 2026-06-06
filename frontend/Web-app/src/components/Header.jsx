@@ -5,7 +5,7 @@ import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
 import logo from '../assets/LOGO ECOSOLIDO.png'
 
-export default function Header({ onMenuClick }) {
+export default function Header({ onMenuClick,onLogout }) {
   const [temaOscuro, setTemaOscuro] = useState(() => {
     const temaGuardado = localStorage.getItem('tema')
     return temaGuardado === 'oscuro'
@@ -35,6 +35,8 @@ export default function Header({ onMenuClick }) {
 
   function handleConfirmarCierre() {
     localStorage.removeItem('token')
+    localStorage.removeItem("nombreUsuario")
+    onLogout()
     navigate('/login', { replace: true })
   }
 
