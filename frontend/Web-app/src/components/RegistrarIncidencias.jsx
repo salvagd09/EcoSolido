@@ -22,8 +22,8 @@ const CATEGORIAS = [
 ]
 
 const MAX_FOTOS = 5
-const MAX_TAMANO_MB = 1 // Tamaño máximo por foto en MB
-const MAX_CARACTERES = 500 // Límite de caracteres para la descripción
+const MAX_TAMANO_MB = 10 // Tamaño máximo por foto en MB
+const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
 
 function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
@@ -42,8 +42,10 @@ export default function RegistrarIncidencias() {
   const [generandoIA, setGenerandoIA] = useState(false)
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('')
-  const fileInputRefs = useRef([])
+  const [isDragging, setIsDragging] = useState(false);
 
+
+  const fileInputRefs = useRef([])
   const fotosSubidas = fotos.filter((f) => f.file)
   const tieneFotos = fotosSubidas.length > 0
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
@@ -62,38 +64,38 @@ export default function RegistrarIncidencias() {
     if (!files.length) return
 
     const nuevosSlots = files.map((file) => ({
-        preview: URL.createObjectURL(file),
-        file
+      preview: URL.createObjectURL(file),
+      file
     }))
 
     setFotos((prev) => {
-        // Liberar previews anteriores
-        prev.forEach((slot) => {
-            if (slot.preview) URL.revokeObjectURL(slot.preview)
-        })
-        // Limitar al máximo permitido
-        return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
+      // Liberar previews anteriores
+      prev.forEach((slot) => {
+        if (slot.preview) URL.revokeObjectURL(slot.preview)
+      })
+      // Limitar al máximo permitido
+      return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
     })
 
     if (descripcionEsErrorIA) {
-        setDescripcion('')
-        limpiarEstadoErrorIA()
+      setDescripcion('')
+      limpiarEstadoErrorIA()
     }
     setErrorTecnico('')
     event.target.value = ''
-}
-function handleEliminarFoto(index) {
+  }
+  function handleEliminarFoto(index) {
     setFotos((prev) => {
-        if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-        return prev.filter((_, i) => i !== index)
+      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
     })
     if (descripcionEsErrorIA) {
-        setDescripcion('')
-        limpiarEstadoErrorIA()
+      setDescripcion('')
+      limpiarEstadoErrorIA()
     }
     setErrorTecnico('')
-}
-function handleDescripcionChange(event) {
+  }
+  function handleDescripcionChange(event) {
     const nuevoValor = event.target.value
     setDescripcion(nuevoValor)
     setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length)
@@ -121,17 +123,17 @@ function handleDescripcionChange(event) {
       setShowWarningModal(true)
       return
     }
-      try {
-        await registrarIncidencia(
-            categoria,
-            descripcion,
-            urlsCloudinary,                          // URLs si usó IA
-            fotosSubidas.map((slot) => slot.file)
-        )
-        setShowSuccessModal(true)
+    try {
+      await registrarIncidencia(
+        categoria,
+        descripcion,
+        urlsCloudinary,                          // URLs si usó IA
+        fotosSubidas.map((slot) => slot.file)
+      )
+      setShowSuccessModal(true)
     } catch (err) {
-        setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
-        setShowWarningModal(true)
+      setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
+      setShowWarningModal(true)
     }
   }
 
@@ -151,31 +153,31 @@ function handleDescripcionChange(event) {
     setErrorTecnico('')
 
     try {
-        // Subir fotos a Cloudinary y obtener URLs
-        const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
-        setUrlsCloudinary(urls)
+      // Subir fotos a Cloudinary y obtener URLs
+      const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
+      setUrlsCloudinary(urls)
 
-        // Enviar URLs a la IA
-        const texto = (await describirFotosConIA(urls)).trim()
+      // Enviar URLs a la IA
+      const texto = (await describirFotosConIA(urls)).trim()
 
-        if (esRespuestaFotosNoVisibles(texto)) {
-            mostrarMensajeFotosNoVisibles()
-        } else {
-            setDescripcion(texto)
-        }
+      if (esRespuestaFotosNoVisibles(texto)) {
+        mostrarMensajeFotosNoVisibles()
+      } else {
+        setDescripcion(texto)
+      }
     } catch (err) {
-        const mensaje = err instanceof Error ? err.message : 'Error desconocido con la IA.'
-        if (esErrorTecnicoIA(mensaje)) {
-            setErrorTecnico(mensaje)
-            setDescripcion('')
-            limpiarEstadoErrorIA()
-        } else {
-            mostrarMensajeFotosNoVisibles()
-        }
+      const mensaje = err instanceof Error ? err.message : 'Error desconocido con la IA.'
+      if (esErrorTecnicoIA(mensaje)) {
+        setErrorTecnico(mensaje)
+        setDescripcion('')
+        limpiarEstadoErrorIA()
+      } else {
+        mostrarMensajeFotosNoVisibles()
+      }
     } finally {
-        setGenerandoIA(false)
+      setGenerandoIA(false)
     }
-}
+  }
 
   function resetFormulario() {
     fotos.forEach((slot) => {
@@ -194,61 +196,72 @@ function handleDescripcionChange(event) {
     setShowSuccessModal(false)
     resetFormulario()
   }
-
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const archivos = Array.from(e.dataTransfer.files)
+    .filter(file => file.type.startsWith("image/"));
+    if (!archivos.length) return;
+    // Simula el evento que ya espera handleFotoChange
+    handleFotoChange(0, { target: { files: archivos } });
+  };
   return (
     <main className="registrar">
       <h2 className="registrar__title">Registrar Incidencias</h2>
 
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
-    <fieldset className="registrar__fotos">
-    <legend>Fotos a presentar:</legend>
-    <p className="registrar__fotos-info">
-      Máximo {MAX_FOTOS} fotos, tamaño máximo {MAX_TAMANO_MB} MB por foto.
-    </p>
-    <div className="registrar__fotos-container">
-        <input
-            ref={(el) => { fileInputRefs.current[0] = el }}
-            type="file"
-            accept="image/*"
-            multiple
-            className="foto-slot__input"
-            onChange={(e) => handleFotoChange(0, e)}
-            aria-label="Subir fotos"
-        />
-        <button
-            type="button"
-            className="foto-slot__btn"
-            onClick={() => fileInputRefs.current[0]?.click()}
-        >
-            <div className="foto-slot__upload-area">
-                <IconNube />
-                <span className="foto-slot__upload-text">
+          <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}    
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}>
+            <legend>Fotos a presentar:</legend>
+            <p className="registrar__fotos-info">
+              Máximo {MAX_FOTOS} fotos, tamaño máximo {MAX_TAMANO_MB} MB por foto.
+            </p>
+            <div className="registrar__fotos-container">
+              <input
+                ref={(el) => { fileInputRefs.current[0] = el }}
+                type="file"
+                accept="image/*"
+                multiple
+                className="foto-slot__input"
+                onChange={(e) => handleFotoChange(0, e)}
+                aria-label="Subir fotos"
+              />
+              <button
+                type="button"
+                className="foto-slot__btn"
+                onClick={() => fileInputRefs.current[0]?.click()}
+              >
+                <div className="foto-slot__upload-area">
+                  <IconNube />
+                  <span className="foto-slot__upload-text">
                     {fotosSubidas.length > 0
-                        ? `${fotosSubidas.length} foto(s) seleccionada(s)`
-                        : 'Ingresa una o más fotos'}
-                </span>
-            </div>
-        </button>
+                      ? `${fotosSubidas.length} foto(s) seleccionada(s)`
+                      : 'Ingresa o arrastre una o más fotos'}
+                  </span>
+                </div>
+              </button>
 
-        {/* Previsualización de todas las fotos */}
-        <div className="registrar__fotos-preview">
-            {fotosSubidas.map((slot, index) => (
-                <div key={index} className="foto-slot">
+              {/* Previsualización de todas las fotos */}
+              <div className="registrar__fotos-preview">
+                {fotosSubidas.map((slot, index) => (
+                  <div key={index} className="foto-slot">
                     <img src={slot.preview} alt={`Foto ${index + 1}`} className="foto-slot__preview" />
                     <button
-                        type="button"
-                        className="foto-slot__remove"
-                        onClick={() => handleEliminarFoto(index)}
-                        aria-label={`Quitar foto ${index + 1}`}
+                      type="button"
+                      className="foto-slot__remove"
+                      onClick={() => handleEliminarFoto(index)}
+                      aria-label={`Quitar foto ${index + 1}`}
                     >
-                        ×
+                      ×
                     </button>
-                </div>
-            ))}
-        </div>
-    </div>
-</fieldset>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </fieldset>
 
           <div className="registrar__field">
             <label htmlFor="categoria">Selecciona una categoría</label>

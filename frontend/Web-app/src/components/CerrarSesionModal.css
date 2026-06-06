@@ -1,0 +1,66 @@
+.cerrar-modal-overlay {
+    position: fixed;
+    inset: 0;                    
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;          
+    justify-content: center;     
+    z-index: 1000;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.cerrar-modal {
+  background: #fff;
+  border: 2px solid var(--color-border);
+  padding: 28px 32px 32px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+.cerrar-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cerrar-modal__message {
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.cerrar-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cerrar-modal__btn {
+  min-width: 80px;
+  padding: 8px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  border: 2px solid var(--color-border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.cerrar-modal__btn--yes {
+  background: var(--color-btn-success);
+}
+
+.cerrar-modal__btn--yes:hover {
+  background: var(--color-btn-success-hover);
+}
+
+.cerrar-modal__btn--no {
+  background: var(--color-btn-danger);
+}
+
+.cerrar-modal__btn--no:hover {
+  background: var(--color-btn-danger-hover);
+}
