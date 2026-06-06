@@ -101,7 +101,7 @@ export default function Registrarse() {
                 <form className="registrarse__form" onSubmit={handleSubmit}>
                     <div className="registrarse__row">
                         <div className="registrarse__field">
-                            <label htmlFor="nombre">Nombre</label>
+                            <label htmlFor="nombre">Nombre<span style={{ color: '#FF746C' }}>*</span></label>
                             <input
                                 type="text"
                                 id="nombre"
@@ -113,7 +113,7 @@ export default function Registrarse() {
                             />
                         </div>
                         <div className="registrarse__field">
-                            <label htmlFor="apellido">Apellido</label>
+                            <label htmlFor="apellido">Apellido<span style={{ color: '#FF746C' }}>*</span></label>
                             <input
                                 type="text"
                                 id="apellido"
@@ -127,7 +127,7 @@ export default function Registrarse() {
                     </div>
 
                     <div className="registrarse__field">
-                        <label htmlFor="email">Correo electrónico</label>
+                        <label htmlFor="email">Correo electrónico<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="email"
                             id="email"
@@ -140,7 +140,7 @@ export default function Registrarse() {
                     </div>
 
                     <div className="registrarse__field">
-                        <label htmlFor="telefono">Teléfono</label>
+                        <label htmlFor="telefono">Teléfono<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="tel"
                             id="telefono"
@@ -153,7 +153,7 @@ export default function Registrarse() {
                         />
                     </div>
                     <div className="registrarse__field">
-                        <label htmlFor="DNI">DNI</label>
+                        <label htmlFor="DNI">DNI<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="text"
                             id="DNI"
@@ -166,7 +166,7 @@ export default function Registrarse() {
                         />
                     </div>
                     <div className="registrarse__field">
-                        <label htmlFor="nombreUsuario">Nombre de usuario</label>
+                        <label htmlFor="nombreUsuario">Nombre de usuario<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="text"
                             id="nombreUsuario"
@@ -178,7 +178,7 @@ export default function Registrarse() {
                         />
                     </div>
                     <div className="registrarse__field">
-                        <label htmlFor="pregunta">Pregunta de seguridad</label>
+                        <label htmlFor="pregunta">Pregunta de seguridad<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="text"
                             id="pregunta"
@@ -190,7 +190,7 @@ export default function Registrarse() {
                         />
                     </div>
                     <div className="registrarse__field">
-                        <label htmlFor="respuesta">Respuesta</label>
+                        <label htmlFor="respuesta">Respuesta<span style={{ color: '#FF746C' }}>*</span></label>
                         <input
                             type="text"
                             id="respuesta"
@@ -216,7 +216,7 @@ export default function Registrarse() {
                     </div>*/}
 
                     <div className="registrarse__field">
-                        <label htmlFor="contrasena">Contraseña</label>
+                        <label htmlFor="contrasena">Contraseña<span style={{ color: '#FF746C' }}>*</span></label>
                         <div className="registrarse_input_wrapper">
                             <input
                                 type={verContra ? "text" : "password"}
@@ -241,7 +241,7 @@ export default function Registrarse() {
                     </div>
 
                     <div className="registrarse__field">
-                        <label htmlFor="confirmarContrasena">Confirmar contraseña</label>
+                        <label htmlFor="confirmarContrasena">Confirmar contraseña<span style={{ color: '#FF746C' }}>*</span></label>
                         <div className="registrarse_input_wrapper">
                             <input
                                 type={verContraRepetida ? "text" : "password"}
@@ -265,7 +265,7 @@ export default function Registrarse() {
                         </div>
 
                     </div>
-
+                    <span style={{ color: '#FF746C' }}>*Campo Obligatorio</span>
                     <div className="registrarse__actions">
                         <button type="submit" className="registrarse__submit">
                             Crear Cuenta

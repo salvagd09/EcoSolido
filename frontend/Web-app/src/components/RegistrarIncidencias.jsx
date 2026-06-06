@@ -215,7 +215,7 @@ export default function RegistrarIncidencias() {
           onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}>
-            <legend>Fotos a presentar: <span style={{ color: '#ff7a00' }}>*</span></legend>
+            <legend>Fotos a presentar: <span style={{ color: '#FF746C' }}>*</span></legend>
             <div className="registrar__fotos-container">
               <input
                 ref={(el) => { fileInputRefs.current[0] = el }}
@@ -264,7 +264,7 @@ export default function RegistrarIncidencias() {
           </fieldset>
 
           <div className="registrar__field">
-            <label htmlFor="categoria">Selecciona una categoría <span style={{ color: '#ff7a00' }}>*</span>:</label>
+            <label htmlFor="categoria">Selecciona una categoría <span style={{ color: '#FF746C' }}>*</span>:</label>
             <div className="registrar__select-wrap">
               <select
                 id="categoria"
@@ -284,7 +284,7 @@ export default function RegistrarIncidencias() {
           </div>
 
           <div className="registrar__field registrar__field--descripcion">
-            <label htmlFor="descripcion">Descripción sobre la incidencia: <span style={{ color: '#ff7a00' }}>*</span></label>
+            <label htmlFor="descripcion">Descripción sobre la incidencia: <span style={{ color: '#FF746C' }}>*</span></label>
             <div className="registrar__textarea-wrapper">
               <textarea
                 id="descripcion"
@@ -300,7 +300,7 @@ export default function RegistrarIncidencias() {
                 {caracteresRestantes} caracteres restantes
               </span>
             </div>
-            <span style={{ color: '#ff7a00' }}>*Campo Obligatorio</span>
+            <span style={{ color: '#FF746C' }}>*Campo Obligatorio</span>
             {generandoIA && (
               <span className="registrar__ia-loading" role="status">
                 Analizando las fotos con IA...
