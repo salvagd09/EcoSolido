@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(26, 26, 46, 0.6);
+  background: rgba(245, 244, 239, 0.8);
   backdrop-filter: blur(4px);
   pointer-events: none;
 }
@@ -65,7 +65,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: #fff;
-  background: var(--color-btn-secondary);
+  background: var(--color-btn-primary);
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -74,7 +74,7 @@
 }
 
 .warning-modal__btn:hover {
-  background: var(--color-btn-secondary-hover);
+  background: var(--color-btn-primary-hover);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }

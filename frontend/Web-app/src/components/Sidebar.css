@@ -1,19 +1,19 @@
 /* ============================================
    SIDEBAR MODERNO - ECO SÓLIDO
    Color principal: Verde (coincide con header)
-   Fondo: Oscuro (#1a1a2e)
+   Fondo: Verde institucional
    ============================================ */
 
 :root {
-  --sidebar-bg: #1b5e20;
-  --sidebar-bg-hover: #154a19;
+  --sidebar-bg: #2E7D32;
+  --sidebar-bg-hover: #1b5e20;
   --sidebar-text: #ffffff;
-  --sidebar-text-secondary: #c8e6c9;
-  --sidebar-accent: #2e7d32;
+  --sidebar-text-secondary: #C8E6C9;
+  --sidebar-accent: #2E7D32;
   --sidebar-accent-hover: #1b5e20;
-  --sidebar-accent-light: rgba(46, 125, 50, 0.4);
-  --sidebar-accent-glow: rgba(46, 125, 50, 0.6);
-  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-accent-light: rgba(46, 125, 50, 0.3);
+  --sidebar-accent-glow: rgba(46, 125, 50, 0.5);
+  --sidebar-border: rgba(255, 255, 255, 0.15);
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 72px;
   --sidebar-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -222,7 +222,7 @@
 }
 
 .sidebar__item--active .sidebar__item-icon {
-  color: #63b3ed;
+  color: #FF8F0F;
 }
 
 .sidebar__item-icon svg {
@@ -261,22 +261,22 @@
   transform: translateY(-50%);
   width: 4px;
   height: 70%;
-  background: #63b3ed;
+  background: #FF8F0F;
   border-radius: 0 4px 4px 0;
-  box-shadow: 0 0 8px rgba(99, 179, 237, 0.4);
+  box-shadow: 0 0 8px rgba(255, 143, 15, 0.4);
 }
 
 .sidebar__item--active:hover {
-  background: rgba(74, 85, 104, 0.5);
+  background: var(--sidebar-bg-hover);
   color: #ffffff;
 }
 
 .sidebar__item--active .sidebar__item-icon {
-  color: #63b3ed;
+  color: #FF8F0F;
 }
 
 .sidebar__item--active .sidebar__item-icon svg {
-  filter: drop-shadow(0 0 6px rgba(99, 179, 237, 0.4));
+  filter: drop-shadow(0 0 6px rgba(255, 143, 15, 0.4));
 }
 
 /* Footer del sidebar */
@@ -486,7 +486,7 @@
    MODO OSCURO (reforzando colores)
    ============================================ */
 [data-theme="dark"] {
-  --sidebar-bg: #1a202c;
-  --sidebar-bg-hover: #2d3748;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-bg: #1b5e20;
+  --sidebar-bg-hover: #154a19;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
 }
