@@ -2,14 +2,16 @@ package com.DisenoProductos.EcoSolido.Security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "${token.secret.value}";
-    public String generarToken(String nombreUsuario) {
+    @Value("${token.secret.value}")
+    private String SECRET_KEY;
+    public String generarToken(String nombreUsuario){
         return Jwts.builder()
                 .setSubject(nombreUsuario)
                 .setIssuedAt(new Date())
@@ -23,5 +25,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+    public boolean validarToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
