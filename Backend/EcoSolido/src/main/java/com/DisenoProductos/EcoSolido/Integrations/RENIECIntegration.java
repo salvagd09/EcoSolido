@@ -10,6 +10,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
+import java.text.Normalizer;
 import java.util.Map;
 
 @Service
@@ -24,7 +25,6 @@ public class RENIECIntegration {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public boolean validarDni(String dni, String nombres, String apellidos) throws Exception {
-
         // Body que pide la API
         String body = mapper.writeValueAsString(Map.of(
                 "token", apiToken,
@@ -42,12 +42,21 @@ public class RENIECIntegration {
                 .send(request, HttpResponse.BodyHandlers.ofString());
 
         ReniecResponseDTO datos = mapper.readValue(response.body(), ReniecResponseDTO.class);
-
         if (!datos.isSuccess()) {
             throw new RuntimeException("DNI no encontrado en RENIEC");
         }
-
-        return datos.getData().getFull_name()
-                .equalsIgnoreCase(apellidos + " " + nombres);
+        String reniecNormalizado = datos.getData().getFull_name()
+                .replace(",", "")        // ← quita la coma
+                .replaceAll("\\s+", " ") // ← normaliza espacios dobles
+                .trim();
+        String usuarioNormalizado = (apellidos + " " + nombres)
+                .toUpperCase().trim();
+        reniecNormalizado = quitarTildes(reniecNormalizado);
+        usuarioNormalizado = quitarTildes(usuarioNormalizado);
+        return reniecNormalizado.equalsIgnoreCase(usuarioNormalizado);
+    }
+    private String quitarTildes(String texto) {
+        return Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
     }
 }

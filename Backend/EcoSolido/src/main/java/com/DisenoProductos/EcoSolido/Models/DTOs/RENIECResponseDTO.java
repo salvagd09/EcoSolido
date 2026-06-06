@@ -1,5 +1,8 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReniecResponseDTO {
     private boolean success;
     private ReniecDataDTO data;

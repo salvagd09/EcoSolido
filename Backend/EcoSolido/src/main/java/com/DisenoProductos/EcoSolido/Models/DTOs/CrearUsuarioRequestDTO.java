@@ -1,7 +1,6 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
 public class CrearUsuarioRequestDTO {
-    private Integer idUsuario;
     private String nombreCompleto;
     private String apellidoCompleto;
     private String dni;
@@ -11,12 +10,6 @@ public class CrearUsuarioRequestDTO {
     private String contrasena;
     private String preguntaSeguridad;
     private String respuestaPregunta;
-    public Integer getIdUsuario() {
-        return idUsuario;
-    }
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
     public String getNombreCompleto() {
         return nombreCompleto;
     }

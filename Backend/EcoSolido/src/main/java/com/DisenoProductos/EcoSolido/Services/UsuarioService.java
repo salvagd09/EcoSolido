@@ -1,14 +1,15 @@
 package com.DisenoProductos.EcoSolido.Services;
 
 import com.DisenoProductos.EcoSolido.Integrations.RENIECIntegration;
-import com.DisenoProductos.EcoSolido.Models.DTOs.CrearUsuarioRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.LoginRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.LoginResponseDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.*;
 import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
 import com.DisenoProductos.EcoSolido.Security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -32,7 +33,7 @@ public class UsuarioService {
         usuario.setTelefono(usuarioRequestDTO.getTelefono());
         usuario.setCorreoElectronico(usuarioRequestDTO.getCorreoElectronico());
         usuario.setPreguntaSeguridad(usuarioRequestDTO.getPreguntaSeguridad());
-        usuario.setRespuestaPregunta(usuarioRequestDTO.getRespuestaPregunta());
+        usuario.setRespuestaPregunta(usuarioRequestDTO.getRespuestaPregunta().toLowerCase());
         if (!reniecIntegration.validarDni(usuario.getDni(),
                 usuario.getNombreCompleto(),
                 usuario.getApellidoCompleto())) {
@@ -40,19 +41,14 @@ public class UsuarioService {
         }
         return usuarioRepository.save(usuario);
     }
-    private LoginRequestDTO loginRequest(String nombreUsuario,String contrasena,String token){
+    private LoginRequestDTO loginRequest(String nombreUsuario,String contrasena){
         LoginRequestDTO requestDTO=new LoginRequestDTO();
         requestDTO.setNombreUsuario(nombreUsuario);
         requestDTO.setContrasena(contrasena);
-        requestDTO.setToken(token);
         return requestDTO;
     }
-    public LoginResponseDTO autenticarUsuario(String nombreUsuario, String contrasena, String token){
-        LoginRequestDTO requestDTO=loginRequest(nombreUsuario, contrasena, token);
-        String usuarioDelToken = jwtUtil.extraerNombreUsuario(requestDTO.getToken());
-        if (!usuarioDelToken.equals(requestDTO.getNombreUsuario())) {
-            throw new RuntimeException("Token no corresponde al usuario");
-        }
+    public LoginResponseDTO autenticarUsuario(String nombreUsuario, String contrasena){
+        LoginRequestDTO requestDTO=loginRequest(nombreUsuario, contrasena);
         UsuarioEntity usuario = usuarioRepository
                 .findByNombreUsuario(requestDTO.getNombreUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -61,5 +57,61 @@ public class UsuarioService {
         }
         String nuevoToken = jwtUtil.generarToken(usuario.getNombreUsuario());
         return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario());
+    }
+    public VerificarCorreoTelResponseDTO verificarCorreoOTelefono(VerificarCorreoTelRequestDTO requestDTO) {
+        boolean existe;
+        if (requestDTO.getCorreo() != null && !requestDTO.getCorreo().isEmpty()) {
+            existe = usuarioRepository.existsByCorreoElectronico(requestDTO.getCorreo());
+        } else {
+            existe = usuarioRepository.existsByTelefono(requestDTO.getTelefono());
+        }
+        VerificarCorreoTelResponseDTO response = new VerificarCorreoTelResponseDTO();
+        response.setEstaRegistrado(existe);
+        return response;
+    }
+    public String obtenerPreguntaSeguridad(VerificarCorreoTelRequestDTO requestDTO) {
+        Optional<UsuarioEntity> usuario;
+        if (requestDTO.getCorreo() != null && !requestDTO.getCorreo().isEmpty()) {
+            usuario = usuarioRepository.findByCorreoElectronico(requestDTO.getCorreo());
+        } else {
+            usuario = usuarioRepository.findByTelefono(requestDTO.getTelefono());
+        }
+        return usuario
+                .map(UsuarioEntity::getPreguntaSeguridad)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+    public RespuestaSeguridadResponseDTO verificarRespuesta(RespuestaSeguridadRequestDTO requestDTO){
+        Optional<UsuarioEntity> usuarioOpt;
+        if (requestDTO.getCorreo() != null && !requestDTO.getCorreo().isEmpty()) {
+            usuarioOpt = usuarioRepository.findByCorreoElectronico(requestDTO.getCorreo());
+        } else {
+            usuarioOpt = usuarioRepository.findByTelefono(requestDTO.getTelefono());
+        }
+        UsuarioEntity usuario = usuarioOpt
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        boolean coinciden = usuario.getRespuestaPregunta()
+                .equalsIgnoreCase(requestDTO.getRespuesta().toLowerCase());
+        RespuestaSeguridadResponseDTO response = new RespuestaSeguridadResponseDTO();
+        response.setCoinciden(coinciden);
+        return response;
+    }
+    public RestablecerContrasenaResponseDTO restablecerContrasena(RestablecerContrasenaRequestDTO requestDTO){
+        RestablecerContrasenaResponseDTO response = new RestablecerContrasenaResponseDTO();
+        if (!Objects.equals(requestDTO.getNuevaContrasena(), requestDTO.getNuevaContrasenaRepetida())) {
+            response.setExito(false);
+            throw new RuntimeException("Las contraseñas no coinciden");
+        }
+        Optional<UsuarioEntity> usuarioOpt;
+        if (requestDTO.getCorreo() != null && !requestDTO.getCorreo().isEmpty()) {
+            usuarioOpt = usuarioRepository.findByCorreoElectronico(requestDTO.getCorreo());
+        } else {
+            usuarioOpt = usuarioRepository.findByTelefono(requestDTO.getTelefono());
+        }
+        UsuarioEntity usuario = usuarioOpt
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuario.setContrasena(requestDTO.getNuevaContrasena());
+        usuarioRepository.save(usuario);
+        response.setExito(true);
+        return response;
     }
 }
