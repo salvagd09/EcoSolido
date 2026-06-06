@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Login.css'
 
-export default function Login() {
+export default function Login({ onLogin }) {
     const [nombreUs, setNombreUs] = useState("")
     const [contra, setContra] = useState("")
     const navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function Login() {
             const data = await respuesta.json();
             localStorage.setItem("token", data.token);
             localStorage.setItem("nombreUsuario", data.nombreUsuario);
+            onLogin()
             navigate("/registro");
         } catch (error) {
             setError(error.message);
