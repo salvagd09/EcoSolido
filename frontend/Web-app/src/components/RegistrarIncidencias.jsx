@@ -11,7 +11,7 @@ import { IconIA, IconNube } from './icons'
 import SuccessModal from './SuccessModal'
 import WarningModal from './WarningModal'
 import './RegistrarIncidencias.css'
-
+import HelpModal from './HelpModal'
 const CATEGORIAS = [
   'Acumulación y falta de recojo',
   'Basura en vía pública',
@@ -52,6 +52,7 @@ export default function RegistrarIncidencias() {
   const fotosSubidas = fotos.filter((f) => f.file)
   const tieneFotos = fotosSubidas.length > 0
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
+  const [showHelpModal, setShowHelpModal] = useState(false)
 
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
@@ -219,7 +220,14 @@ export default function RegistrarIncidencias() {
   return (
     <main className="registrar">
       <h2 className="registrar__title">Registrar Incidencias</h2>
-
+      {/*Nuevo botón*/}
+      <button
+          type="button"
+          className="registrar__help-btn"
+          onClick={() => setShowHelpModal(true)}
+      >
+          ¿Cómo funciona?
+      </button>
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
           <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}    
@@ -361,6 +369,8 @@ export default function RegistrarIncidencias() {
             message={warningMessage}
           />
         )}
+        {/*Nuevo modal */}
+        {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
       </div>
     </main>
   )
