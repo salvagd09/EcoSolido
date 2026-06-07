@@ -283,7 +283,7 @@ export default function RegistrarIncidencias() {
           </fieldset>
 
           <div className="registrar__field">
-            <label htmlFor="categoria">Selecciona una categoría <span style={{ color: '#ff7a00' }}>*</span>:</label>
+            <label htmlFor="categoria">Selecciona una categoría(6 categorías) <span style={{ color: '#ff7a00' }}>*</span>:</label>
             <div  className="registrar__select-wrap" >
               <select
                 id="categoria"
