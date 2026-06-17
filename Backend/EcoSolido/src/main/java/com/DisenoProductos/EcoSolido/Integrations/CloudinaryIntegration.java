@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class CloudinaryIntegration {
     private final Cloudinary cloudinary;
-    public CloudinaryIntegration(@Value("${CLOUDINARY_URL}") String cloudinaryURL) {
+    public CloudinaryIntegration(@Value("${cloudinary.url}") String cloudinaryURL) {
         this.cloudinary =new Cloudinary(cloudinaryURL);
     }
     public Map subir(MultipartFile archivo) throws IOException{

@@ -1,137 +1,63 @@
-
+import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Header from './components/Header'
-import RegistrarIncidencias from './components/RegistrarIncidencias'
 import Sidebar from './components/Sidebar'
+import Login from './components/Login'
+import RegistrarIncidencias from './components/RegistrarIncidencias'
+import SeguimientoIncidencias from './components/SeguimientoIncidencias'
+import EducacionMedioAmbiental from './components/EducacionMedioAmbiental'
 import './App.css'
+import Registrarse from './components/Registrarse'
+import RestablecerContra from './components/RestablecerContraseña'
 
 function App() {
+  const [menuAbierto, setMenuAbierto] = useState(false)
+
+  function toggleMenu() {
+    setMenuAbierto(prev => !prev)
+  }
+
+  function cerrarMenu() {
+    setMenuAbierto(false)
+  }
+
+  // Verificar autenticación del usuario
+  const [estaAutenticado, setEstaAutenticado] = useState(
+        !!localStorage.getItem("token")  // ← valor inicial
+    )
+    useEffect(() => {
+        const verificar = () => {
+            setEstaAutenticado(!!localStorage.getItem("token"))
+        }
+        window.addEventListener("storage", verificar)
+        return () => window.removeEventListener("storage", verificar)
+    }, [])
   return (
-    <div className="app">
-      <Header />
-      <div className="app__body">
-        <Sidebar />
-        <RegistrarIncidencias />
-      </div>
-    </div>
-
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={() => setEstaAutenticado(true)}/>} />
+        <Route path="/registrarse" element={<Registrarse />} /> 
+        <Route path="/restablecer" element={<RestablecerContra/>}/>
+        <Route path="/*" element={
+          estaAutenticado ? (
+            <div className="app">
+              <Header onMenuClick={toggleMenu} onLogout={() => setEstaAutenticado(false)}/>
+              <div className="app__body">
+                <Sidebar isOpen={menuAbierto} onClose={cerrarMenu} />
+                <Routes>
+                  <Route path="/registro" element={<RegistrarIncidencias />} />
+                  <Route path="/seguimiento" element={<SeguimientoIncidencias />} />
+                  <Route path="/educacion" element={<EducacionMedioAmbiental />} />
+                  <Route path="/" element={<Navigate to="/registro" replace />} />
+                </Routes>
+              </div>
+            </div>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+      </Routes>
+    </Router>
   )
 }
 

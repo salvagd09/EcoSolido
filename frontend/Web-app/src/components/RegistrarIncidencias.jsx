@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 import {
   describirFotosConIA,
   esErrorTecnicoIA,
-  prepararImagenesParaIA,
+  subirFotosACloudinary,
+  registrarIncidencia
 } from '../services/incidenciasApi'
 import { esRespuestaFotosNoVisibles, MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 import AIConfirmModal from './AIConfirmModal'
@@ -10,7 +11,7 @@ import { IconIA, IconNube } from './icons'
 import SuccessModal from './SuccessModal'
 import WarningModal from './WarningModal'
 import './RegistrarIncidencias.css'
-
+import HelpModal from './HelpModal'
 const CATEGORIAS = [
   'Acumulación y falta de recojo',
   'Basura en vía pública',
@@ -20,28 +21,38 @@ const CATEGORIAS = [
   'Otro',
 ]
 
-const SLOTS_FOTOS = 1
+const MAX_FOTOS = 5
+const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
 
 function crearSlotsVacios() {
-  return Array.from({ length: SLOTS_FOTOS }, () => ({ preview: null, file: null }))
+  return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
 }
 
 export default function RegistrarIncidencias() {
   const [fotos, setFotos] = useState(crearSlotsVacios)
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
+  const [caracteresRestantes, setCaracteresRestantes] = useState(MAX_CARACTERES)
   const [descripcionEsErrorIA, setDescripcionEsErrorIA] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [showAIModal, setShowAIModal] = useState(false)
   const [showWarningModal, setShowWarningModal] = useState(false)
   const [warningMessage, setWarningMessage] = useState('')
   const [generandoIA, setGenerandoIA] = useState(false)
+  const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('')
-  const fileInputRefs = useRef([])
+  const [isDragging, setIsDragging] = useState(false);
+  const [camposError, setCamposError] = useState({
+      categoria: false,
+      fotos: false,
+      descripcion: false
+  })
 
+  const fileInputRefs = useRef([])
   const fotosSubidas = fotos.filter((f) => f.file)
   const tieneFotos = fotosSubidas.length > 0
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
+  const [showHelpModal, setShowHelpModal] = useState(false)
 
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
@@ -53,30 +64,35 @@ export default function RegistrarIncidencias() {
   }
 
   function handleFotoChange(index, event) {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const files = Array.from(event.target.files ?? [])
+    if (!files.length) return
 
-    const preview = URL.createObjectURL(file)
+    const nuevosSlots = files.map((file) => ({
+      preview: URL.createObjectURL(file),
+      file
+    }))
+
     setFotos((prev) => {
-      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      const next = [...prev]
-      next[index] = { preview, file }
-      return next
+      // Liberar previews anteriores
+      prev.forEach((slot) => {
+        if (slot.preview) URL.revokeObjectURL(slot.preview)
+      })
+      // Limitar al máximo permitido
+      return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
     })
+
     if (descripcionEsErrorIA) {
       setDescripcion('')
       limpiarEstadoErrorIA()
     }
+    setCamposError(prev => ({ ...prev, fotos: false })) 
     setErrorTecnico('')
     event.target.value = ''
   }
-
   function handleEliminarFoto(index) {
     setFotos((prev) => {
       if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      const next = [...prev]
-      next[index] = { preview: null, file: null }
-      return next
+      return prev.filter((_, i) => i !== index)
     })
     if (descripcionEsErrorIA) {
       setDescripcion('')
@@ -84,14 +100,22 @@ export default function RegistrarIncidencias() {
     }
     setErrorTecnico('')
   }
-
   function handleDescripcionChange(event) {
-    setDescripcion(event.target.value)
+    const nuevoValor = event.target.value
+    setDescripcion(nuevoValor)
+    setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length)
+    setCamposError(prev => ({ ...prev, descripcion: false }))
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
+    const errores = {
+        categoria: !categoria,
+        fotos: !tieneFotos,
+        descripcion: !descripcion.trim()
+    }
+    setCamposError(errores)
     if (descripcionEsErrorIA) {
       alert('Genera una descripción válida o cambia las fotos antes de registrar.')
       return
@@ -111,7 +135,18 @@ export default function RegistrarIncidencias() {
       setShowWarningModal(true)
       return
     }
-    setShowSuccessModal(true)
+    try {
+      await registrarIncidencia(
+        categoria,
+        descripcion,
+        urlsCloudinary,                          // URLs si usó IA
+        fotosSubidas.map((slot) => slot.file)
+      )
+      setShowSuccessModal(true)
+    } catch (err) {
+      setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
+      setShowWarningModal(true)
+    }
   }
 
   function handleGenerarIA() {
@@ -130,10 +165,12 @@ export default function RegistrarIncidencias() {
     setErrorTecnico('')
 
     try {
-      const imagenesBase64 = await prepararImagenesParaIA(
-        fotosSubidas.map((slot) => slot.file)
-      )
-      const texto = (await describirFotosConIA(imagenesBase64)).trim()
+      // Subir fotos a Cloudinary y obtener URLs
+      const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
+      setUrlsCloudinary(urls)
+
+      // Enviar URLs a la IA
+      const texto = (await describirFotosConIA(urls)).trim()
 
       if (esRespuestaFotosNoVisibles(texto)) {
         mostrarMensajeFotosNoVisibles()
@@ -142,7 +179,6 @@ export default function RegistrarIncidencias() {
       }
     } catch (err) {
       const mensaje = err instanceof Error ? err.message : 'Error desconocido con la IA.'
-
       if (esErrorTecnicoIA(mensaje)) {
         setErrorTecnico(mensaje)
         setDescripcion('')
@@ -164,6 +200,7 @@ export default function RegistrarIncidencias() {
     setDescripcion('')
     limpiarEstadoErrorIA()
     setErrorTecnico('')
+    setUrlsCloudinary([])
     fileInputRefs.current = []
   }
 
@@ -171,67 +208,89 @@ export default function RegistrarIncidencias() {
     setShowSuccessModal(false)
     resetFormulario()
   }
-
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const archivos = Array.from(e.dataTransfer.files)
+    .filter(file => file.type.startsWith("image/"));
+    if (!archivos.length) return;
+    // Simula el evento que ya espera handleFotoChange
+    handleFotoChange(0, { target: { files: archivos } });
+  };
   return (
     <main className="registrar">
       <h2 className="registrar__title">Registrar Incidencias</h2>
-
+      {/*Nuevo botón*/}
+      <button
+          type="button"
+          className="registrar__help-btn"
+          onClick={() => setShowHelpModal(true)}
+      >
+          ¿Cómo funciona?
+      </button>
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
-          <fieldset className="registrar__fotos">
-            <legend>Fotos a presentar:</legend>
+          <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}    
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}>
+            <legend>Fotos a presentar: <span style={{ color: '#ff7a00' }}>*</span></legend>
             <div className="registrar__fotos-container">
-              {fotos.map((slot, index) => (
-                <div key={index} className="foto-slot">
-                  <input
-                    ref={(el) => {
-                      fileInputRefs.current[index] = el
-                    }}
-                    type="file"
-                    accept="image/*"
-                    className="foto-slot__input"
-                    onChange={(e) => handleFotoChange(index, e)}
-                    aria-label={`Subir foto ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    className="foto-slot__btn"
-                    onClick={() => fileInputRefs.current[index]?.click()}
-                  >
-                    {slot.preview ? (
-                      <>
-                        <img src={slot.preview} alt={`Foto ${index + 1}`} className="foto-slot__preview" />
-                        <button
-                          type="button"
-                          className="foto-slot__remove"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleEliminarFoto(index)
-                          }}
-                          aria-label={`Quitar foto ${index + 1}`}
-                        >
-                          ×
-                        </button>
-                      </>
-                    ) : (
-                      <div className="foto-slot__upload-area">
-                        <IconNube />
-                        <span className="foto-slot__upload-text">Ingresa una foto</span>
-                      </div>
-                    )}
-                  </button>
+              <input
+                ref={(el) => { fileInputRefs.current[0] = el }}
+                type="file"
+                accept="image/*"
+                multiple
+                className="foto-slot__input"
+                onChange={(e) => handleFotoChange(0, e)}
+                aria-label="Subir fotos"
+              />
+              <button
+                type="button"
+                className={`foto-slot__btn ${camposError.fotos ? "campo-error" : ""}`}
+                onClick={() => fileInputRefs.current[0]?.click()}
+              >
+                <div className="foto-slot__upload-area">
+                  <IconNube />
+                  <span className="foto-slot__upload-text">
+                    {fotosSubidas.length > 0
+                      ? `${fotosSubidas.length} foto(s) seleccionada(s)`
+                      : 'Ingresa o arrastre una o más fotos'}
+                  </span>
                 </div>
-              ))}
+              </button>
+
+              {/* Previsualización de todas las fotos */}
+              <div className="registrar__fotos-preview">
+                {fotosSubidas.map((slot, index) => (
+                  <div key={index} className="foto-slot">
+                    <img src={slot.preview} alt={`Foto ${index + 1}`} className="foto-slot__preview" />
+                    <button
+                      type="button"
+                      className="foto-slot__remove"
+                      onClick={() => handleEliminarFoto(index)}
+                      aria-label={`Quitar foto ${index + 1}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
+            <p className="registrar__fotos-info">
+              Solo se pueden ingresar hasta 5 fotos con un tamaño total que no debe superar los 50 MB entre todas
+            </p>
           </fieldset>
 
           <div className="registrar__field">
-            <label htmlFor="categoria">Selecciona una categoría</label>
-            <div className="registrar__select-wrap">
+            <label htmlFor="categoria">Selecciona una categoría(6 categorías) <span style={{ color: '#ff7a00' }}>*</span>:</label>
+            <div  className="registrar__select-wrap" >
               <select
                 id="categoria"
+                className={`${camposError.categoria ? "campo-error" : ""}`}
                 value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
+                onChange={(e) => {setCategoria(e.target.value)
+                  setCamposError(prev => ({ ...prev, categoria: false }))}}
               >
                 <option value="" disabled>
                   Seleccione una opción
@@ -245,18 +304,24 @@ export default function RegistrarIncidencias() {
             </div>
           </div>
 
-          <div className="registrar__field">
-            <label htmlFor="descripcion">Descripción sobre la incidencia:</label>
-            <textarea
-              id="descripcion"
-              rows={7}
-              value={descripcion}
-              onChange={handleDescripcionChange}
-              placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
-              disabled={generandoIA}
-              className={descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}
-              aria-invalid={descripcionEsErrorIA}
-            />
+          <div className="registrar__field registrar__field--descripcion">
+            <label htmlFor="descripcion">Descripción sobre la incidencia: <span style={{ color: '#ff7a00' }}>*</span></label>
+            <div className="registrar__textarea-wrapper">
+              <textarea
+                id="descripcion"
+                rows={7}
+                value={descripcion}
+                onChange={handleDescripcionChange}
+                placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
+                disabled={generandoIA}
+                 className={`${descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}${camposError.descripcion ? 'campo-error' : ''}`}
+                aria-invalid={descripcionEsErrorIA}
+              />
+              <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
+                {caracteresRestantes} caracteres restantes
+              </span>
+            </div>
+            <span style={{ color: '#ff7a00' }}>*Campo Obligatorio</span>
             {generandoIA && (
               <span className="registrar__ia-loading" role="status">
                 Analizando las fotos con IA...
@@ -267,8 +332,7 @@ export default function RegistrarIncidencias() {
                 <strong>No se pudo conectar con la IA:</strong>
                 <p>{errorTecnico}</p>
                 <p className="registrar__ia-tecnico-hint">
-                  En PowerShell, antes de <code>spring-boot:run</code>:{' '}
-                  <code>$env:HF_TOKEN=&quot;tu_token&quot;</code>
+                  Verifica que el backend esté ejecutándose y que la API Key de Google Vision esté configurada correctamente.
                 </p>
               </div>
             )}
@@ -305,6 +369,8 @@ export default function RegistrarIncidencias() {
             message={warningMessage}
           />
         )}
+        {/*Nuevo modal */}
+        {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
       </div>
     </main>
   )

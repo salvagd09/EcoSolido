@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(26, 26, 46, 0.5);
+  background: rgba(245, 244, 239, 0.8);
   backdrop-filter: blur(4px);
   pointer-events: none;
 }
@@ -66,7 +66,7 @@
   margin: 0 0 16px;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-btn-success);
+  color: var(--color-btn-primary);
   font-family: var(--font-heading);
 }
 

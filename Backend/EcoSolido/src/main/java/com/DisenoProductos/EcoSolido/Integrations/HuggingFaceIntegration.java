@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,11 @@ public class HuggingFaceIntegration {
 
             content.add(Map.of(
                     "type", "text",
-                    "text", "Describe estas imágenes en español en 2 oraciones como si fuera el reporte de una incidencia urbana."
+                    "text", "Describe estas imágenes en español en 2 oraciones como si fuera el reporte " +
+                            "de una incidencia urbana. Si las imágenes son demasiado borrosas, pixeleadas o no " +
+                            "puedes distinguir claramente su contenido, responde EXACTAMENTE con: " +
+                            "'Lo siento, no pude ver muy bien las fotos por lo cual no puedo describirlas. " +
+                            "¿Podrías volver a pasarlas o cambiar de fotos?'"
             ));
 
             for (String url : urlFotos) {
@@ -51,6 +56,7 @@ public class HuggingFaceIntegration {
                     .bodyValue(body)
                     .retrieve()
                     .bodyToMono(Map.class)
+                    .timeout(Duration.ofSeconds(30))   // ← timeout agregado
                     .block();
 
             List<Map> choices = (List<Map>) response.get("choices");

@@ -22,13 +22,29 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(HuggingFaceException.class)
     public ResponseEntity<?> handleIAError(HuggingFaceException ex) {
-            return ResponseEntity.ok()
-                    .body(Map.of("descripcion", "Lo siento, no pude ver muy bien las fotos " +
-                            "por lo cual no puedo describirlas. ¿Podrías volver a pasarlas o cambiar de fotos?"));
+        return ResponseEntity.status(503)
+                .body(Map.of(
+                    "error", "Error de IA",
+                    "message", ex.getMessage() != null ? ex.getMessage() : 
+                        "Lo siento, no pude ver muy bien las fotos. ¿Podrías volver a intentarlo?"
+                ));
     }
+    
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateError(IllegalStateException ex) {
+        return ResponseEntity.status(500)
+                .body(Map.of(
+                    "error", "Error del servicio",
+                    "message", ex.getMessage() != null ? ex.getMessage() : "Ocurrió un error inesperado."
+                ));
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericError(Exception ex) {
         return ResponseEntity.internalServerError()
-                .body("Ocurrió un error inesperado.");
+                .body(Map.of(
+                    "error", "Error interno",
+                    "message", ex.getMessage() != null ? ex.getMessage() : "Ocurrió un error inesperado."
+                ));
     }
 }
