@@ -67,4 +67,35 @@ public class HuggingFaceIntegration {
             throw new HuggingFaceException("No se pudo describir las fotos.", e);
         }
     }
+    public String generarTitulo(String descripcion) {
+        try {
+            Map<String, Object> body = Map.of(
+                    "model", "google/gemma-4-31B-it",
+                    "messages", List.of(
+                            Map.of(
+                                    "role", "user",
+                                    "content", "Genera un título corto y descriptivo (máximo 6 palabras) " +
+                                            "en español para una incidencia urbana con esta descripción: \"" +
+                                            descripcion + "\". Responde SOLO con el título, sin comillas ni explicaciones."
+                            )
+                    )
+            );
+
+            Map response = webClient.post()
+                    .uri(apiUrl)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+
+            List<Map> choices = (List<Map>) response.get("choices");
+            Map message = (Map) choices.get(0).get("message");
+            return (String) message.get("content");
+
+        } catch (Exception e) {
+            throw new HuggingFaceException("No se pudo generar el título.", e);
+        }
+    }
 }
