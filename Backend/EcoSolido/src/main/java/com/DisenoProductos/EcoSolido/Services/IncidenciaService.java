@@ -43,6 +43,7 @@ public class IncidenciaService  {
         try {
             titulo = huggingFaceIntegration.generarTitulo(incidenciaDTO.getDescripcion());
         } catch (Exception e) {
+            e.printStackTrace();
             titulo = "Incidencia #"+incidenciaDTO.getCategoria(); // Fallback si la IA falla
         }
         incidencia.setTitulo(titulo);
