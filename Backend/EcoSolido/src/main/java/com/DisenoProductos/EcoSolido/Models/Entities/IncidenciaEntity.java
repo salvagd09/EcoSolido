@@ -17,6 +17,8 @@ public class IncidenciaEntity {
     private String categoria;
     @Column(columnDefinition = "TEXT")
     private String descripcion;
+    @Column(name = "titulo")
+    private String titulo;
     @Column(name="fecha")
     private LocalDateTime fecha=LocalDateTime.now();
     @ManyToOne
@@ -48,7 +50,12 @@ public class IncidenciaEntity {
     public String getDescripcion() {
         return descripcion;
     }
-
+    public String getTitulo() {
+        return titulo;
+    }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }

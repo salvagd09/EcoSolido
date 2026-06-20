@@ -1,22 +1,31 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
-public class IncidenciaResponseDTO {
+import java.util.List;
+
+public class SeguirIncidenciaResponseDTO {
     private Integer idIncidencia;
-    private String categoria;
     private String descripcion;
     private String estado;
+    private String titulo;
     private String fecha;
+    private List<String> urlsImagenes;
+    public String getTitulo() {
+        return titulo;
+    }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+    public List<String> getUrlsImagenes() {
+        return urlsImagenes;
+    }
+    public void setUrlsImagenes(List<String> urlsImagenes) {
+        this.urlsImagenes = urlsImagenes;
+    }
     public Integer getIdIncidencia() {
         return idIncidencia;
     }
     public void setIdIncidencia(Integer idIncidencia) {
         this.idIncidencia = idIncidencia;
-    }
-    public String getCategoria() {
-        return categoria;
-    }
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
     }
     public String getDescripcion() {
         return descripcion;
