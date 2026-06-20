@@ -70,7 +70,8 @@ public class HuggingFaceIntegration {
     public String generarTitulo(String descripcion) {
         try {
             Map<String, Object> body = Map.of(
-                    "model", "google/gemma-4-31B-it",
+                    "model", "meta-llama/Llama-3.1-8B-Instruct",
+                    "max_tokens",30,
                     "messages", List.of(
                             Map.of(
                                     "role", "user",
@@ -94,7 +95,7 @@ public class HuggingFaceIntegration {
             Map message = (Map) choices.get(0).get("message");
             return (String) message.get("content");
 
-        } catch (Exception e) {
+        }  catch (Exception e) {
             throw new HuggingFaceException("No se pudo generar el título.", e);
         }
     }
