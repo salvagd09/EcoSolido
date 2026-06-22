@@ -3,6 +3,7 @@ package com.DisenoProductos.EcoSolido.Services;
 import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
 import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.MetricasResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.SeguirIncidenciaResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
@@ -103,5 +104,18 @@ public class IncidenciaService  {
             );
             return muestraIncidencia;
         }).collect(Collectors.toList());
+    }
+    public MetricasResponseDTO obtenerMetricas(String nombreUsuario) {
+        long total = incidenciaRepository.countByUsuario_NombreUsuario(nombreUsuario);
+        long resueltas = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
+        long enProceso = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.EN_PROCESO);
+        long pendientes = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.PENDIENTE);
+
+        MetricasResponseDTO dto = new MetricasResponseDTO();
+        dto.setTotal(total);
+        dto.setResueltas(resueltas);
+        dto.setEnProceso(enProceso);
+        dto.setPendientes(pendientes);
+        return dto;
     }
 }

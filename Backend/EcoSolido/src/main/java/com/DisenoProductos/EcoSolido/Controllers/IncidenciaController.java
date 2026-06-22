@@ -37,6 +37,11 @@ public class IncidenciaController {
         incidenciaService.registrarIncidencia(incidenciaDTO, fotos, urlsFotos, nombreUsuario);
         return ResponseEntity.ok("Su incidencia ha sido registrada exitosamente...");
     }
+    @GetMapping("/metricas")
+    public ResponseEntity<?> mostrarMetricas(Authentication authentication){
+        String userName=authentication.getName();
+        return ResponseEntity.ok(incidenciaService.obtenerMetricas(userName));
+    }
     @PostMapping("/generar-descripcion")
     public ResponseEntity<?> generarDescripcion(@RequestBody DescribirFotosRequestDTO request){
         if(request.getImagenes() == null || request.getImagenes().isEmpty()){
