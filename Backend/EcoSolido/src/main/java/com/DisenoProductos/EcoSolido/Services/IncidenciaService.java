@@ -11,6 +11,7 @@ import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
@@ -110,12 +111,14 @@ public class IncidenciaService  {
         long resueltas = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
         long enProceso = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.EN_PROCESO);
         long pendientes = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.PENDIENTE);
-
+        LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
+        long incidenciasEsteMes = incidenciaRepository.countDesdeFecha(nombreUsuario, inicioMes);
         MetricasResponseDTO dto = new MetricasResponseDTO();
         dto.setTotal(total);
         dto.setResueltas(resueltas);
         dto.setEnProceso(enProceso);
         dto.setPendientes(pendientes);
+        dto.setIncidenciasEsteMes(incidenciasEsteMes);
         return dto;
     }
 }

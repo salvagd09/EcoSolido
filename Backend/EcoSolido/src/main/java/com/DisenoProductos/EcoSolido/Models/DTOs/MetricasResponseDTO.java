@@ -5,9 +5,15 @@ public class MetricasResponseDTO {
     private long resueltas;
     private long enProceso;
     private long pendientes;
-
+    private long incidenciasEsteMes;
     public long getTotal() {
         return total;
+    }
+    public long getIncidenciasEsteMes() {
+        return incidenciasEsteMes;
+    }
+    public void setIncidenciasEsteMes(long incidenciasEsteMes) {
+        this.incidenciasEsteMes = incidenciasEsteMes;
     }
 
     public void setTotal(long total) {
