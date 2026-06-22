@@ -1,10 +1,11 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
 public class MetricasResponseDTO {
-    long total;
-    long resueltas;
-    long enProceso;
-    long pendientes;
+    private long total;
+    private long resueltas;
+    private long enProceso;
+    private long pendientes;
+
     public long getTotal() {
         return total;
     }
