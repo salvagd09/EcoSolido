@@ -5,3 +5,4 @@ ALTER TABLE usuario ADD UNIQUE(nombre_usuario);
 ALTER TABLE usuario ADD UNIQUE(contrasena);
 Select * from usuario;
 SELECT * FROM incidencia;
+SELECT * FROM incidencia_foto;
