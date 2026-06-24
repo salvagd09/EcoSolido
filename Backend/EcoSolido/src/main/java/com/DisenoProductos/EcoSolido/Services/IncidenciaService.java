@@ -72,6 +72,9 @@ public class IncidenciaService  {
         }
         incidencia.setFotos(fotosEntidad);
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
+        incidencia.setLatitud(incidenciaDTO.getLatitud());
+        incidencia.setLongitud(incidenciaDTO.getLongitud());
+        incidencia.setDireccionTexto(incidenciaDTO.getDireccionTexto());
         return incidenciaRepository.save(incidencia);
     }
     public String generarDescripcion(List<String> urlFotos){
