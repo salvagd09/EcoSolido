@@ -12,4 +12,5 @@ ALTER TABLE usuario ADD UNIQUE(contrasena);
 
 -- Verificar cambios
 SELECT * FROM usuario;
-SELECT * FROM incidencia;  
+SELECT * FROM incidencia;
+SELECT * FROM incidencia_foto;
