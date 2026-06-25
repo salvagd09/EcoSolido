@@ -1,12 +1,15 @@
 .cerrar-modal-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(245, 244, 239, 0.8);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1000 !important;
     padding: 24px;
 }
 
@@ -19,6 +22,8 @@
   text-align: center;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1001 !important;
 }
 
 .cerrar-modal__title {
