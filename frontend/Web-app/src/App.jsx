@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, createContext, useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useOutletContext, useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
@@ -10,6 +10,8 @@ import './App.css'
 import Registrarse from './components/Registrarse'
 import RestablecerContra from './components/RestablecerContraseña'
 import { useNavigationShortcuts } from './hooks/useKeyboardShortcuts'
+import { useAuth } from './hooks/useAuth'
+import ProtectedRoute, { PublicRoute } from './components/ProtectedRoute'
 
 // Componente de diseño para el layout principal (con Header y Sidebar)
 function MainLayout() {
@@ -55,16 +57,39 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        {/* Rutas públicas */}
+        <Route path="/login" element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        } />
         <Route path="/registrarse" element={<Registrarse />} />
         <Route path="/restablecer" element={<RestablecerContra />} />
+        
         {/* Ruta protegida que usa el layout principal */}
-        <Route element={<MainLayout />}>
-          <Route path="/registro" element={<RegistrarConLayout />} />
-          <Route path="/seguimiento" element={<SeguimientoConLayout />} />
-          <Route path="/educacion" element={<EducacionMedioAmbiental />} />
+        <Route element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }>
+          <Route path="/registro" element={
+            <ProtectedRoute module="registro">
+              <RegistrarConLayout />
+            </ProtectedRoute>
+          } />
+          <Route path="/seguimiento" element={
+            <ProtectedRoute module="seguimiento">
+              <SeguimientoConLayout />
+            </ProtectedRoute>
+          } />
+          <Route path="/educacion" element={
+            <ProtectedRoute module="educacion">
+              <EducacionMedioAmbiental />
+            </ProtectedRoute>
+          } />
           <Route index element={<Navigate to="/registro" replace />} />
         </Route>
+        
         {/* Redirigir rutas desconocidas */}
         <Route path="*" element={<Navigate to="/registro" replace />} />
       </Routes>
