@@ -14,7 +14,7 @@ export default function Header({ onMenuClick,onLogout }) {
   const navigate = useNavigate()
   const nombreUsuario = localStorage.getItem("nombreUsuario") 
   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
-
+  const { logout } = useAuth();
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {
@@ -35,7 +35,6 @@ export default function Header({ onMenuClick,onLogout }) {
   }
 
   function handleConfirmarCierre() {
-    const { logout } = useAuth();
     logout();
     onLogout();
     navigate('/login', { replace: true })

@@ -8,6 +8,13 @@ public class SeguirIncidenciaResponseDTO {
     private String estado;
     private String titulo;
     private String fecha;
+    private String direccionTexto;
+    public String getDireccionTexto() {
+        return direccionTexto;
+    }
+    public void setDireccionTexto(String direccionTexto) {
+        this.direccionTexto = direccionTexto;
+    }
     private List<String> urlsImagenes;
     public String getTitulo() {
         return titulo;

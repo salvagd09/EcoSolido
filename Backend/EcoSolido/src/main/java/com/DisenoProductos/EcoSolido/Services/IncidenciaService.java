@@ -106,6 +106,7 @@ public class IncidenciaService  {
                             .map(IncidenciaFotoEntity::getUrlFoto)
                             .collect(Collectors.toList())
             );
+            muestraIncidencia.setDireccionTexto(incidencia.getDireccionTexto());
             return muestraIncidencia;
         }).collect(Collectors.toList());
     }
