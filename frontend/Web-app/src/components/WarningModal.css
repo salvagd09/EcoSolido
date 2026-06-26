@@ -1,7 +1,10 @@
 .warning-modal-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 15;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,6 +25,8 @@
   box-shadow: var(--shadow-lg);
   animation: modalSlideIn 0.3s ease-out;
   pointer-events: auto;
+  position: relative;
+  z-index: 1001;
 }
 
 @keyframes modalSlideIn {

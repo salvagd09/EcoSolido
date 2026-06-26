@@ -126,20 +126,19 @@ export async function subirFotosACloudinary(archivos) {
   return data.urls
 }
 
-export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos) {
-  const formData = new FormData()
-  const incidenciaBlob = new Blob(
-    [JSON.stringify({ categoria, descripcion })],
-    { type: 'application/json' }
-  )
-  formData.append('incidencia', incidenciaBlob)
+export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos, ubicacion) {
+  const formData = new FormData();
+  const incidenciaBlob = new Blob([
+    JSON.stringify({ categoria, descripcion, ubicacion: ubicacion ? `${ubicacion.lat},${ubicacion.lng}` : '' })
+  ], { type: 'application/json' });
+  formData.append('incidencia', incidenciaBlob);
   const token = localStorage.getItem("token");
   if (urlsFotos.length > 0) {
     // Ya están en Cloudinary, solo enviar URLs
-    urlsFotos.forEach((url) => formData.append('urlsFotos', url))
+    urlsFotos.forEach((url) => formData.append('urlsFotos', url));
   } else {
     // No usó IA, subir archivos directamente
-    archivos.forEach((file) => formData.append('fotos', file))
+    archivos.forEach((file) => formData.append('fotos', file));
   }
   
   const response = await fetch(`${API_BASE}/incidencias/registrar`, {

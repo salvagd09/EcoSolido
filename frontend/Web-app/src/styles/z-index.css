@@ -1,0 +1,226 @@
+/**
+ * z-index.css - Gestión centralizada de z-index para EcoSolido
+ * 
+ * Este archivo establece una jerarquía clara de z-index para evitar
+ * conflictos de apilamiento, especialmente con el mapa de Leaflet.
+ * 
+ * JERARQUÍA:
+ * 0-100:    Elementos normales de la página
+ * 100-200:  Header, sidebar, elementos de navegación
+ * 200-300:  Dropdowns, tooltips
+ * 400-500:  Contenedores de mapas Leaflet
+ * 1000:     Overlays de modales (fondo oscuro)
+ * 1001-1050: Contenido de modales (ventanas)
+ * 2000+:    Notificaciones toast, elementos críticos
+ */
+
+/* ========================================
+   VARIABLES CSS PARA Z-INDEX
+   ======================================== */
+:root {
+  /* Elementos base */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky-header: 200;
+  --z-sidebar: 200;
+  
+  /* Leaflet Map */
+  --z-leaflet-container: 400;
+  --z-leaflet-popup: 450;
+  --z-leaflet-tooltip: 460;
+  --z-leaflet-pane: 400;
+  
+  /* Modales */
+  --z-modal-overlay: 1000;
+  --z-modal-content: 1001;
+  --z-modal-close: 1002;
+  
+  /* Elementos críticos */
+  --z-toast: 2000;
+  --z-loading-overlay: 2100;
+}
+
+/* ========================================
+   LEAFLET MAP - Limitar z-index del mapa
+   ======================================== */
+
+/* Contenedor principal del mapa */
+.leaflet-container,
+.leaflet-map-container {
+  z-index: var(--z-leaflet-container) !important;
+  position: relative;
+}
+
+/* Paneles de Leaflet (tiles, marcadores, etc.) */
+.leaflet-pane,
+.leaflet-tile-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
+.leaflet-popup-pane,
+.leaflet-tooltip-pane {
+  z-index: var(--z-leaflet-pane) !important;
+}
+
+/* Popups de Leaflet */
+.leaflet-popup {
+  z-index: var(--z-leaflet-popup) !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+  z-index: var(--z-leaflet-popup) !important;
+}
+
+/* Tooltips de Leaflet */
+.leaflet-tooltip {
+  z-index: var(--z-leaflet-tooltip) !important;
+}
+
+/* Controles de Leaflet (zoom, layers, etc.) */
+.leaflet-control-zoom,
+.leaflet-control-layers,
+.leaflet-control-attribution {
+  z-index: calc(var(--z-leaflet-container) + 10) !important;
+}
+
+/* ========================================
+   MODALES - Todos con position: fixed
+   ======================================== */
+
+/* Overlay base para todos los modales */
+.modal-overlay,
+.warning-modal-overlay,
+.ai-modal-overlay,
+.help-modal-overlay,
+.cerrar-modal-overlay,
+.location-picker-modal-overlay {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal-overlay) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenido del modal */
+.modal,
+.warning-modal,
+.ai-modal,
+.help-modal,
+.cerrar-modal,
+.location-picker-modal {
+  position: relative;
+  z-index: var(--z-modal-content) !important;
+}
+
+/* Botón de cerrar modal */
+.modal__close,
+.warning-modal__close,
+.ai-modal__close,
+.help-modal__close,
+.cerrar-modal__close,
+.location-picker-modal__close {
+  position: relative;
+  z-index: var(--z-modal-close) !important;
+}
+
+/* ========================================
+   PREVENIR CONFLICTOS
+   ======================================== */
+
+/* Cuando un modal está abierto, asegurar que el body no cree contexto de apilamiento */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Asegurar que los modales siempre estén por encima de todo */
+#root {
+  position: relative;
+}
+
+/* ========================================
+   CASOS ESPECIALES
+   ======================================== */
+
+/* Modal de LocationPicker que contiene mapa */
+.location-picker-modal-overlay {
+  z-index: var(--z-modal-overlay) !important;
+}
+
+.location-picker-modal {
+  z-index: var(--z-modal-content) !important;
+}
+
+/* El mapa dentro del modal debe tener z-index controlado */
+.location-picker-modal .leaflet-container,
+.location-picker-modal .leaflet-map-container {
+  z-index: 1 !important; /* Dentro del modal, el mapa no necesita z-index alto */
+}
+
+/* ========================================
+   RESPONSIVE Y AJUSTES
+   ======================================== */
+
+/* En móviles, asegurar que los modales ocupen toda la pantalla */
+@media (max-width: 768px) {
+  .modal-overlay,
+  .warning-modal-overlay,
+  .ai-modal-overlay,
+  .help-modal-overlay,
+  .cerrar-modal-overlay,
+  .location-picker-modal-overlay {
+    padding: 0;
+  }
+  
+  .modal,
+  .warning-modal,
+  .ai-modal,
+  .help-modal,
+  .cerrar-modal,
+  .location-picker-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* ========================================
+   ANIMACIONES - Mantener en el mismo contexto
+   ======================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplicar animaciones a todos los modales */
+.modal-overlay,
+.warning-modal-overlay,
+.ai-modal-overlay,
+.help-modal-overlay,
+.cerrar-modal-overlay,
+.location-picker-modal-overlay {
+  animation: fadeIn 0.2s ease;
+}
+
+.modal,
+.warning-modal,
+.ai-modal,
+.help-modal,
+.cerrar-modal,
+.location-picker-modal {
+  animation: slideUp 0.3s ease;
+}

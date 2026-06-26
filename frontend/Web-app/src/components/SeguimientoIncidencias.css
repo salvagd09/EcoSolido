@@ -9,8 +9,137 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-text);
+  margin-bottom: 20px;
+}
+
+/* Panel de Métricas */
+.metricas-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
   margin-bottom: 24px;
 }
+
+.metrica-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.metrica-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metrica-card__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.metrica-card__icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.metrica-card__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.metrica-card__numero {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metrica-card__label {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Colores específicos para cada métrica */
+.metrica-card--total {
+  border-left: 4px solid var(--color-btn-primary);
+}
+
+.metrica-card--total .metrica-card__icon {
+  background: rgba(33, 150, 243, 0.1);
+  color: var(--color-btn-primary);
+}
+
+.metrica-card--total .metrica-card__numero {
+  color: var(--color-btn-primary);
+}
+
+.metrica-card--resueltas {
+  border-left: 4px solid #4CAF50;
+}
+
+.metrica-card--resueltas .metrica-card__icon {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.metrica-card--resueltas .metrica-card__numero {
+  color: #4CAF50;
+}
+
+.metrica-card--proceso {
+  border-left: 4px solid #FF9800;
+}
+
+.metrica-card--proceso .metrica-card__icon {
+  background: rgba(255, 152, 0, 0.1);
+  color: #FF9800;
+}
+
+.metrica-card--proceso .metrica-card__numero {
+  color: #FF9800;
+}
+
+.metrica-card--pendientes {
+  border-left: 4px solid #F44336;
+}
+
+.metrica-card--pendientes .metrica-card__icon {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.metrica-card--pendientes .metrica-card__numero {
+  color: #F44336;
+}
+
+/* Mensaje cuando no hay incidencias */
+.sin-incidencias-mensaje {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 2px dashed var(--color-border);
+}
+
+.sin-incidencias-mensaje p {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
 
 .seguimiento__controls {
   display: flex;
@@ -181,6 +310,29 @@
     font-size: 1.25rem;
   }
 
+  .metricas-panel {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .metrica-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .metrica-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .metrica-card__numero {
+    font-size: 1.5rem;
+  }
+
+  .metrica-card__label {
+    font-size: 0.8rem;
+  }
+
   .seguimiento__controls {
     flex-direction: column;
     align-items: stretch;
@@ -201,5 +353,11 @@
   .seguimiento__tabla td {
     padding: 10px 12px;
     font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .metricas-panel {
+    grid-template-columns: 1fr;
   }
 }

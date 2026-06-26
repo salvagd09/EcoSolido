@@ -1,7 +1,10 @@
 .ai-modal-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,6 +22,8 @@
   text-align: center;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1001;
 }
 
 .ai-modal__title {
