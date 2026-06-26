@@ -1,0 +1,501 @@
+/* LocationPicker.css - Estilos para el selector de ubicación */
+
+/* Estilos para el estado en el formulario principal - igual que registrar__field */
+.location-picker__status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.location-picker__status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.location-picker__title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.location-picker__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.location-picker__required {
+  color: #ff7a00;
+  font-weight: bold;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.location-picker__no-location {
+  color: #666;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0.75rem 0;
+}
+
+.location-picker__confirmed-status {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0 0;
+  padding: 0.5rem 0.75rem;
+  background: #e8f5e9;
+  border-radius: 4px;
+  border-left: 3px solid #28a745;
+  display: inline-block;
+}
+
+.location-picker__open-btn {
+  background: #ff7a00;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.location-picker__open-btn:hover {
+  background: #e06c00;
+}
+
+/* Estilos para ubicación confirmada */
+.location-picker__confirmed-info {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.location-picker__success {
+  color: #28a745;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.location-picker__address-display {
+  color: #333;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  background: #e8f5e9;
+  border-radius: 4px;
+  border-left: 3px solid #28a745;
+  margin: 0.25rem 0;
+}
+
+.location-picker__modify-btn {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.location-picker__modify-btn:hover {
+  background: #5a6268;
+}
+
+/* Overlay del modal */
+.location-picker-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000 !important;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal */
+.location-picker-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh; /* reduced to avoid full-screen white overlay */
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1001 !important;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.location-picker-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eee;
+}
+
+.location-picker-modal__title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.location-picker-modal__close {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  color: #666;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.location-picker-modal__close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.location-picker-modal__body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Botón GPS en el modal */
+.location-picker-modal__gps-btn {
+  background: #ff7a00;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.location-picker-modal__gps-btn:hover:not(:disabled) {
+  background: #e06c00;
+}
+
+.location-picker-modal__gps-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner de carga para GPS */
+.location-picker-modal__gps-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mensaje de error de GPS */
+.location-picker-modal__gps-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #dc2626;
+  line-height: 1.5;
+}
+
+/* Coordenadas */
+.location-picker-modal__coordinates {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
+  font-family: monospace;
+  background: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+/* Contenedor del mapa */
+.location-picker-modal__map-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  height: 400px; /* fixed height for map visibility */
+  max-height: none;
+  position: relative;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.location-picker-modal__map-container .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+.leaflet-map-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Estilos para el mapa Leaflet */
+.location-picker-modal__map-container .leaflet-container {
+  cursor: grab; /* Cursor de mano para arrastrar el mapa */
+}
+
+.location-picker-modal__map-container .leaflet-container:active {
+  cursor: grabbing; /* Cursor de agarre mientras se arrastra el mapa */
+}
+
+/* Cursor para el marcador arrastrable */
+.location-picker-modal__map-container .leaflet-marker-draggable {
+  cursor: move; /* Cursor de movimiento para el marcador */
+}
+
+.location-picker-modal__map-container .leaflet-marker-draggable:active {
+  cursor: grabbing; /* Cursor de agarre al arrastrar el marcador */
+}
+
+/* Mensaje de ayuda para el usuario */
+.location-picker-modal__map-hint {
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.location-picker-modal__map-hint strong {
+  color: #ff7a00;
+}
+
+/* Dirección encontrada en el modal */
+.location-picker-modal__address {
+  background: #e8f5e9;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border-left: 3px solid #28a745;
+}
+
+.location-picker-modal__location-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.location-picker-modal__location-icon {
+  font-size: 1.2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.location-picker-modal__location-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #28a745;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.location-picker-modal__address-text {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+/* Botones de acción */
+.location-picker-modal__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.location-picker-modal__btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  border: none;
+}
+
+.location-picker-modal__btn--confirm {
+  background: #28a745;
+  color: #fff;
+}
+
+.location-picker-modal__btn--confirm:hover:not(:disabled) {
+  background: #218838;
+}
+
+.location-picker-modal__btn--confirm:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.location-picker-modal__btn--cancel {
+  background: #6c757d;
+  color: #fff;
+}
+
+.location-picker-modal__btn--cancel:hover {
+  background: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .location-picker-modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .location-picker-modal__map-container {
+    height: 250px;
+  }
+
+  .location-picker-modal__actions {
+    flex-direction: column;
+  }
+
+  .location-picker-modal__btn {
+    width: 100%;
+  }
+}
+
+/* Estilos antiguos (mantenidos para compatibilidad) */
+.location-picker {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.location-picker__title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.location-picker__gps-btn {
+  background: #0066ff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.location-picker__gps-btn:hover {
+  background: #0055dd;
+}
+
+.location-picker__map-wrapper {
+  margin: 0.5rem 0;
+}
+
+.location-picker__info {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.location-picker__confirm-btn {
+  margin-top: 0.5rem;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.location-picker__confirm-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+.location-picker__valid {
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}

@@ -10,7 +10,8 @@ import AIConfirmModal from './AIConfirmModal'
 import { IconIA, IconNube } from './icons'
 import SuccessModal from './SuccessModal'
 import WarningModal from './WarningModal'
-import './RegistrarIncidencias.css'
+import './RegistrarIncidencias.css';
+import LocationPicker from './LocationPicker';
 import HelpModal from './HelpModal'
 const CATEGORIAS = [
   'Acumulación y falta de recojo',
@@ -28,7 +29,7 @@ function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
 }
 
-export default function RegistrarIncidencias() {
+export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [fotos, setFotos] = useState(crearSlotsVacios)
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
@@ -40,12 +41,14 @@ export default function RegistrarIncidencias() {
   const [warningMessage, setWarningMessage] = useState('')
   const [generandoIA, setGenerandoIA] = useState(false)
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
-  const [errorTecnico, setErrorTecnico] = useState('')
+  const [errorTecnico, setErrorTecnico] = useState('');
+  const [ubicacion, setUbicacion] = useState(null); // {lat,lng,address}
   const [isDragging, setIsDragging] = useState(false);
   const [camposError, setCamposError] = useState({
       categoria: false,
       fotos: false,
-      descripcion: false
+      descripcion: false,
+      ubicacion: false
   })
 
   const fileInputRefs = useRef([])
@@ -109,39 +112,46 @@ export default function RegistrarIncidencias() {
   }
 
   async function handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
     const errores = {
         categoria: !categoria,
         fotos: !tieneFotos,
-        descripcion: !descripcion.trim()
-    }
-    setCamposError(errores)
+        descripcion: !descripcion.trim(),
+        ubicacion: !ubicacion
+    };
+    setCamposError(errores);
     if (descripcionEsErrorIA) {
-      alert('Genera una descripción válida o cambia las fotos antes de registrar.')
-      return
+      alert('Genera una descripción válida o cambia las fotos antes de registrar.');
+      return;
     }
-    if (!categoria) {
-      setWarningMessage('No ha establecido alguna categoría.')
-      setShowWarningModal(true)
-      return
-    }
-    if (!tieneFotos) {
-      setWarningMessage('No ha colocado foto alguna.')
-      setShowWarningModal(true)
-      return
-    }
-    if (!descripcion.trim()) {
-      setWarningMessage('No ha escrito alguna descripción de la incidencia.')
-      setShowWarningModal(true)
-      return
-    }
+    if (!categoria) { setWarningMessage('No ha establecido alguna categoría.'); setShowWarningModal(true); return; }
+    if (!tieneFotos) { setWarningMessage('No ha colocado foto alguna.'); setShowWarningModal(true); return; }
+    if (!descripcion.trim()) { setWarningMessage('No ha escrito alguna descripción de la incidencia.'); setShowWarningModal(true); return; }
+    if (!ubicacion) { setWarningMessage('Debe seleccionar y confirmar una ubicación antes de registrar.'); setShowWarningModal(true); return; }
     try {
       await registrarIncidencia(
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
-        fotosSubidas.map((slot) => slot.file)
+        fotosSubidas.map((slot) => slot.file),
+        ubicacion
       )
+      
+      // Crear nueva incidencia para actualizar métricas
+      const nuevaIncidencia = {
+        id: `INC-${Date.now().toString().slice(-6)}`,
+        categoria: categoria,
+        fecha: new Date().toISOString().split('T')[0],
+        estado: 'Pendiente', // Todas las nuevas incidencias comienzan como Pendientes
+        descripcion: descripcion,
+        ubicacion: ubicacion ? `${ubicacion.lat},${ubicacion.lng}` : ''
+      }
+      
+      // Notificar al componente padre para actualizar métricas
+      if (onIncidenciaRegistrada) {
+        onIncidenciaRegistrada(nuevaIncidencia)
+      }
+      
       setShowSuccessModal(true)
     } catch (err) {
       setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
@@ -201,6 +211,7 @@ export default function RegistrarIncidencias() {
     limpiarEstadoErrorIA()
     setErrorTecnico('')
     setUrlsCloudinary([])
+    setUbicacion(null)
     fileInputRefs.current = []
   }
 
@@ -337,7 +348,10 @@ export default function RegistrarIncidencias() {
               </div>
             )}
           </div>
-
+          {/* Location Picker inserted below description */}
+          <div className="registrar__field">
+            <LocationPicker onConfirm={setUbicacion} />
+          </div>
           <div className="registrar__actions">
             <button type="submit" className="registrar__btn registrar__btn--primary">
               Registrar incidencia

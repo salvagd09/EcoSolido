@@ -3,6 +3,7 @@ import { IconSalir, IconUsuario, IconSol, IconLuna, IconMenu } from './icons'
 import './Header.css'
 import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/LOGO ECOSOLIDO.png'
 
 export default function Header({ onMenuClick,onLogout }) {
@@ -34,9 +35,9 @@ export default function Header({ onMenuClick,onLogout }) {
   }
 
   function handleConfirmarCierre() {
-    localStorage.removeItem('token')
-    localStorage.removeItem("nombreUsuario")
-    onLogout()
+    const { logout } = useAuth();
+    logout();
+    onLogout();
     navigate('/login', { replace: true })
   }
 

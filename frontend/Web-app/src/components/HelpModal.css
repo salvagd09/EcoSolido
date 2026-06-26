@@ -1,11 +1,14 @@
 .help-modal-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1000 !important;
 }
 
 .help-modal {
@@ -16,6 +19,8 @@
     max-width: 520px;
     max-height: 80vh;
     overflow-y: auto;
+    position: relative;
+    z-index: 1001 !important;
 }
 
 .help-modal__header {
