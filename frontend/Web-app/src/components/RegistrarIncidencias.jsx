@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState,lazy,Suspense } from 'react'
 import {
   describirFotosConIA,
   esErrorTecnicoIA,
@@ -8,8 +8,6 @@ import {
 import { esRespuestaFotosNoVisibles, MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 import AIConfirmModal from './AIConfirmModal'
 import { IconIA, IconNube } from './icons'
-import SuccessModal from './SuccessModal'
-import WarningModal from './WarningModal'
 import './RegistrarIncidencias.css';
 import LocationPicker from './LocationPicker';
 import HelpModal from './HelpModal'
@@ -21,7 +19,8 @@ const CATEGORIAS = [
   'Residuos en parques o áreas verdes',
   'Otro',
 ]
-
+const SuccessModal = lazy(() => import('./SuccessModal'));
+const WarningModal = lazy(() => import('./WarningModal'));
 const MAX_FOTOS = 5
 const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
 
@@ -42,6 +41,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [generandoIA, setGenerandoIA] = useState(false)
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('');
+  const [leafletKey,setLeafletKey]=useState(0)
   const [ubicacion, setUbicacion] = useState(null); // {lat,lng,address}
   const [isDragging, setIsDragging] = useState(false);
   const [camposError, setCamposError] = useState({
@@ -77,11 +77,14 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
     setFotos((prev) => {
       // Liberar previews anteriores
-      prev.forEach((slot) => {
-        if (slot.preview) URL.revokeObjectURL(slot.preview)
-      })
-      // Limitar al máximo permitido
-      return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
+      const fotosExistentes = prev.filter(s => s.file);
+      const espacioDisponible = MAX_FOTOS - fotosExistentes.length;
+      if (nuevosSlots.length > espacioDisponible) {
+        nuevosSlots.slice(espacioDisponible).forEach((slot) => {
+          URL.revokeObjectURL(slot.preview); // Libera solo las sobrantes inmediatamente
+        });
+      }
+      return [...fotosExistentes, ...nuevosSlots].slice(0, MAX_FOTOS);
     })
 
     if (descripcionEsErrorIA) {
@@ -93,15 +96,13 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     event.target.value = ''
   }
   function handleEliminarFoto(index) {
-    setFotos((prev) => {
-      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      return prev.filter((_, i) => i !== index)
-    })
-    if (descripcionEsErrorIA) {
-      setDescripcion('')
-      limpiarEstadoErrorIA()
-    }
-    setErrorTecnico('')
+      setFotos((prev) => {
+      // Revocar únicamente la URL del elemento que se está eliminando
+      if (prev[index].preview) {
+        URL.revokeObjectURL(prev[index].preview);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   }
   function handleDescripcionChange(event) {
     const nuevoValor = event.target.value
@@ -151,6 +152,10 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   };
   async function handleSubmit(event) {
     event.preventDefault();
+    console.log('DEBUG - categoria:', categoria)
+    console.log('DEBUG - tieneFotos:', tieneFotos, '| fotosSubidas:', fotosSubidas.length)
+    console.log('DEBUG - descripcion:', descripcion)
+    console.log('DEBUG - ubicacion:', ubicacion)
     const errores = {
         categoria: !categoria,
         fotos: !tieneFotos,
@@ -166,15 +171,21 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     if (!tieneFotos) { setWarningMessage('No ha colocado foto alguna.'); setShowWarningModal(true); return; }
     if (!descripcion.trim()) { setWarningMessage('No ha escrito alguna descripción de la incidencia.'); setShowWarningModal(true); return; }
     if (!ubicacion) { setWarningMessage('Debe seleccionar y confirmar una ubicación antes de registrar.'); setShowWarningModal(true); return; }
+    console.log('Ubicación al enviar:', ubicacion)
+    console.log('Fotos al enviar:', fotosSubidas.length)
     try {
+      const fotosComprimidas = await Promise.all(
+      fotosSubidas.map(slot => comprimirImagen(slot.file))
+      );
       await registrarIncidencia(
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
-        comprimirImagen(fotosSubidas.map((slot) => slot.file)),
-        ubicacion
+        fotosComprimidas,
+        ubicacion.address, 
+        ubicacion.lat,     
+        ubicacion.lng      
       )
-      
       // Crear nueva incidencia para actualizar métricas
       const nuevaIncidencia = {
         id: `INC-${Date.now().toString().slice(-6)}`,
@@ -182,7 +193,9 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         fecha: new Date().toISOString().split('T')[0],
         estado: 'Pendiente', // Todas las nuevas incidencias comienzan como Pendientes
         descripcion: descripcion,
-        ubicacion: ubicacion ? `${ubicacion.lat},${ubicacion.lng}` : ''
+        direccionTexto: ubicacion.address, 
+        latitud: ubicacion.lat, 
+        longitud: ubicacion.lng
       }
       
       // Notificar al componente padre para actualizar métricas
@@ -192,8 +205,8 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
       
       setShowSuccessModal(true)
     } catch (err) {
-      setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
-      setShowWarningModal(true)
+      setWarningMessage(err.message ?? 'Error al registrar la incidencia.');
+      setShowWarningModal(true);
     }
   }
 
@@ -250,6 +263,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setErrorTecnico('')
     setUrlsCloudinary([])
     setUbicacion(null)
+    setLeafletKey(prevKey => prevKey + 1)
     fileInputRefs.current = []
   }
 
@@ -388,7 +402,10 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           </div>
           {/* Location Picker inserted below description */}
           <div className="registrar__field">
-            <LocationPicker onConfirm={setUbicacion} />
+            <LocationPicker     
+              key={leafletKey}
+              value={ubicacion}
+              onConfirm={setUbicacion} />
           </div>
           <div className="registrar__actions">
             <button type="submit" className="registrar__btn registrar__btn--primary">
@@ -413,13 +430,18 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           />
         )}
 
-        {showSuccessModal && <SuccessModal onClose={handleCloseSuccessModal} />}
-
+        {showSuccessModal && (
+        <Suspense fallback={<div>Cargando...</div>}>
+          <SuccessModal onClose={handleCloseSuccessModal} />
+        </Suspense>
+        )}
         {showWarningModal && (
-          <WarningModal
-            onClose={() => setShowWarningModal(false)}
-            message={warningMessage}
+        <Suspense fallback={<div className="modal-loading">Cargando...</div>}>
+          <WarningModal 
+            message={warningMessage} 
+            onClose={() => setShowWarningModal(false)} 
           />
+        </Suspense>
         )}
         {/*Nuevo modal */}
         {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}

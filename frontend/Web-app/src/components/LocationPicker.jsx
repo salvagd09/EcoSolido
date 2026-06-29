@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './LocationPicker.css';
 import LeafletMap from './LeafletMap';
 import WarningModal from './WarningModal';
@@ -11,7 +11,7 @@ export default function LocationPicker({ value, onConfirm }) {
   const [searchError, setSearchError] = useState('');
   const [confirmed, setConfirmed] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-  const [warningMsg, setWarningMsg] = useState('');
+  const [warningMessage, setWarningMessage] = useState('');
   const [isConfirming, setIsConfirming] = useState(false);
   const [isGettingGPS, setIsGettingGPS] = useState(false);
   const [leafletKey, setLeafletKey] = useState(0);
@@ -26,7 +26,7 @@ export default function LocationPicker({ value, onConfirm }) {
 
   const confirmLocation = () => {
     if (!coords.lat || !coords.lng) {
-      setWarningMsg('No hay una ubicación seleccionada. Seleccione un punto en el mapa o use el GPS.');
+      setWarningMessage('No hay una ubicación seleccionada. Seleccione un punto en el mapa o use el GPS.');
       setShowWarning(true);
       return;
     }
@@ -156,10 +156,13 @@ export default function LocationPicker({ value, onConfirm }) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude, accuracy } = pos.coords;
+        setCoords({ lat: latitude.toFixed(6), lng: longitude.toFixed(6) });
+        setIsGettingGPS(false);
+        setLeafletKey((k) => k + 1);
         if (accuracy > 100) {
-          setGpsError(`Precisión del GPS baja (${Math.round(accuracy)}m). Intente de nuevo o seleccione manualmente.`);
-          setIsGettingGPS(false);
-          return;
+           setGpsError(`Precisión del GPS baja (${Math.round(accuracy)}m). Puede ajustar manualmente el marcador si es necesario.`);
+        } else {
+            setGpsError(null);
         }
         setCoords({ lat: latitude.toFixed(6), lng: longitude.toFixed(6) });
         setIsGettingGPS(false);
@@ -168,11 +171,8 @@ export default function LocationPicker({ value, onConfirm }) {
         setLeafletKey((k) => k + 1);
         // Get address for the GPS location
         reverseGeocode(latitude, longitude)
-          .then((addr) => {
-            if (addr) setAddress(addr);
-            else setAddress('Dirección no disponible');
-          })
-          .catch(() => setAddress('Dirección no disponible'));
+        .then((addr) => setAddress(addr || 'Dirección no disponible'))
+        .catch(() => setAddress('Dirección no disponible'));
       },
       (err) => {
         console.error('Error de geolocalización:', err.code, err.message);
@@ -285,7 +285,7 @@ export default function LocationPicker({ value, onConfirm }) {
 
       {showWarning && (
         <WarningModal 
-          message={warningMsg} 
+          message={warningMessage} 
           onClose={() => setShowWarning(false)} 
         />
       )}
