@@ -9,7 +9,14 @@
   padding: 0;
   width: 100%;
 }
-
+.location-picker-modal__gps-warning {
+    color: #ff7a00; /* ámbar/naranja para advertencia, no rojo de error crítico */
+    font-size: 0.85rem;
+    margin: 4px 0 8px 0;
+    padding: 8px;
+    background-color: #fef3c7;
+    border-radius: 6px;
+}
 .location-picker__status-header {
   display: flex;
   align-items: center;

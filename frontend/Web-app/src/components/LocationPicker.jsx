@@ -243,7 +243,11 @@ export default function LocationPicker({ value, onConfirm }) {
               <span>Usar mi ubicación actual</span>
             )}
           </button>
-
+          {gpsError && (
+              <p className="location-picker-modal__gps-warning">
+                  ⚠️ {gpsError}
+              </p>
+          )}
           <div className="location-picker-modal__map-container">
             <LeafletMap
               key={leafletKey}
