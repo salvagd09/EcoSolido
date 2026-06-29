@@ -21,12 +21,15 @@ public class IncidenciaEntity {
     private String titulo;
     @Column(name="fecha")
     private LocalDateTime fecha=LocalDateTime.now();
-    @ManyToOne
+    /*Mejora para tener código eficiente:
+    Evita traer al usuario completo si no es necesario*/
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_ciudadano")
     private UsuarioEntity usuario;
     @Enumerated(EnumType.STRING)
     private IncidenciaEstados estado;
-    @OneToMany(mappedBy="incidencia",cascade=CascadeType.ALL)
+    //Mejora para tener código eficiente
+    @OneToMany(mappedBy="incidencia", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @Size(min=1,message="Debe adjuntar al menos 1 foto")
     private List<IncidenciaFotoEntity> fotos;
     @Column(name="latitud")

@@ -15,7 +15,8 @@ public class IncidenciaFotoEntity {
     private String publicId;
     @Column(name="url_foto")
     private String urlFoto;
-    @ManyToOne
+    // Mejora de código eficiente: Evita cargas eager innecesarias
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_incidencia")
     private IncidenciaEntity incidencia;
     public Integer getIdFoto() {

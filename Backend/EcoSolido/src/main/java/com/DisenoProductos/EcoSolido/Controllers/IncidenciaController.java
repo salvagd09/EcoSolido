@@ -33,6 +33,11 @@ public class IncidenciaController {
             @RequestPart(value = "fotos", required = false) List<MultipartFile> fotos,
             @RequestParam(value = "urlsFotos", required = false) List<String> urlsFotos,
             Authentication authentication) throws Exception {
+        /* Mejora para tener código eficiente:
+        Detiene peticiones sin fotos antes de que inicien llamadas a base de datos*/
+        if ((fotos == null || fotos.isEmpty()) && (urlsFotos == null || urlsFotos.isEmpty())) {
+            return ResponseEntity.badRequest().body("Debe adjuntar al menos una foto para registrar la incidencia.");
+        }
         String nombreUsuario = authentication.getName();
         incidenciaService.registrarIncidencia(incidenciaDTO, fotos, urlsFotos, nombreUsuario);
         return ResponseEntity.ok("Su incidencia ha sido registrada exitosamente...");
@@ -44,14 +49,16 @@ public class IncidenciaController {
     }
     @PostMapping("/generar-descripcion")
     public ResponseEntity<?> generarDescripcion(@RequestBody DescribirFotosRequestDTO request){
-        if(request.getImagenes() == null || request.getImagenes().isEmpty()){
-            return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto");
+        // MEJORA de código eficiente:
+        // Detiene peticiones vacías para proteger el backend y no gastar consultas de IA
+        if (request.getImagenes() == null || request.getImagenes().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debe adjuntar al menos 1 foto para generar una descripción.");
         }
         try {
             String descripcion = incidenciaService.generarDescripcion(request.getImagenes());
             return ResponseEntity.ok(new DescribirFotosResponseDTO(descripcion));
         } catch (Exception e) {
-            throw e;
+            return ResponseEntity.internalServerError().body("Ocurrió un error al procesar las imágenes con Inteligencia Artificial.");
         }
     }
     @PostMapping("/subir-fotos")
