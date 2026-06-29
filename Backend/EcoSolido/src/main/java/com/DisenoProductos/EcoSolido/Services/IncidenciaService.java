@@ -42,11 +42,16 @@ public class IncidenciaService  {
         incidencia.setCategoria(incidenciaDTO.getCategoria());
         incidencia.setUsuario(usuario);
         String titulo;
-        try {
-            titulo = huggingFaceIntegration.generarTitulo(incidenciaDTO.getDescripcion());
-        } catch (Exception e) {
-            e.printStackTrace();
-            titulo = "Incidencia #"+incidenciaDTO.getCategoria(); // Fallback si la IA falla
+        /* Mejora para tener código eficiente:
+        Validar longitud de texto para evitar peticiones vacías a la IA (Llama)*/
+        if (incidenciaDTO.getDescripcion() != null && incidenciaDTO.getDescripcion().trim().length() > 5) {
+            try {
+                titulo = huggingFaceIntegration.generarTitulo(incidenciaDTO.getDescripcion());
+            } catch (Exception e) {
+                titulo = "Incidencia #" + incidenciaDTO.getCategoria();
+            }
+        } else {
+            titulo = "Incidencia #" + incidenciaDTO.getCategoria();
         }
         incidencia.setTitulo(titulo);
         List<IncidenciaFotoEntity> fotosEntidad = new ArrayList<>();
@@ -72,26 +77,36 @@ public class IncidenciaService  {
         }
         incidencia.setFotos(fotosEntidad);
         incidencia.setEstado(IncidenciaEstados.PENDIENTE);
+        incidencia.setLatitud(incidenciaDTO.getLatitud());
+        incidencia.setLongitud(incidenciaDTO.getLongitud());
+        incidencia.setDireccionTexto(incidenciaDTO.getDireccionTexto());
         return incidenciaRepository.save(incidencia);
     }
     public String generarDescripcion(List<String> urlFotos){
-        try{
+        /* Mejora para tener código eficiente:
+        Validar que existan fotos antes de realizar llamadas a la GPU de Hugging Face*/
+        if (urlFotos == null || urlFotos.isEmpty()) {
+            return "No se proporcionaron imágenes.";
+        }
+        try {
             return huggingFaceIntegration.describirFotos(urlFotos);
-        } catch(Exception e){
-                throw new HuggingFaceException("No se pudo describir la foto.",e);
+        } catch (Exception e) {
+            throw new HuggingFaceException("No se pudo describir la foto.", e);
         }
     }
     public List<String> subirFotos(List<MultipartFile> fotos) throws IOException {
         List<String> urls = new ArrayList<>();
         for (MultipartFile foto : fotos) {
             Map resultado = cloudinaryIntegration.subir(foto);
-            urls.add((String) resultado.get("secure_url"));
+            String secureUrl = (String) resultado.get("secure_url");
+            String urlOptimizada = secureUrl.replace("/upload/", "/upload/f_auto,q_auto/");
+            urls.add(urlOptimizada);
         }
         return urls;
     }
     public List<SeguirIncidenciaResponseDTO> mostrarIncidencias(String nombreUsuario){
-        List<IncidenciaEntity> incidencias=incidenciaRepository.findByUsuario_NombreUsuario(nombreUsuario);
-        return incidencias.stream().map(incidencia->{
+        List<IncidenciaEntity> incidencias=incidenciaRepository.findByUsuario_NombreUsuarioConFotos(nombreUsuario);
+        return incidencias.stream().distinct().map(incidencia->{
             SeguirIncidenciaResponseDTO muestraIncidencia=new SeguirIncidenciaResponseDTO();
             muestraIncidencia.setIdIncidencia(incidencia.getIdIncidencia());
             muestraIncidencia.setDescripcion(incidencia.getDescripcion());
@@ -103,6 +118,7 @@ public class IncidenciaService  {
                             .map(IncidenciaFotoEntity::getUrlFoto)
                             .collect(Collectors.toList())
             );
+            muestraIncidencia.setDireccionTexto(incidencia.getDireccionTexto());
             return muestraIncidencia;
         }).collect(Collectors.toList());
     }

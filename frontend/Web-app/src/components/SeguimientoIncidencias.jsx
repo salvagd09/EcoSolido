@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo,useEffect } from 'react'
 import './SeguimientoIncidencias.css'
 
 // Iconos SVG inline
@@ -31,9 +31,9 @@ const IconPendientes = () => (
 
 
 const ESTADOS = {
-  Pendiente: 'pending',
-  'En Proceso': 'in-progress',
-  Resuelto: 'resolved'
+  PENDIENTE: 'pending',
+  EN_PROCESO: 'in-progress',
+  RESUELTO: 'resolved'
 }
 
 const CLASES_ESTADO = {
@@ -44,32 +44,59 @@ const CLASES_ESTADO = {
 
 export default function SeguimientoIncidencias({ incidencias: propsIncidencias }) {
   // Usar las incidencias pasadas como prop (vacío si no hay ninguna)
-  const [incidencias] = useState(propsIncidencias || [])
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
-
-  // Calcular métricas
-  const metricas = useMemo(() => {
-    const total = incidencias.length
-    const resueltas = incidencias.filter(i => i.estado === 'Resuelto').length
-    const enProceso = incidencias.filter(i => i.estado === 'En Proceso').length
-    const pendientes = incidencias.filter(i => i.estado === 'Pendiente').length
-    
-    return { total, resueltas, enProceso, pendientes }
-  }, [incidencias])
-
+  const [metricas, setMetricas] = useState({ total: 0, resueltas: 0, enProceso: 0, pendientes: 0 })
+  const [cargandoMetricas, setCargandoMetricas] = useState(true)
+  const [incidencias, setIncidencias] = useState([])
+  useEffect(() => {
+    async function obtenerMetricas() {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:8080/incidencias/metricas', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        const data = await response.json()
+        setMetricas(data)
+      } catch (error) {
+        console.error('Error al obtener métricas:', error)
+      } finally {
+        setCargandoMetricas(false)
+      }
+    }
+    obtenerMetricas()
+  }, [])
+  useEffect(() => {
+    async function mostrarIncidencias() {
+        try {
+            const token = localStorage.getItem('token')
+            const response = await fetch('http://localhost:8080/incidencias/seguir', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data2 = await response.json()
+            setIncidencias(data2)
+        } catch (error) {
+            console.error('Error al obtener incidencias', error)
+        }
+    }
+    mostrarIncidencias()
+}, [])
   // Verificar si no hay incidencias
   const sinIncidencias = metricas.total === 0
 
   const incidenciasFiltradas = incidencias.filter(incidencia => {
     const coincideEstado = filtroEstado === 'todos' || 
-      ESTADOS[incidencia.estado] === filtroEstado
-    const coincideBusqueda = incidencia.id.toLowerCase().includes(busqueda.toLowerCase()) ||
-      incidencia.categoria.toLowerCase().includes(busqueda.toLowerCase()) ||
-      incidencia.ubicacion.toLowerCase().includes(busqueda.toLowerCase())
+        ESTADOS[incidencia.estado] === filtroEstado
+    const coincideBusqueda = 
+        incidencia.idIncidencia.toString().toLowerCase().includes(busqueda.toLowerCase()) ||
+        incidencia.categoria.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
     return coincideEstado && coincideBusqueda
   })
-
   return (
     <main className="seguimiento">
       <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
@@ -81,7 +108,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <IconTotal />
           </div>
           <div className="metrica-card__content">
-            <span className="metrica-card__numero">{metricas.total}</span>
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : metricas.total}
+            </span>
             <span className="metrica-card__label">Total Reportadas</span>
           </div>
         </div>
@@ -91,7 +120,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <IconResueltas />
           </div>
           <div className="metrica-card__content">
-            <span className="metrica-card__numero">{metricas.resueltas}</span>
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : metricas.resueltas}
+            </span>
             <span className="metrica-card__label">Resueltas</span>
           </div>
         </div>
@@ -101,7 +132,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <IconProceso />
           </div>
           <div className="metrica-card__content">
-            <span className="metrica-card__numero">{metricas.enProceso}</span>
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : metricas.enProceso}
+            </span>
             <span className="metrica-card__label">En Proceso</span>
           </div>
         </div>
@@ -111,14 +144,15 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <IconPendientes />
           </div>
           <div className="metrica-card__content">
-            <span className="metrica-card__numero">{metricas.pendientes}</span>
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : metricas.pendientes}
+            </span>
             <span className="metrica-card__label">Pendientes</span>
           </div>
         </div>
       </div>
 
-      {/* Mensaje cuando no hay incidencias */}
-      {sinIncidencias && (
+      {!cargandoMetricas && sinIncidencias && (
         <div className="sin-incidencias-mensaje">
           <p>¡Empieza a reportar incidencias y mide tu impacto!</p>
         </div>
@@ -173,7 +207,8 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Categoría</th>
+                <th>Titulo</th>
+                <th>Descripción</th>
                 <th>Ubicación</th>
                 <th>Fecha</th>
                 <th>Estado</th>
@@ -181,10 +216,11 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             </thead>
             <tbody>
               {incidenciasFiltradas.map(incidencia => (
-                <tr key={incidencia.id} className="seguimiento__fila">
-                  <td className="seguimiento__id">{incidencia.id}</td>
-                  <td className="seguimiento__categoria">{incidencia.categoria}</td>
-                  <td className="seguimiento__ubicacion">{incidencia.ubicacion}</td>
+                <tr key={incidencia.idIncidencia} className="seguimiento__fila">
+                  <td className="seguimiento__id">{incidencia.idIncidencia}</td>
+                  <td className="seguimineto_categoria">{incidencia.titulo}</td>
+                  <td className="seguimiento_descripcion">{incidencia.descripcion}</td>
+                  <td className="seguimiento__ubicacion">{!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</td>
                   <td className="seguimiento__fecha">{incidencia.fecha}</td>
                   <td className={`seguimiento__estado estado--${CLASES_ESTADO[ESTADOS[incidencia.estado]]}`}>
                     {incidencia.estado}

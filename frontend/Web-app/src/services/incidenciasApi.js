@@ -126,18 +126,23 @@ export async function subirFotosACloudinary(archivos) {
   return data.urls
 }
 
-export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos, ubicacion) {
+export async function registrarIncidencia(categoria, descripcion, urlsFotos, archivos, direccionTexto, latitud, longitud) {
   const formData = new FormData();
   const incidenciaBlob = new Blob([
-    JSON.stringify({ categoria, descripcion, ubicacion: ubicacion ? `${ubicacion.lat},${ubicacion.lng}` : '' })
+    JSON.stringify({ 
+        categoria, 
+        descripcion,
+        latitud,
+        longitud,
+        direccionTexto
+    })
   ], { type: 'application/json' });
   formData.append('incidencia', incidenciaBlob);
   const token = localStorage.getItem("token");
+  
   if (urlsFotos.length > 0) {
-    // Ya están en Cloudinary, solo enviar URLs
     urlsFotos.forEach((url) => formData.append('urlsFotos', url));
   } else {
-    // No usó IA, subir archivos directamente
     archivos.forEach((file) => formData.append('fotos', file));
   }
   

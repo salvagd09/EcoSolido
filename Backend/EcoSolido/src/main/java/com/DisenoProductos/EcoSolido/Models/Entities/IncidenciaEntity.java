@@ -21,14 +21,23 @@ public class IncidenciaEntity {
     private String titulo;
     @Column(name="fecha")
     private LocalDateTime fecha=LocalDateTime.now();
-    @ManyToOne
+    /*Mejora para tener código eficiente:
+    Evita traer al usuario completo si no es necesario*/
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_ciudadano")
     private UsuarioEntity usuario;
     @Enumerated(EnumType.STRING)
     private IncidenciaEstados estado;
-    @OneToMany(mappedBy="incidencia",cascade=CascadeType.ALL)
+    //Mejora para tener código eficiente
+    @OneToMany(mappedBy="incidencia", cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @Size(min=1,message="Debe adjuntar al menos 1 foto")
     private List<IncidenciaFotoEntity> fotos;
+    @Column(name="latitud")
+    private Double latitud;
+    @Column(name="longitud")
+    private Double longitud;
+    @Column(name="direccion_texto")
+    private String direccionTexto;
     public Integer getIdIncidencia() {
         return idIncidencia;
     }
@@ -53,34 +62,46 @@ public class IncidenciaEntity {
     public String getTitulo() {
         return titulo;
     }
+    public Double getLatitud() {
+        return latitud;
+    }
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+    public Double getLongitud() {
+        return longitud;
+    }
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
     public List<IncidenciaFotoEntity> getFotos() {
         return fotos;
     }
-
     public void setFotos(List<IncidenciaFotoEntity> fotos) {
         this.fotos = fotos;
     }
-
     public LocalDateTime getFecha() {
         return fecha;
     }
-
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
-
     public UsuarioEntity getUsuario() {
         return usuario;
     }
-
     public void setUsuario(UsuarioEntity usuario) {
         this.usuario = usuario;
+    }
+    public String getDireccionTexto() {
+        return  direccionTexto;
+    }
+    public void setDireccionTexto(String direccionTexto) {
+        this.direccionTexto = direccionTexto;
     }
 }
