@@ -110,7 +110,45 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setCamposError(prev => ({ ...prev, descripcion: false }))
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
-
+   const comprimirImagen = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200; // Resolución suficiente para verificar residuos
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            }));
+          }, 'image/jpeg', 0.7); // 70% de calidad JPEG (óptima compresión/peso)
+        };
+      };
+    });
+  };
   async function handleSubmit(event) {
     event.preventDefault();
     const errores = {
@@ -133,7 +171,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
-        fotosSubidas.map((slot) => slot.file),
+        comprimirImagen(fotosSubidas.map((slot) => slot.file)),
         ubicacion
       )
       

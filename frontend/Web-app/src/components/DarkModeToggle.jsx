@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react'
 import './DarkModeToggle.css'
-
+  const obtenerTemaInicial = () => {
+    const temaGuardado = localStorage.getItem('theme');
+    if (temaGuardado) {
+      return temaGuardado === 'dark';
+    }
+    // Si no hay tema guardado, detecta si el sistema operativo del usuario ya usa modo oscuro
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  };
 export default function DarkModeToggle() {
-  const [isChecked, setIsChecked] = useState(() => {
-    return localStorage.getItem('theme') === 'dark'
-  })
-
+  const [isChecked, setIsChecked] = useState(() => obtenerTemaInicial())
   useEffect(() => {
     const root = document.documentElement
     if (isChecked) {

@@ -5,11 +5,17 @@ import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/LOGO ECOSOLIDO.png'
-
+const obtenerTemaInicial = () => {
+    const temaGuardado = localStorage.getItem('theme');
+    if (temaGuardado) {
+      return temaGuardado === 'dark';
+    }
+    // Si no hay tema guardado, detecta si el sistema operativo del usuario ya usa modo oscuro
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
 export default function Header({ onMenuClick,onLogout }) {
   const [temaOscuro, setTemaOscuro] = useState(() => {
-    const temaGuardado = localStorage.getItem('tema')
-    return temaGuardado === 'oscuro'
+    obtenerTemaInicial()
   })
   const navigate = useNavigate()
   const nombreUsuario = localStorage.getItem("nombreUsuario") 
@@ -19,10 +25,10 @@ export default function Header({ onMenuClick,onLogout }) {
     const root = document.documentElement
     if (temaOscuro) {
       root.setAttribute('data-theme', 'dark')
-      localStorage.setItem('tema', 'oscuro')
+      localStorage.setItem('theme', 'dark')
     } else {
       root.removeAttribute('data-theme')
-      localStorage.setItem('tema', 'claro')
+      localStorage.setItem('theme', 'light')
     }
   }, [temaOscuro])
 
