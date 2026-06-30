@@ -56,6 +56,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const tieneFotos = fotosSubidas.length > 0
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
   const [showHelpModal, setShowHelpModal] = useState(false)
+  const [tamañoLetra, setTamañoLetra] = useState(1)
 
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
@@ -281,16 +282,24 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     handleFotoChange(0, { target: { files: archivos } });
   };
   return (
-    <main className="registrar">
+    <main className="registrar" style={{ fontSize: `${tamañoLetra}rem` }}>
       <h2 className="registrar__title">Registrar Incidencias</h2>
       {/*Nuevo botón*/}
-      <button
+      <div className="registrar__controles-texto">
+        <button
           type="button"
           className="registrar__help-btn"
           onClick={() => setShowHelpModal(true)}
-      >
-          ¿Cómo funciona?
-      </button>
+        >
+            ¿Cómo funciona?
+        </button>
+        <div className="registrar__font-controls">
+          <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>A-</button>
+          <button type="button" onClick={() => setTamañoLetra(1)}>A</button>
+          <button type="button" onClick={() => setTamañoLetra(t => Math.min(1.5, t + 0.1))}>A+</button>
+        </div>
+      </div>
+
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
           <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}    
