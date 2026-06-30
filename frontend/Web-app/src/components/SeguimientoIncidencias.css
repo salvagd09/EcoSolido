@@ -361,3 +361,59 @@
     grid-template-columns: 1fr;
   }
 }
+
+.seguimiento__tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  height:100%;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.incidencia-tarjeta {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 280px;
+}
+.incidencia-tarjeta__estado{
+  margin-left:5px;
+  font-size:15px;
+}
+.incidencia-tarjeta__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.incidencia-tarjeta__imagen {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+.incidencia-tarjeta__titulo {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.incidencia-tarjeta__fecha {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.incidencia-tarjeta__descripcion {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.incidencia-tarjeta__ubicacion {
+  font-size: 0.85rem;
+  color: #666;
+}
