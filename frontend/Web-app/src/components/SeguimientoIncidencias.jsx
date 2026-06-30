@@ -87,7 +87,16 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
 }, [])
   // Verificar si no hay incidencias
   const sinIncidencias = metricas.total === 0
-
+  const formatearFecha = (fechaString) => {
+    if (!fechaString) return '';
+    const fecha = new Date(fechaString);
+    
+    return new Intl.DateTimeFormat('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(fecha).replace(/\//g, '-');
+  };
   const incidenciasFiltradas = incidencias.filter(incidencia => {
     const coincideEstado = filtroEstado === 'todos' || 
         ESTADOS[incidencia.estado] === filtroEstado
@@ -203,32 +212,28 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <p>No se encontraron incidencias que coincidan con los filtros.</p>
           </div>
         ) : (
-          <table className="seguimiento__tabla">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Titulo</th>
-                <th>Descripción</th>
-                <th>Ubicación</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {incidenciasFiltradas.map(incidencia => (
-                <tr key={incidencia.idIncidencia} className="seguimiento__fila">
-                  <td className="seguimiento__id">{incidencia.idIncidencia}</td>
-                  <td className="seguimineto_categoria">{incidencia.titulo}</td>
-                  <td className="seguimiento_descripcion">{incidencia.descripcion}</td>
-                  <td className="seguimiento__ubicacion">{!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</td>
-                  <td className="seguimiento__fecha">{incidencia.fecha}</td>
-                  <td className={`seguimiento__estado estado--${CLASES_ESTADO[ESTADOS[incidencia.estado]]}`}>
+          <div className="seguimiento__tarjetas">
+            {incidenciasFiltradas.map(incidencia => (
+              <div key={incidencia.idIncidencia} className="incidencia-tarjeta">
+                <div className="incidencia-tarjeta__header">
+                  <h3 className="incidencia-tarjeta__titulo">{incidencia.titulo}</h3>
+                  <span className={`incidencia-tarjeta__estado estado--${CLASES_ESTADO[ESTADOS[incidencia.estado]]}`}>
                     {incidencia.estado}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </span>
+                </div>
+                <p className="incidencia-tarjeta__fecha">📅{formatearFecha(incidencia.fecha)} </p>
+                <p className="incidencia-tarjeta__descripcion">{incidencia.descripcion}</p>
+                <p className="incidencia-tarjeta__ubicacion">📍 {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
+                {incidencia.urlsImagenes && incidencia.urlsImagenes.length > 0 && (
+                <img 
+                      src={incidencia.urlsImagenes[0]} 
+                      alt={incidencia.titulo}
+                      className="incidencia-tarjeta__imagen"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </main>

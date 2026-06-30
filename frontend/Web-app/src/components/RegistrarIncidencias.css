@@ -645,3 +645,29 @@
     min-width: 140px;
   }
 }
+
+.registrar__controles-texto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.registrar__font-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.registrar__font-controls button {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-white);
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.registrar__font-controls button:hover {
+  background: var(--color-accent-green-light);
+}
