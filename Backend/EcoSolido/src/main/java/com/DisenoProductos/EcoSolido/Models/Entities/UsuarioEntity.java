@@ -17,8 +17,9 @@ public class UsuarioEntity {
     private String telefono;
     @Column(name="correo_electronico")
     private String correoElectronico;
-    @Column(name = "nombre_usuario")
+    @Column(name = "nombre_usuario",unique=true)
     private String nombreUsuario;
+    @Column(name="contrasena",unique=true)
     private String contrasena;
     @Column(name = "pregunta_seguridad")
     private String preguntaSeguridad;

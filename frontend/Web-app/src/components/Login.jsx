@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import './Login.css'
 
 export default function Login({ onLogin }) {
@@ -8,29 +9,17 @@ export default function Login({ onLogin }) {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [verContra, setVerContra] = useState(false)
+    const { login } = useAuth();
+    
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const respuesta = await fetch("http://localhost:8080/usuario/autenticar", {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nombreUsuario: nombreUs,
-                    contrasena: contra
-                })
-            });
-
-            if (!respuesta.ok) {
-                const error = await respuesta.text();
-                throw new Error(error);
-            }
-            const data = await respuesta.json();
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("nombreUsuario", data.nombreUsuario);
-            onLogin()
+        const result = await login(nombreUs, contra);
+        
+        if (result.success) {
+            onLogin?.();
             navigate("/registro");
-        } catch (error) {
-            setError(error.message);
+        } else {
+            setError(result.error);
         }
     }
 

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState,lazy,Suspense } from 'react'
 import {
   describirFotosConIA,
   esErrorTecnicoIA,
@@ -8,9 +8,8 @@ import {
 import { esRespuestaFotosNoVisibles, MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 import AIConfirmModal from './AIConfirmModal'
 import { IconIA, IconNube } from './icons'
-import SuccessModal from './SuccessModal'
-import WarningModal from './WarningModal'
-import './RegistrarIncidencias.css'
+import './RegistrarIncidencias.css';
+import LocationPicker from './LocationPicker';
 import HelpModal from './HelpModal'
 const CATEGORIAS = [
   'Acumulación y falta de recojo',
@@ -20,7 +19,8 @@ const CATEGORIAS = [
   'Residuos en parques o áreas verdes',
   'Otro',
 ]
-
+const SuccessModal = lazy(() => import('./SuccessModal'));
+const WarningModal = lazy(() => import('./WarningModal'));
 const MAX_FOTOS = 5
 const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
 
@@ -28,7 +28,7 @@ function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
 }
 
-export default function RegistrarIncidencias() {
+export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [fotos, setFotos] = useState(crearSlotsVacios)
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
@@ -40,12 +40,15 @@ export default function RegistrarIncidencias() {
   const [warningMessage, setWarningMessage] = useState('')
   const [generandoIA, setGenerandoIA] = useState(false)
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
-  const [errorTecnico, setErrorTecnico] = useState('')
+  const [errorTecnico, setErrorTecnico] = useState('');
+  const [leafletKey,setLeafletKey]=useState(0)
+  const [ubicacion, setUbicacion] = useState(null); // {lat,lng,address}
   const [isDragging, setIsDragging] = useState(false);
   const [camposError, setCamposError] = useState({
       categoria: false,
       fotos: false,
-      descripcion: false
+      descripcion: false,
+      ubicacion: false
   })
 
   const fileInputRefs = useRef([])
@@ -74,11 +77,14 @@ export default function RegistrarIncidencias() {
 
     setFotos((prev) => {
       // Liberar previews anteriores
-      prev.forEach((slot) => {
-        if (slot.preview) URL.revokeObjectURL(slot.preview)
-      })
-      // Limitar al máximo permitido
-      return [...prev.filter(s => s.file), ...nuevosSlots].slice(0, MAX_FOTOS)
+      const fotosExistentes = prev.filter(s => s.file);
+      const espacioDisponible = MAX_FOTOS - fotosExistentes.length;
+      if (nuevosSlots.length > espacioDisponible) {
+        nuevosSlots.slice(espacioDisponible).forEach((slot) => {
+          URL.revokeObjectURL(slot.preview); // Libera solo las sobrantes inmediatamente
+        });
+      }
+      return [...fotosExistentes, ...nuevosSlots].slice(0, MAX_FOTOS);
     })
 
     if (descripcionEsErrorIA) {
@@ -90,15 +96,13 @@ export default function RegistrarIncidencias() {
     event.target.value = ''
   }
   function handleEliminarFoto(index) {
-    setFotos((prev) => {
-      if (prev[index].preview) URL.revokeObjectURL(prev[index].preview)
-      return prev.filter((_, i) => i !== index)
-    })
-    if (descripcionEsErrorIA) {
-      setDescripcion('')
-      limpiarEstadoErrorIA()
-    }
-    setErrorTecnico('')
+      setFotos((prev) => {
+      // Revocar únicamente la URL del elemento que se está eliminando
+      if (prev[index].preview) {
+        URL.revokeObjectURL(prev[index].preview);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   }
   function handleDescripcionChange(event) {
     const nuevoValor = event.target.value
@@ -107,45 +111,102 @@ export default function RegistrarIncidencias() {
     setCamposError(prev => ({ ...prev, descripcion: false }))
     if (descripcionEsErrorIA) limpiarEstadoErrorIA()
   }
-
+   const comprimirImagen = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200; // Resolución suficiente para verificar residuos
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            }));
+          }, 'image/jpeg', 0.7); // 70% de calidad JPEG (óptima compresión/peso)
+        };
+      };
+    });
+  };
   async function handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
+    console.log('DEBUG - categoria:', categoria)
+    console.log('DEBUG - tieneFotos:', tieneFotos, '| fotosSubidas:', fotosSubidas.length)
+    console.log('DEBUG - descripcion:', descripcion)
+    console.log('DEBUG - ubicacion:', ubicacion)
     const errores = {
         categoria: !categoria,
         fotos: !tieneFotos,
-        descripcion: !descripcion.trim()
-    }
-    setCamposError(errores)
+        descripcion: !descripcion.trim(),
+        ubicacion: !ubicacion
+    };
+    setCamposError(errores);
     if (descripcionEsErrorIA) {
-      alert('Genera una descripción válida o cambia las fotos antes de registrar.')
-      return
+      alert('Genera una descripción válida o cambia las fotos antes de registrar.');
+      return;
     }
-    if (!categoria) {
-      setWarningMessage('No ha establecido alguna categoría.')
-      setShowWarningModal(true)
-      return
-    }
-    if (!tieneFotos) {
-      setWarningMessage('No ha colocado foto alguna.')
-      setShowWarningModal(true)
-      return
-    }
-    if (!descripcion.trim()) {
-      setWarningMessage('No ha escrito alguna descripción de la incidencia.')
-      setShowWarningModal(true)
-      return
-    }
+    if (!categoria) { setWarningMessage('No ha establecido alguna categoría.'); setShowWarningModal(true); return; }
+    if (!tieneFotos) { setWarningMessage('No ha colocado foto alguna.'); setShowWarningModal(true); return; }
+    if (!descripcion.trim()) { setWarningMessage('No ha escrito alguna descripción de la incidencia.'); setShowWarningModal(true); return; }
+    if (!ubicacion) { setWarningMessage('Debe seleccionar y confirmar una ubicación antes de registrar.'); setShowWarningModal(true); return; }
+    console.log('Ubicación al enviar:', ubicacion)
+    console.log('Fotos al enviar:', fotosSubidas.length)
     try {
+      const fotosComprimidas = await Promise.all(
+      fotosSubidas.map(slot => comprimirImagen(slot.file))
+      );
       await registrarIncidencia(
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
-        fotosSubidas.map((slot) => slot.file)
+        fotosComprimidas,
+        ubicacion.address, 
+        ubicacion.lat,     
+        ubicacion.lng      
       )
+      // Crear nueva incidencia para actualizar métricas
+      const nuevaIncidencia = {
+        id: `INC-${Date.now().toString().slice(-6)}`,
+        categoria: categoria,
+        fecha: new Date().toISOString().split('T')[0],
+        estado: 'Pendiente', // Todas las nuevas incidencias comienzan como Pendientes
+        descripcion: descripcion,
+        direccionTexto: ubicacion.address, 
+        latitud: ubicacion.lat, 
+        longitud: ubicacion.lng
+      }
+      
+      // Notificar al componente padre para actualizar métricas
+      if (onIncidenciaRegistrada) {
+        onIncidenciaRegistrada(nuevaIncidencia)
+      }
+      
       setShowSuccessModal(true)
     } catch (err) {
-      setWarningMessage(err.message ?? 'Error al registrar la incidencia.')
-      setShowWarningModal(true)
+      setWarningMessage(err.message ?? 'Error al registrar la incidencia.');
+      setShowWarningModal(true);
     }
   }
 
@@ -201,6 +262,8 @@ export default function RegistrarIncidencias() {
     limpiarEstadoErrorIA()
     setErrorTecnico('')
     setUrlsCloudinary([])
+    setUbicacion(null)
+    setLeafletKey(prevKey => prevKey + 1)
     fileInputRefs.current = []
   }
 
@@ -337,7 +400,13 @@ export default function RegistrarIncidencias() {
               </div>
             )}
           </div>
-
+          {/* Location Picker inserted below description */}
+          <div className="registrar__field">
+            <LocationPicker     
+              key={leafletKey}
+              value={ubicacion}
+              onConfirm={setUbicacion} />
+          </div>
           <div className="registrar__actions">
             <button type="submit" className="registrar__btn registrar__btn--primary">
               Registrar incidencia
@@ -361,13 +430,18 @@ export default function RegistrarIncidencias() {
           />
         )}
 
-        {showSuccessModal && <SuccessModal onClose={handleCloseSuccessModal} />}
-
+        {showSuccessModal && (
+        <Suspense fallback={<div>Cargando...</div>}>
+          <SuccessModal onClose={handleCloseSuccessModal} />
+        </Suspense>
+        )}
         {showWarningModal && (
-          <WarningModal
-            onClose={() => setShowWarningModal(false)}
-            message={warningMessage}
+        <Suspense fallback={<div className="modal-loading">Cargando...</div>}>
+          <WarningModal 
+            message={warningMessage} 
+            onClose={() => setShowWarningModal(false)} 
           />
+        </Suspense>
         )}
         {/*Nuevo modal */}
         {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}

@@ -114,6 +114,11 @@
 .registrar__help-btn:hover {
     opacity: 1;
 }
+[data-theme="dark"] .registrar__help-btn { 
+    color: white;
+    font-weight:500;            /* El texto se vuelve oscuro para contrastar */
+    border: 2px solid #ffffff;
+}
 .registrar__form {
   display: flex;
   flex-direction: column;
