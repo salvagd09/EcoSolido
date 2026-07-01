@@ -3,6 +3,7 @@ package com.DisenoProductos.EcoSolido.Integrations;
 import com.DisenoProductos.EcoSolido.Services.HuggingFaceException;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -21,7 +22,7 @@ public class HuggingFaceIntegration {
     private String apiUrl;
 
     private final WebClient webClient = WebClient.create();
-
+    @Cacheable(value="descripciones",key = "#urlFotos.toString()")
     public String describirFotos(List<String> urlFotos) {
         try {
             List<Map<String, Object>> content = new ArrayList<>();
@@ -58,7 +59,6 @@ public class HuggingFaceIntegration {
                     .bodyToMono(Map.class)
                     .timeout(Duration.ofSeconds(30))   // ← timeout agregado
                     .block();
-
             List<Map> choices = (List<Map>) response.get("choices");
             Map message = (Map) choices.get(0).get("message");
             return (String) message.get("content");
@@ -67,6 +67,7 @@ public class HuggingFaceIntegration {
             throw new HuggingFaceException("No se pudo describir las fotos.", e);
         }
     }
+    @Cacheable(value="titulos",key="#descripcion")
     public String generarTitulo(String descripcion) {
         try {
             Map<String, Object> body = Map.of(

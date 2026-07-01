@@ -2,6 +2,7 @@ package com.DisenoProductos.EcoSolido.Integrations;
 
 import com.DisenoProductos.EcoSolido.Models.DTOs.ReniecResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.Cacheable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

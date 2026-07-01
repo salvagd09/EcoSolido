@@ -153,10 +153,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   };
   async function handleSubmit(event) {
     event.preventDefault();
-    console.log('DEBUG - categoria:', categoria)
-    console.log('DEBUG - tieneFotos:', tieneFotos, '| fotosSubidas:', fotosSubidas.length)
-    console.log('DEBUG - descripcion:', descripcion)
-    console.log('DEBUG - ubicacion:', ubicacion)
     const errores = {
         categoria: !categoria,
         fotos: !tieneFotos,
@@ -172,8 +168,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     if (!tieneFotos) { setWarningMessage('No ha colocado foto alguna.'); setShowWarningModal(true); return; }
     if (!descripcion.trim()) { setWarningMessage('No ha escrito alguna descripción de la incidencia.'); setShowWarningModal(true); return; }
     if (!ubicacion) { setWarningMessage('Debe seleccionar y confirmar una ubicación antes de registrar.'); setShowWarningModal(true); return; }
-    console.log('Ubicación al enviar:', ubicacion)
-    console.log('Fotos al enviar:', fotosSubidas.length)
     try {
       const fotosComprimidas = await Promise.all(
       fotosSubidas.map(slot => comprimirImagen(slot.file))
