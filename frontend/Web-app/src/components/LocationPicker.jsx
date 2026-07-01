@@ -32,13 +32,13 @@ export default function LocationPicker({ value, onConfirm }) {
     }
     setIsConfirming(true);
     setConfirmed(true);
-    
-    const locationData = { 
-      lat: parseFloat(coords.lat), 
-      lng: parseFloat(coords.lng), 
-      address 
+
+    const locationData = {
+      lat: parseFloat(coords.lat),
+      lng: parseFloat(coords.lng),
+      address
     };
-    
+
     if (onConfirm) onConfirm(locationData);
     setIsOpen(false);
     setIsConfirming(false);
@@ -48,7 +48,7 @@ export default function LocationPicker({ value, onConfirm }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isOpen) return;
-      
+
       // Esc para cerrar modal
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -101,20 +101,16 @@ export default function LocationPicker({ value, onConfirm }) {
 
   // Get address when coordinates change (after user selects)
   useEffect(() => {
-    if (coords.lat && coords.lng) {
-      // Only fetch address if we don't already have one (e.g., from fallback)
-      if (!address) {
-        reverseGeocode(parseFloat(coords.lat), parseFloat(coords.lng))
+      if (!coords.lat || !coords.lng) return;
+      if (address) return;
+      reverseGeocode(parseFloat(coords.lat), parseFloat(coords.lng))
           .then((addr) => {
-            if (addr) setAddress(addr);
-            else setAddress('Dirección no disponible');
+           setAddress(addr || 'Dirección no disponible');
           })
           .catch(() => setAddress('Dirección no disponible'));
-      }
       // Reset confirmation when new coords selected
       setConfirmed(false);
-    }
-  }, [coords, address]);
+    },[coords]);
 
   // ---- Search result callbacks from LeafletMap ----
   const handleSearchResult = ({ lat, lng, address: foundAddress }) => {
@@ -160,19 +156,10 @@ export default function LocationPicker({ value, onConfirm }) {
         setIsGettingGPS(false);
         setLeafletKey((k) => k + 1);
         if (accuracy > 100) {
-           setGpsError(`Precisión del GPS baja (${Math.round(accuracy)}m). Puede ajustar manualmente el marcador si es necesario.`);
+          setGpsError(`Precisión del GPS baja (${Math.round(accuracy)}m). Puede ajustar manualmente el marcador si es necesario.`);
         } else {
-            setGpsError(null);
+          setGpsError(null);
         }
-        setCoords({ lat: latitude.toFixed(6), lng: longitude.toFixed(6) });
-        setIsGettingGPS(false);
-        setGpsError(null);
-        // Force map to update to the new GPS position
-        setLeafletKey((k) => k + 1);
-        // Get address for the GPS location
-        reverseGeocode(latitude, longitude)
-        .then((addr) => setAddress(addr || 'Dirección no disponible'))
-        .catch(() => setAddress('Dirección no disponible'));
       },
       (err) => {
         console.error('Error de geolocalización:', err.code, err.message);
@@ -194,10 +181,13 @@ export default function LocationPicker({ value, onConfirm }) {
   };
 
   const handleMapSelect = useCallback((c) => {
-    setCoords({ lat: c.lat.toFixed(6), lng: c.lng.toFixed(6) });
-    // Clear any previous GPS or search errors now that a valid location is chosen manually
+    setCoords({
+      lat: c.lat.toFixed(6),
+      lng: c.lng.toFixed(6)
+    });
+    setAddress("");
     setGpsError(null);
-    setSearchError('');
+    setSearchError("");
   }, []);
 
   // Render compact view when modal is closed
@@ -244,9 +234,9 @@ export default function LocationPicker({ value, onConfirm }) {
             )}
           </button>
           {gpsError && (
-              <p className="location-picker-modal__gps-warning">
-                  ⚠️ {gpsError}
-              </p>
+            <p className="location-picker-modal__gps-warning">
+              ⚠️ {gpsError}
+            </p>
           )}
           <div className="location-picker-modal__map-container">
             <LeafletMap
@@ -262,7 +252,7 @@ export default function LocationPicker({ value, onConfirm }) {
             />
           </div>
           <p className="location-picker-modal__map-hint">
-            <strong>Arrastrar marcador:</strong> Ajustar ubicación exacta &nbsp;|&nbsp; 
+            <strong>Arrastrar marcador:</strong> Ajustar ubicación exacta &nbsp;|&nbsp;
             <strong>Click derecho:</strong> Mover marcador al punto &nbsp;|&nbsp;
             <strong>Mapa:</strong> Arrastrar para mover
           </p>
@@ -288,9 +278,9 @@ export default function LocationPicker({ value, onConfirm }) {
       </div>
 
       {showWarning && (
-        <WarningModal 
-          message={warningMessage} 
-          onClose={() => setShowWarning(false)} 
+        <WarningModal
+          message={warningMessage}
+          onClose={() => setShowWarning(false)}
         />
       )}
     </div>
