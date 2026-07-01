@@ -1,4 +1,4 @@
-import { useRef, useState,lazy,Suspense } from 'react'
+import { useRef, useState, lazy, Suspense } from 'react'
 import {
   describirFotosConIA,
   esErrorTecnicoIA,
@@ -11,6 +11,7 @@ import { IconIA, IconNube } from './icons'
 import './RegistrarIncidencias.css';
 import LocationPicker from './LocationPicker';
 import HelpModal from './HelpModal'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 const CATEGORIAS = [
   'Acumulación y falta de recojo',
   'Basura en vía pública',
@@ -41,14 +42,14 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [generandoIA, setGenerandoIA] = useState(false)
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('');
-  const [leafletKey,setLeafletKey]=useState(0)
+  const [leafletKey, setLeafletKey] = useState(0)
   const [ubicacion, setUbicacion] = useState(null); // {lat,lng,address}
   const [isDragging, setIsDragging] = useState(false);
   const [camposError, setCamposError] = useState({
-      categoria: false,
-      fotos: false,
-      descripcion: false,
-      ubicacion: false
+    categoria: false,
+    fotos: false,
+    descripcion: false,
+    ubicacion: false
   })
 
   const fileInputRefs = useRef([])
@@ -57,7 +58,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [tamañoLetra, setTamañoLetra] = useState(1)
-
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
     setDescripcionEsErrorIA(true)
@@ -92,12 +93,12 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
       setDescripcion('')
       limpiarEstadoErrorIA()
     }
-    setCamposError(prev => ({ ...prev, fotos: false })) 
+    setCamposError(prev => ({ ...prev, fotos: false }))
     setErrorTecnico('')
     event.target.value = ''
   }
   function handleEliminarFoto(index) {
-      setFotos((prev) => {
+    setFotos((prev) => {
       // Revocar únicamente la URL del elemento que se está eliminando
       if (prev[index].preview) {
         URL.revokeObjectURL(prev[index].preview);
@@ -106,13 +107,13 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     });
   }
   function handleDescripcionChange(event) {
-    const nuevoValor = event.target.value
-    setDescripcion(nuevoValor)
-    setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length)
-    setCamposError(prev => ({ ...prev, descripcion: false }))
-    if (descripcionEsErrorIA) limpiarEstadoErrorIA()
+    const nuevoValor = event.target.value;
+    setDescripcion(nuevoValor);
+    setCaracteresRestantes(MAX_CARACTERES - nuevoValor.length);
+    setCamposError(prev => ({ ...prev, descripcion: false }));
+    if (descripcionEsErrorIA) limpiarEstadoErrorIA();
   }
-   const comprimirImagen = (file) => {
+  const comprimirImagen = (file) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -140,7 +141,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          
+
           canvas.toBlob((blob) => {
             resolve(new File([blob], file.name, {
               type: 'image/jpeg',
@@ -154,10 +155,10 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   async function handleSubmit(event) {
     event.preventDefault();
     const errores = {
-        categoria: !categoria,
-        fotos: !tieneFotos,
-        descripcion: !descripcion.trim(),
-        ubicacion: !ubicacion
+      categoria: !categoria,
+      fotos: !tieneFotos,
+      descripcion: !descripcion.trim(),
+      ubicacion: !ubicacion
     };
     setCamposError(errores);
     if (descripcionEsErrorIA) {
@@ -170,16 +171,16 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     if (!ubicacion) { setWarningMessage('Debe seleccionar y confirmar una ubicación antes de registrar.'); setShowWarningModal(true); return; }
     try {
       const fotosComprimidas = await Promise.all(
-      fotosSubidas.map(slot => comprimirImagen(slot.file))
+        fotosSubidas.map(slot => comprimirImagen(slot.file))
       );
       await registrarIncidencia(
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
         fotosComprimidas,
-        ubicacion.address, 
-        ubicacion.lat,     
-        ubicacion.lng      
+        ubicacion.address,
+        ubicacion.lat,
+        ubicacion.lng
       )
       // Crear nueva incidencia para actualizar métricas
       const nuevaIncidencia = {
@@ -188,23 +189,22 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         fecha: new Date().toISOString().split('T')[0],
         estado: 'Pendiente', // Todas las nuevas incidencias comienzan como Pendientes
         descripcion: descripcion,
-        direccionTexto: ubicacion.address, 
-        latitud: ubicacion.lat, 
+        direccionTexto: ubicacion.address,
+        latitud: ubicacion.lat,
         longitud: ubicacion.lng
       }
-      
+
       // Notificar al componente padre para actualizar métricas
       if (onIncidenciaRegistrada) {
         onIncidenciaRegistrada(nuevaIncidencia)
       }
-      
+
       setShowSuccessModal(true)
     } catch (err) {
       setWarningMessage(err.message ?? 'Error al registrar la incidencia.');
       setShowWarningModal(true);
     }
   }
-
   function handleGenerarIA() {
     if (!tieneFotos) {
       alert('Debes subir al menos una foto antes de generar la descripción con IA.')
@@ -270,7 +270,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     e.preventDefault();
     setIsDragging(false);
     const archivos = Array.from(e.dataTransfer.files)
-    .filter(file => file.type.startsWith("image/"));
+      .filter(file => file.type.startsWith("image/"));
     if (!archivos.length) return;
     // Simula el evento que ya espera handleFotoChange
     handleFotoChange(0, { target: { files: archivos } });
@@ -285,7 +285,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           className="registrar__help-btn"
           onClick={() => setShowHelpModal(true)}
         >
-            ¿Cómo funciona?
+          ¿Cómo funciona?
         </button>
         <div className="registrar__font-controls">
           <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>A-</button>
@@ -296,10 +296,10 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
       <div className={`registrar__wrapper${modalAbierto ? ' registrar__wrapper--modal-open' : ''}`}>
         <form className="registrar__form" onSubmit={handleSubmit}>
-          <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}    
-          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={handleDrop}>
+          <fieldset className={`registrar__fotos ${isDragging ? "dragging" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}>
             <legend>Fotos a presentar: <span style={{ color: '#ff7a00' }}>*</span></legend>
             <div className="registrar__fotos-container">
               <input
@@ -350,13 +350,15 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
           <div className="registrar__field">
             <label htmlFor="categoria">Selecciona una categoría(6 categorías) <span style={{ color: '#ff7a00' }}>*</span>:</label>
-            <div  className="registrar__select-wrap" >
+            <div className="registrar__select-wrap" >
               <select
                 id="categoria"
                 className={`${camposError.categoria ? "campo-error" : ""}`}
                 value={categoria}
-                onChange={(e) => {setCategoria(e.target.value)
-                  setCamposError(prev => ({ ...prev, categoria: false }))}}
+                onChange={(e) => {
+                  setCategoria(e.target.value)
+                  setCamposError(prev => ({ ...prev, categoria: false }))
+                }}
               >
                 <option value="" disabled>
                   Seleccione una opción
@@ -376,16 +378,45 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
               <textarea
                 id="descripcion"
                 rows={7}
-                value={descripcion}
+                value={listening ? transcript : descripcion}
                 onChange={handleDescripcionChange}
                 placeholder="Ingrese su texto o genérelo con IA a partir de las fotos"
                 disabled={generandoIA}
-                 className={`${descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}${camposError.descripcion ? 'campo-error' : ''}`}
+                className={`${descripcionEsErrorIA ? 'registrar__textarea--ia-error' : ''}${camposError.descripcion ? 'campo-error' : ''}`}
                 aria-invalid={descripcionEsErrorIA}
+                maxLength={MAX_CARACTERES}
               />
               <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
                 {caracteresRestantes} caracteres restantes
               </span>
+              {/* Botón de voz */}
+              {browserSupportsSpeechRecognition && (
+                <div className="registrar__voz">
+                  <button
+                    type="button"
+                    className={`registrar__btn--voz ${listening ? 'registrar__btn--voz--activo' : ''}`}
+                    onClick={() => {
+                      if (listening) {
+                        // 1. Se apaga el micrófono
+                        SpeechRecognition.stopListening();
+                        // Permite guardar el texto al final
+                        if (transcript) {
+                          setDescripcion(transcript);
+                          setCaracteresRestantes(MAX_CARACTERES - transcript.length);
+                        }
+                      } else {
+                        resetTranscript();
+                        SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
+                      }
+                    }}
+                  >
+                    {listening ? '⏹️ Detener grabación' : '🗣️ Dictar descripción'}
+                  </button>
+                  {listening && (
+                    <span className="registrar__voz-estado">Escuchando...</span>
+                  )}
+                </div>
+              )}
             </div>
             <span style={{ color: '#ff7a00' }}>*Campo Obligatorio</span>
             {generandoIA && (
@@ -405,7 +436,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           </div>
           {/* Location Picker inserted below description */}
           <div className="registrar__field">
-            <LocationPicker     
+            <LocationPicker
               key={leafletKey}
               value={ubicacion}
               onConfirm={setUbicacion} />
@@ -434,17 +465,17 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         )}
 
         {showSuccessModal && (
-        <Suspense fallback={<div>Cargando...</div>}>
-          <SuccessModal onClose={handleCloseSuccessModal} />
-        </Suspense>
+          <Suspense fallback={<div>Cargando...</div>}>
+            <SuccessModal onClose={handleCloseSuccessModal} />
+          </Suspense>
         )}
         {showWarningModal && (
-        <Suspense fallback={<div className="modal-loading">Cargando...</div>}>
-          <WarningModal 
-            message={warningMessage} 
-            onClose={() => setShowWarningModal(false)} 
-          />
-        </Suspense>
+          <Suspense fallback={<div className="modal-loading">Cargando...</div>}>
+            <WarningModal
+              message={warningMessage}
+              onClose={() => setShowWarningModal(false)}
+            />
+          </Suspense>
         )}
         {/*Nuevo modal */}
         {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
