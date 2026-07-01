@@ -671,3 +671,36 @@
 .registrar__font-controls button:hover {
   background: var(--color-accent-green-light);
 }
+.registrar__voz {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.registrar__btn--voz {
+    padding: 8px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    background: white;
+    color: #4caf50;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.registrar__btn--voz--activo {
+    background: #4caf50;
+    color: white;
+    animation: pulsar 1.5s infinite;
+}
+
+.registrar__voz-estado {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+@keyframes pulsar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
