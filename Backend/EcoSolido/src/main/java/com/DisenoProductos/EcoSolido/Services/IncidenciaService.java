@@ -32,9 +32,16 @@ public class IncidenciaService  {
     public HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
     public UsuarioRepository usuarioRepository;
-    public IncidenciaEntity registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
-                                                List<MultipartFile> fotos,
-                                                List<String> urlsFotos,String nombreUsuario) throws IOException {
+    public void registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
+                                    List<MultipartFile> fotos,
+                                    List<String> urlsFotos, String nombreUsuario) throws IOException {
+        boolean tieneUrls = urlsFotos != null && !urlsFotos.isEmpty();
+        boolean tieneArchivos = fotos != null && !fotos.isEmpty() && fotos.stream().anyMatch(f -> !f.isEmpty());
+
+        if (!tieneUrls && !tieneArchivos) {
+            // Tu GlobalExceptionHandler captura IllegalStateException y devuelve un HTTP 500 con este mensaje
+            throw new IllegalStateException("Debe adjuntar al menos 1 foto");
+        }
         UsuarioEntity usuario = usuarioRepository.findByNombreUsuario(nombreUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         IncidenciaEntity incidencia = new IncidenciaEntity();
@@ -80,7 +87,7 @@ public class IncidenciaService  {
         incidencia.setLatitud(incidenciaDTO.getLatitud());
         incidencia.setLongitud(incidenciaDTO.getLongitud());
         incidencia.setDireccionTexto(incidenciaDTO.getDireccionTexto());
-        return incidenciaRepository.save(incidencia);
+        incidenciaRepository.save(incidencia);
     }
     public String generarDescripcion(List<String> urlFotos){
         /* Mejora para tener código eficiente:
@@ -99,6 +106,9 @@ public class IncidenciaService  {
         for (MultipartFile foto : fotos) {
             Map resultado = cloudinaryIntegration.subir(foto);
             String secureUrl = (String) resultado.get("secure_url");
+            // Mejora de código eficiente: Modifica la URL para
+            // forzar formatos livianos (WebP/AVIF) y compresión inteligente (q_auto)
+            // de modo que el ciudadano gaste menos datos móviles al navegar y cargar la app.
             String urlOptimizada = secureUrl.replace("/upload/", "/upload/f_auto,q_auto/");
             urls.add(urlOptimizada);
         }
