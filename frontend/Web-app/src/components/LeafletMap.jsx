@@ -157,15 +157,8 @@ export default function LeafletMap({
   // Handle marker selection and get address
   const handleMarkerSelect = useCallback((coords) => {
     setPosition(coords);
-    // Get address for the selected position
-    reverseGeocode(coords.lat, coords.lng)
-      .then((addr) => {
-        setAddress(addr || 'Dirección no disponible');
-      })
-      .catch(() => {
-        setAddress('Dirección no disponible');
-      });
-    if (onSelect) onSelect(coords);
+      setPosition(coords);
+      if (onSelect) onSelect(coords);
   }, [onSelect]);
 
   // Get address when position changes

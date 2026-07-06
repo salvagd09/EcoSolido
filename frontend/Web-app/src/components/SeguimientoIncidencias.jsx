@@ -97,12 +97,16 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
       year: 'numeric'
     }).format(fecha).replace(/\//g, '-');
   };
+  const porcentajeResueltas= metricas.total > 0 ?(metricas.resueltas/metricas.total)*100:0
+  const porcentajeEnProceso=  metricas.total > 0 ? (metricas.enProceso/metricas.total)*100:0
+  const porcentajePendientes= metricas.total > 0 ? (metricas.pendientes/metricas.total)*100:0
   const incidenciasFiltradas = incidencias.filter(incidencia => {
     const coincideEstado = filtroEstado === 'todos' || 
         ESTADOS[incidencia.estado] === filtroEstado
+    const fechaFormateada = formatearFecha(incidencia.fecha).toLowerCase();
     const coincideBusqueda = 
-        incidencia.idIncidencia.toString().toLowerCase().includes(busqueda.toLowerCase()) ||
-        incidencia.categoria.toLowerCase().includes(busqueda.toLowerCase()) ||
+        fechaFormateada.includes(busqueda.toLowerCase()) ||
+        incidencia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
         (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
     return coincideEstado && coincideBusqueda
   })
@@ -130,7 +134,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           </div>
           <div className="metrica-card__content">
             <span className="metrica-card__numero">
-              {cargandoMetricas ? '...' : metricas.resueltas}
+            </span>
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : `${metricas.resueltas} (${porcentajeResueltas.toFixed(2)}%)`}
             </span>
             <span className="metrica-card__label">Resueltas</span>
           </div>
@@ -142,7 +148,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           </div>
           <div className="metrica-card__content">
             <span className="metrica-card__numero">
-              {cargandoMetricas ? '...' : metricas.enProceso}
+              {cargandoMetricas ? '...' :`${metricas.enProceso} (${porcentajeEnProceso.toFixed(2)}%)` }
             </span>
             <span className="metrica-card__label">En Proceso</span>
           </div>
@@ -154,7 +160,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           </div>
           <div className="metrica-card__content">
             <span className="metrica-card__numero">
-              {cargandoMetricas ? '...' : metricas.pendientes}
+              {cargandoMetricas ? '...' : `${metricas.pendientes} (${porcentajePendientes.toFixed(2)}%)`}
             </span>
             <span className="metrica-card__label">Pendientes</span>
           </div>
@@ -171,7 +177,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
         <div className="seguimiento__search">
           <input
             type="text"
-            placeholder="Buscar por ID, categoría o ubicación..."
+            placeholder="Buscar por fecha, título o ubicación..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="seguimiento__search-input"
