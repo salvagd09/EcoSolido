@@ -61,6 +61,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [tamañoLetra, setTamañoLetra] = useState(1)
   const [puntosGanados, setPuntosGanados] = useState(0)
+  const [nuevasInsignias, setNuevasInsignias] = useState([])
   const { updatePuntos } = useAuth()
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   function mostrarMensajeFotosNoVisibles() {
@@ -198,6 +199,13 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
           updatePuntos(puntosGuardados + respuesta.puntosGanados)
         }
+      }
+
+      // HU012: Mostrar insignias recién desbloqueadas
+      if (respuesta.nuevasInsignias && respuesta.nuevasInsignias.length > 0) {
+        setNuevasInsignias(respuesta.nuevasInsignias)
+      } else {
+        setNuevasInsignias([])
       }
       // Crear nueva incidencia para actualizar métricas
       const nuevaIncidencia = {
@@ -483,7 +491,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
         {showSuccessModal && (
           <Suspense fallback={<div>Cargando...</div>}>
-            <SuccessModal onClose={handleCloseSuccessModal} puntosGanados={puntosGanados} />
+            <SuccessModal onClose={handleCloseSuccessModal} puntosGanados={puntosGanados} nuevasInsignias={nuevasInsignias} />
           </Suspense>
         )}
         {showWarningModal && (

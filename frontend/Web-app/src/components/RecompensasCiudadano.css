@@ -1,0 +1,167 @@
+.recompensas {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--color-bg);
+}
+
+.recompensas__header {
+  margin-bottom: 24px;
+}
+
+.recompensas__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.recompensas__subtitle {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.recompensas__seccion-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.recompensas__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.recompensa-card {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recompensa-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.recompensa-card--desbloqueada {
+  border-left: 5px solid var(--color-btn-primary);
+}
+
+.recompensa-card--bloqueada {
+  border-left: 5px solid var(--color-text-secondary);
+  opacity: 0.85;
+  filter: grayscale(0.4);
+}
+
+.recompensa-card__icono {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.recompensa-card__imagen {
+  width: 280px;
+  height: 280px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.recompensa-card__imagen--bloqueada {
+  filter: grayscale(0.6);
+  opacity: 0.7;
+}
+
+.recompensa-card__nombre {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  text-align: center;
+}
+
+.recompensa-card__descripcion {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.recompensa-card__requisito {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.recompensa-card__recompensa {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  background: var(--color-accent-green-light);
+  border-radius: var(--radius-sm);
+}
+
+.recompensa-card__recompensa-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-btn-primary);
+  text-transform: uppercase;
+}
+
+.recompensa-card__recompensa-texto {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.recompensa-card__fecha {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.recompensas__vacio {
+  background: var(--color-bg-white);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 2px dashed var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.recompensas__estado {
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.recompensas__estado--error {
+  color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .recompensas {
+    padding: 16px;
+  }
+
+  .recompensas__title {
+    font-size: 1.25rem;
+  }
+
+  .recompensas__grid {
+    grid-template-columns: 1fr;
+  }
+}

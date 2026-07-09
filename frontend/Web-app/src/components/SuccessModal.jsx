@@ -1,7 +1,7 @@
 import { IconCerrar } from './icons'
 import './SuccessModal.css'
 
-export default function SuccessModal({ onClose, puntosGanados = 0 }) {
+export default function SuccessModal({ onClose, puntosGanados = 0, nuevasInsignias = [] }) {
   return (
     <div className="modal-overlay" role="presentation" onClick={onClose}>
       <div
@@ -30,6 +30,24 @@ export default function SuccessModal({ onClose, puntosGanados = 0 }) {
           <p className="modal__points">
             🎉 ¡Has ganado <strong>{puntosGanados}</strong> puntos!
           </p>
+        )}
+        {nuevasInsignias.length > 0 && (
+          <div className="modal__badges">
+            <p className="modal__badges-title">🏅 ¡Nueva(s) insignia(s) desbloqueada(s)!</p>
+            <ul className="modal__badges-list">
+              {nuevasInsignias.map((insignia, index) => (
+                <li key={index} className="modal__badge-item">
+                  <strong>{typeof insignia === 'string' ? insignia : insignia.nombre}</strong>
+                  {(typeof insignia !== 'string' && insignia.recompensa) && (
+                    <span className="modal__badge-recompensa"> — 🎁 {insignia.recompensa}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <p className="modal__badges-hint">
+              Ya puedes visualizarla(s) y canjear los beneficios asociados en "Recompensas al Ciudadano".
+            </p>
+          </div>
         )}
       </div>
     </div>

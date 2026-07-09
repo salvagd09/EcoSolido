@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { IconRegistro, IconSeguimiento, IconEducacion, IconCerrarMenu, IconMenu } from './icons'
+import { IconRegistro, IconSeguimiento, IconEducacion, IconCerrarMenu, IconMenu, IconInsignia } from './icons'
 import './Sidebar.css'
 
 const MENU_ITEMS = [
@@ -24,6 +24,13 @@ const MENU_ITEMS = [
     icon: IconEducacion, 
     path: '/educacion',
     enabled: true  // ← Habilitado para acceso directo
+  },
+  { 
+    id: 'recompensas', 
+    label: 'Recompensas al Ciudadano', 
+    icon: IconInsignia, 
+    path: '/recompensas',
+    enabled: true
   },
 ]
 

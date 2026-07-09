@@ -7,6 +7,7 @@ import com.DisenoProductos.EcoSolido.Models.DTOs.MetricasResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.SeguirIncidenciaResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
+import com.DisenoProductos.EcoSolido.Models.Entities.InsigniaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
@@ -32,11 +33,13 @@ public class IncidenciaService  {
     public HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
     public UsuarioRepository usuarioRepository;
+    @Autowired
+    public InsigniaService insigniaService;
     private static final int PUNTOS_POR_INCIDENCIA = 10;
 
-    public void registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
-                                    List<MultipartFile> fotos,
-                                    List<String> urlsFotos, String nombreUsuario) throws IOException {
+    public List<InsigniaEntity> registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
+                                                      List<MultipartFile> fotos,
+                                                      List<String> urlsFotos, String nombreUsuario) throws IOException {
         boolean tieneUrls = urlsFotos != null && !urlsFotos.isEmpty();
         boolean tieneArchivos = fotos != null && !fotos.isEmpty() && fotos.stream().anyMatch(f -> !f.isEmpty());
 
@@ -107,6 +110,9 @@ public class IncidenciaService  {
         // HU011: Asignar puntos al usuario
         usuario.setPuntos(usuario.getPuntos() + PUNTOS_POR_INCIDENCIA);
         usuarioRepository.save(usuario);
+
+        // HU012: Evaluar y desbloquear insignias
+        return insigniaService.evaluarYDesbloquearInsignias(nombreUsuario);
     }
     public String generarDescripcion(List<String> urlFotos){
         /* Mejora para tener código eficiente:

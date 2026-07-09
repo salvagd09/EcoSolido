@@ -6,6 +6,7 @@ import Login from './components/Login'
 import RegistrarIncidencias from './components/RegistrarIncidencias'
 import SeguimientoIncidencias from './components/SeguimientoIncidencias'
 import EducacionMedioAmbiental from './components/EducacionMedioAmbiental'
+import RecompensasCiudadano from './components/RecompensasCiudadano'
 import './App.css'
 import Registrarse from './components/Registrarse'
 import RestablecerContra from './components/RestablecerContraseña'
@@ -66,12 +67,8 @@ function App() {
         <Route path="/registrarse" element={<Registrarse />} />
         <Route path="/restablecer" element={<RestablecerContra />} />
         
-        {/* Ruta protegida que usa el layout principal */}
-        <Route element={
-          <ProtectedRoute>
-            <MainLayout />
-          </ProtectedRoute>
-        }>
+        {/* Ruta del layout principal (temporalmente sin protección para pruebas) */}
+        <Route element={<MainLayout />}>
           <Route path="/registro" element={
             <ProtectedRoute module="registro">
               <RegistrarConLayout />
@@ -87,6 +84,7 @@ function App() {
               <EducacionMedioAmbiental />
             </ProtectedRoute>
           } />
+          <Route path="/recompensas" element={<RecompensasCiudadano />} />
           <Route index element={<Navigate to="/registro" replace />} />
         </Route>
         

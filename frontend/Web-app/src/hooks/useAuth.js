@@ -130,6 +130,8 @@ export function useAuth() {
         return permissions.canTrack;
       case 'educacion':
         return permissions.canAccessEducation;
+      case 'insignias':
+        return true;
       default:
         return false;
     }

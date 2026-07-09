@@ -186,6 +186,24 @@ export async function obtenerPuntosUsuario() {
   return data.puntos ?? 0
 }
 
+export async function obtenerInsigniasUsuario() {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE}/insignias/mis-insignias`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  return JSON.parse(cuerpo)
+}
+
 export function esErrorTecnicoIA(mensaje) {
   if (!mensaje) return true
   const m = mensaje.toLowerCase()
