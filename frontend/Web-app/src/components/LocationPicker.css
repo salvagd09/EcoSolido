@@ -11,7 +11,7 @@
 }
 .location-picker-modal__gps-warning {
     color: #ff7a00; /* ámbar/naranja para advertencia, no rojo de error crítico */
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
     margin: 4px 0 8px 0;
     padding: 8px;
     background-color: #fef3c7;
@@ -34,7 +34,7 @@
 
 .location-picker__label {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--font-scale, 1));
   color: #333;
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -59,7 +59,7 @@
 .location-picker__confirmed-status {
   color: #28a745;
   font-weight: 600;
-  font-size: 0.95rem;
+ font-size: calc(0.95rem * var(--font-scale, 1));
   margin: 0.25rem 0 0 0;
   padding: 0.5rem 0.75rem;
   background: #e8f5e9;
@@ -75,7 +75,7 @@
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: calc(0.95rem * var(--font-scale, 1));
   font-weight: 500;
   transition: background 0.2s ease;
   white-space: nowrap;
@@ -94,13 +94,13 @@
 .location-picker__success {
   color: #28a745;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--font-scale, 1));
   margin: 0.25rem 0;
 }
 
 .location-picker__address-display {
   color: #333;
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--font-scale, 1));
   padding: 0.5rem;
   background: #e8f5e9;
   border-radius: 4px;
@@ -115,7 +115,7 @@
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: calc(0.95rem * var(--font-scale, 1));
   font-weight: 500;
   transition: background 0.2s ease;
   white-space: nowrap;
@@ -183,7 +183,7 @@
 
 .location-picker-modal__title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: calc(1.25rem * var(--font-scale, 1));
   color: #333;
 }
 
@@ -226,7 +226,7 @@
   padding: 0.75rem 1.25rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--font-scale, 1));
   font-weight: 500;
   width: 100%;
   margin-bottom: 1rem;
@@ -270,14 +270,14 @@
   border-radius: 6px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
-  font-size: 0.85rem;
+  font-size: calc(0.85rem * var(--font-scale, 1));
   color: #dc2626;
   line-height: 1.5;
 }
 
 /* Coordenadas */
 .location-picker-modal__coordinates {
-  font-size: 0.85rem;
+  font-size: calc(0.85rem * var(--font-scale, 1));
   color: #666;
   margin: 0.5rem 0;
   padding: 0.25rem 0;
@@ -330,7 +330,7 @@
 
 /* Mensaje de ayuda para el usuario */
 .location-picker-modal__map-hint {
-  font-size: 0.8rem;
+  font-size: calc(0.8rem * var(--font-scale, 1));
   color: #666;
   text-align: center;
   margin-top: 0.5rem;
@@ -395,7 +395,7 @@
 .location-picker-modal__btn {
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: calc(0.95rem * var(--font-scale, 1));
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease, opacity 0.2s ease;
@@ -457,7 +457,7 @@
 }
 
 .location-picker__title {
-  font-size: 1.25rem;
+  font-size: calc(1.25rem * var(--font-scale, 1));
   margin-bottom: 0.5rem;
   color: #333;
 }
@@ -482,7 +482,7 @@
 
 .location-picker__info {
   margin-top: 0.5rem;
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--font-scale, 1));
   color: #555;
 }
 

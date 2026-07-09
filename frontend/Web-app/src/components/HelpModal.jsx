@@ -35,12 +35,21 @@ const FAQS = [
     {
         pregunta: "¿Qué hace la IA?",
         respuesta: "Analiza tus fotos y genera automáticamente una descripción del problema. Puedes editarla antes de enviar."
+    },
+    {   pregunta: "¿Para qué sirven los botones 🗛+,A y 🗚-?",
+        respuesta:"Son botones que permiten modificar el tamaño de la fuente de los títulos, subtítulos y otros campos textuales. 🗛+ aumenta el tamaño,A lo regresa a su tamaño original y 🗚- disminuye el tamaño"
+    },
+    {   pregunta: "¿Para qué sirven el bóton de la luna que se encuentra junto a mi nombre?",
+        respuesta:"Sirve para cambiar la pestaña a modo nocturno para que sea más fácil de ver en la noche. En caso quiera retornar al modo de vista por defecto, presione otra vez el botón que ahora estará con el símbolo del sol "
+    },
+    {   pregunta: "¿Cómo funciona el botón de dictar descripción?",
+        respuesta:"Funciona de manera similar al botón de grabación de voz de WhatsApp. Mantén presionado el botón mientras dictas la descripción de la incidencia y tu voz se convertirá automáticamente en texto, permitiéndote registrar el reporte de forma más rápida."
     }
 ]
 
-export default function HelpModal({ onClose }) {
+export default function HelpModal({ onClose,fontScale = 1 }) {
     return (
-        <div className="help-modal-overlay" role="presentation" onClick={onClose}>
+        <div className="help-modal-overlay" role="presentation" onClick={onClose} style={{ '--font-scale': fontScale }}>
             <div
                 className="help-modal"
                 role="dialog"

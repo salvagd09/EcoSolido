@@ -4,7 +4,7 @@ import LeafletMap from './LeafletMap';
 import WarningModal from './WarningModal';
 import { reverseGeocode } from '../utils/reverseGeocode';
 
-export default function LocationPicker({ value, onConfirm }) {
+export default function LocationPicker({ value, onConfirm, fontScale = 1 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [coords, setCoords] = useState({ lat: '', lng: '' });
   const [address, setAddress] = useState('');
@@ -16,7 +16,6 @@ export default function LocationPicker({ value, onConfirm }) {
   const [isGettingGPS, setIsGettingGPS] = useState(false);
   const [leafletKey, setLeafletKey] = useState(0);
   const [gpsError, setGpsError] = useState(null);
-
   // Confirm button enabled only when there is a valid location
   const isLocationReady = coords.lat && coords.lng;
 
@@ -193,7 +192,7 @@ export default function LocationPicker({ value, onConfirm }) {
   // Render compact view when modal is closed
   if (!isOpen) {
     return (
-      <div className="location-picker__status">
+      <div className="location-picker__status"  style={{ '--font-scale': fontScale }} >
         <div className="location-picker__status-header">
           <div className="location-picker__title-group">
             <label className="location-picker__label">UBICACIÓN DE LA INCIDENCIA:</label>
@@ -219,7 +218,7 @@ export default function LocationPicker({ value, onConfirm }) {
 
   // Render modal with simple inputs
   return (
-    <div className="location-picker-modal-overlay" onClick={closeModal}>
+    <div className="location-picker-modal-overlay"  style={{ '--font-scale': fontScale }} onClick={closeModal}>
       <div className="location-picker-modal" onClick={(e) => e.stopPropagation()}>
         <div className="location-picker-modal__header">
           <h3 className="location-picker-modal__title">Registrar ubicación</h3>
@@ -249,6 +248,7 @@ export default function LocationPicker({ value, onConfirm }) {
               onConfirm={confirmLocation}
               onCancel={closeModal}
               onGPS={handleGPS}
+              fontScale={fontScale}
             />
           </div>
           <p className="location-picker-modal__map-hint">
