@@ -1,10 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 
 /**
- * Hook personalizado para manejar la autenticación y permisos
- * @returns {Object} Estado de autenticación y funciones relacionadas
+ * Context para manejar la autenticación y permisos de forma global
  */
-export function useAuth() {
+const AuthContext = createContext(null);
+
+/**
+ * Provider que envuelve la aplicación y comparte el estado de autenticación
+ */
+export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,18 +24,17 @@ export function useAuth() {
     const token = localStorage.getItem('token');
     const nombreUsuario = localStorage.getItem('nombreUsuario');
     const userPermissions = localStorage.getItem('permissions');
-    const puntosGuardados = localStorage.getItem('puntos');
 
     if (token && nombreUsuario) {
       setIsAuthenticated(true);
-      setUser({ nombreUsuario, puntos: puntosGuardados ? parseInt(puntosGuardados, 10) : 0 });
+      setUser({ nombreUsuario, puntos: 0 });
+      localStorage.setItem('puntos', 0);
       
       // Parsear permisos si existen
       if (userPermissions) {
         try {
           setPermissions(JSON.parse(userPermissions));
         } catch (e) {
-          // Si no se pueden parsear, usar permisos por defecto
           setPermissions({
             canRegister: true,
             canTrack: true,
@@ -40,7 +43,6 @@ export function useAuth() {
           });
         }
       } else {
-        // Permiso por defecto para todos los módulos
         setPermissions({
           canRegister: true,
           canTrack: true,
@@ -81,7 +83,7 @@ export function useAuth() {
       // Guardar token y usuario
       localStorage.setItem('token', data.token);
       localStorage.setItem('nombreUsuario', data.nombreUsuario);
-      localStorage.setItem('puntos', data.puntos ?? 0);
+      localStorage.setItem('puntos', 0);
       
       // Guardar permisos (pueden venir del backend o ser por defecto)
       const userPermissions = data.permissions || {
@@ -93,7 +95,7 @@ export function useAuth() {
       localStorage.setItem('permissions', JSON.stringify(userPermissions));
       
       setIsAuthenticated(true);
-      setUser({ nombreUsuario: data.nombreUsuario, puntos: data.puntos ?? 0 });
+      setUser({ nombreUsuario: data.nombreUsuario, puntos: 0 });
       setPermissions(userPermissions);
       
       return { success: true };
@@ -148,7 +150,7 @@ export function useAuth() {
     setUser((prev) => ({ ...prev, puntos: nuevosPuntos }));
   }, []);
 
-  return {
+  const value = {
     isAuthenticated,
     user,
     isLoading,
@@ -159,6 +161,20 @@ export function useAuth() {
     isAdmin,
     updatePuntos
   };
+
+  return React.createElement(AuthContext.Provider, { value }, children);
+}
+
+/**
+ * Hook personalizado para manejar la autenticación y permisos
+ * @returns {Object} Estado de autenticación y funciones relacionadas
+ */
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
 }
 
 /**

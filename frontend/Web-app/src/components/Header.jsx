@@ -21,7 +21,7 @@ export default function Header({ onMenuClick,onLogout }) {
   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
   const { logout, user } = useAuth();
   const nombreUsuario = user?.nombreUsuario || localStorage.getItem("nombreUsuario")
-  const puntos = user?.puntos ?? localStorage.getItem("puntos") ?? '0'
+  const puntos = user?.puntos ?? 0
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {

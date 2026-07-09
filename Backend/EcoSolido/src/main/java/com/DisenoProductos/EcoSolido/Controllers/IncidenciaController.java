@@ -51,7 +51,7 @@ public class IncidenciaController {
 
         return ResponseEntity.ok(Map.of(
                 "mensaje", "Su incidencia ha sido registrada exitosamente...",
-                "puntosGanados", 10,
+                "puntosGanados", incidenciaService.getPuntosPorIncidencia(),
                 "nuevasInsignias", nuevasInsigniasDTO
         ));
     }

@@ -9,12 +9,6 @@ const IconTotal = () => (
   </svg>
 )
 
-const IconResueltas = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>
-  </svg>
-)
-
 const IconProceso = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
@@ -26,6 +20,13 @@ const IconProceso = () => (
 const IconPendientes = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z" fill="currentColor"/>
+  </svg>
+)
+
+const IconResueltos = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
+    <path d="M9.29 16.29L5.7 12.7C5.31 12.31 5.31 11.68 5.7 11.29C6.09 10.9 6.72 10.9 7.11 11.29L10 14.17L16.88 7.29C17.27 6.9 17.9 6.9 18.29 7.29C18.68 7.68 18.68 8.31 18.29 8.7L10.7 16.29C10.31 16.68 9.68 16.68 9.29 16.29Z" fill="currentColor"/>
   </svg>
 )
 
@@ -43,12 +44,13 @@ const CLASES_ESTADO = {
 }
 
 export default function SeguimientoIncidencias({ incidencias: propsIncidencias }) {
-  // Usar las incidencias pasadas como prop (vacío si no hay ninguna)
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
-  const [metricas, setMetricas] = useState({ total: 0, resueltas: 0, enProceso: 0, pendientes: 0 })
-  const [cargandoMetricas, setCargandoMetricas] = useState(true)
-  const [incidencias, setIncidencias] = useState([])
+  const INCIDENCIAS_FALSAS = []
+
+  const [metricas, setMetricas] = useState({ total: 0, enProceso: 0, pendientes: 0, resueltos: 0 })
+  const [cargandoMetricas, setCargandoMetricas] = useState(false)
+  const [incidencias, setIncidencias] = useState(INCIDENCIAS_FALSAS)
   useEffect(() => {
     async function obtenerMetricas() {
       try {
@@ -61,7 +63,8 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
         const data = await response.json()
         setMetricas(data)
       } catch (error) {
-        console.error('Error al obtener métricas:', error)
+        console.error('Error al obtener metricas:', error)
+        setMetricas({ total: 0, enProceso: 0, pendientes: 0, resueltos: 0 })
       } finally {
         setCargandoMetricas(false)
       }
@@ -81,25 +84,24 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             setIncidencias(data2)
         } catch (error) {
             console.error('Error al obtener incidencias', error)
+            setIncidencias(INCIDENCIAS_FALSAS)
         }
     }
     mostrarIncidencias()
 }, [])
-  // Verificar si no hay incidencias
   const sinIncidencias = metricas.total === 0
   const formatearFecha = (fechaString) => {
     if (!fechaString) return '';
     const fecha = new Date(fechaString);
-    
     return new Intl.DateTimeFormat('es-ES', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
     }).format(fecha).replace(/\//g, '-');
   };
-  const porcentajeResueltas= metricas.total > 0 ?(metricas.resueltas/metricas.total)*100:0
   const porcentajeEnProceso=  metricas.total > 0 ? (metricas.enProceso/metricas.total)*100:0
   const porcentajePendientes= metricas.total > 0 ? (metricas.pendientes/metricas.total)*100:0
+  const porcentajeResueltos= metricas.total > 0 ? (metricas.resueltos/metricas.total)*100:0
   const incidenciasFiltradas = incidencias.filter(incidencia => {
     const coincideEstado = filtroEstado === 'todos' || 
         ESTADOS[incidencia.estado] === filtroEstado
@@ -114,7 +116,6 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     <main className="seguimiento">
       <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
       
-      {/* Panel de Métricas */}
       <div className="metricas-panel">
         <div className="metrica-card metrica-card--total">
           <div className="metrica-card__icon">
@@ -125,20 +126,6 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
               {cargandoMetricas ? '...' : metricas.total}
             </span>
             <span className="metrica-card__label">Total Reportadas</span>
-          </div>
-        </div>
-        
-        <div className="metrica-card metrica-card--resueltas">
-          <div className="metrica-card__icon">
-            <IconResueltas />
-          </div>
-          <div className="metrica-card__content">
-            <span className="metrica-card__numero">
-            </span>
-            <span className="metrica-card__numero">
-              {cargandoMetricas ? '...' : `${metricas.resueltas} (${porcentajeResueltas.toFixed(2)}%)`}
-            </span>
-            <span className="metrica-card__label">Resueltas</span>
           </div>
         </div>
         
@@ -165,6 +152,18 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <span className="metrica-card__label">Pendientes</span>
           </div>
         </div>
+
+        <div className="metrica-card metrica-card--resueltos">
+          <div className="metrica-card__icon">
+            <IconResueltos />
+          </div>
+          <div className="metrica-card__content">
+            <span className="metrica-card__numero">
+              {cargandoMetricas ? '...' : `${metricas.resueltos ?? 0} (${porcentajeResueltos.toFixed(2)}%)`}
+            </span>
+            <span className="metrica-card__label">Resueltos</span>
+          </div>
+        </div>
       </div>
 
       {!cargandoMetricas && sinIncidencias && (
@@ -177,7 +176,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
         <div className="seguimiento__search">
           <input
             type="text"
-            placeholder="Buscar por fecha, título o ubicación..."
+            placeholder="Buscar por fecha, titulo o ubicacion..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="seguimiento__search-input"
@@ -227,9 +226,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
                     {incidencia.estado}
                   </span>
                 </div>
-                <p className="incidencia-tarjeta__fecha">📅{formatearFecha(incidencia.fecha)} </p>
+                <p className="incidencia-tarjeta__fecha">{formatearFecha(incidencia.fecha)} </p>
                 <p className="incidencia-tarjeta__descripcion">{incidencia.descripcion}</p>
-                <p className="incidencia-tarjeta__ubicacion">📍 {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
+                <p className="incidencia-tarjeta__ubicacion"> {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
                 {incidencia.urlsImagenes && incidencia.urlsImagenes.length > 0 && (
                 <img 
                       src={incidencia.urlsImagenes[0]} 

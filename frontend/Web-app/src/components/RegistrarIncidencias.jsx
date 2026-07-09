@@ -25,7 +25,23 @@ const CATEGORIAS = [
 const SuccessModal = lazy(() => import('./SuccessModal'));
 const WarningModal = lazy(() => import('./WarningModal'));
 const MAX_FOTOS = 5
-const MAX_CARACTERES = 800 // Límite de caracteres para la descripción
+const MAX_CARACTERES = 800
+const PUNTOS_POR_INCIDENCIA = 10
+
+const INSIGNIAS_LOCALES = [
+  { nombre: 'Primer reporte', recompensa: 'Bono de S/20 en tu billetera digital para canjear en mercados locales.', requisito: 1 },
+  { nombre: 'Reportero activo', recompensa: 'Bono de S/50 en tu billetera digital + recarga de 10 GB móviles.', requisito: 5 },
+  { nombre: 'Guardián del barrio', recompensa: 'Vale de S/100 en canasta familiar + reconocimiento público en redes sociales.', requisito: 10 },
+  { nombre: 'EcoHéroe', recompensa: 'Vale de S/200 en canasta familiar + kit de productos ecológicos para el hogar.', requisito: 15 },
+  { nombre: 'Embajador EcoSólido', recompensa: 'Vale de S/500 en canasta familiar + kit EcoSólido + certificado de Embajador Ambiental.', requisito: 20 },
+]
+
+function evaluarInsigniasLocales(totalIncidencias, insigniasYaDesbloqueadas = []) {
+  const nombresDesbloqueados = new Set(insigniasYaDesbloqueadas.map(i => i.nombre))
+  return INSIGNIAS_LOCALES.filter(
+    ins => totalIncidencias >= ins.requisito && !nombresDesbloqueados.has(ins.nombre)
+  )
+}
 
 function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
@@ -45,7 +61,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [urlsCloudinary, setUrlsCloudinary] = useState([])
   const [errorTecnico, setErrorTecnico] = useState('');
   const [leafletKey, setLeafletKey] = useState(0)
-  const [ubicacion, setUbicacion] = useState(null); // {lat,lng,address}
+  const [ubicacion, setUbicacion] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [camposError, setCamposError] = useState({
     categoria: false,
@@ -64,6 +80,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const [nuevasInsignias, setNuevasInsignias] = useState([])
   const { updatePuntos } = useAuth()
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
+
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
     setDescripcionEsErrorIA(true)
@@ -83,12 +100,11 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     }))
 
     setFotos((prev) => {
-      // Liberar previews anteriores
       const fotosExistentes = prev.filter(s => s.file);
       const espacioDisponible = MAX_FOTOS - fotosExistentes.length;
       if (nuevosSlots.length > espacioDisponible) {
         nuevosSlots.slice(espacioDisponible).forEach((slot) => {
-          URL.revokeObjectURL(slot.preview); // Libera solo las sobrantes inmediatamente
+          URL.revokeObjectURL(slot.preview);
         });
       }
       return [...fotosExistentes, ...nuevosSlots].slice(0, MAX_FOTOS);
@@ -102,15 +118,16 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setErrorTecnico('')
     event.target.value = ''
   }
+
   function handleEliminarFoto(index) {
     setFotos((prev) => {
-      // Revocar únicamente la URL del elemento que se está eliminando
       if (prev[index].preview) {
         URL.revokeObjectURL(prev[index].preview);
       }
       return prev.filter((_, i) => i !== index);
     });
   }
+
   function handleDescripcionChange(event) {
     const nuevoValor = event.target.value;
     setDescripcion(nuevoValor);
@@ -118,6 +135,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setCamposError(prev => ({ ...prev, descripcion: false }));
     if (descripcionEsErrorIA) limpiarEstadoErrorIA();
   }
+
   const comprimirImagen = (file) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -127,7 +145,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         img.src = event.target.result;
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1200; // Resolución suficiente para verificar residuos
+          const MAX_WIDTH = 1200;
           const MAX_HEIGHT = 1200;
           let width = img.width;
           let height = img.height;
@@ -152,11 +170,71 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
               type: 'image/jpeg',
               lastModified: Date.now()
             }));
-          }, 'image/jpeg', 0.7); // 70% de calidad JPEG (óptima compresión/peso)
+          }, 'image/jpeg', 0.7);
         };
       };
     });
   };
+
+  // Verifica si la incidencia ya existe (duplicada) en el almacenamiento local
+  // Lógica espejo del backend: misma categoria + descripcion + latitud + longitud
+  function esIncidenciaDuplicadaLocal(incidenciasLocales) {
+    return incidenciasLocales.some(inc =>
+      inc.categoria === categoria &&
+      inc.descripcion === descripcion &&
+      inc.latitud === ubicacion.lat &&
+      inc.longitud === ubicacion.lng
+    )
+  }
+
+  // Registra la incidencia localmente (modo offline sin backend)
+  function registrarIncidenciaLocal() {
+    const incidenciasLocales = JSON.parse(localStorage.getItem('incidenciasLocales') || '[]')
+
+    // HU011: Validar incidencia duplicada (no asigna puntos)
+    if (esIncidenciaDuplicadaLocal(incidenciasLocales)) {
+      setWarningMessage('Esta incidencia ya fue registrada anteriormente. No se asignarán puntos adicionales.')
+      setShowWarningModal(true)
+      return
+    }
+
+    const nuevaIncidenciaLocal = {
+      id: `INC-${Date.now().toString().slice(-6)}`,
+      categoria: categoria,
+      fecha: new Date().toISOString().split('T')[0],
+      estado: 'Pendiente',
+      descripcion: descripcion,
+      direccionTexto: ubicacion.address,
+      latitud: ubicacion.lat,
+      longitud: ubicacion.lng
+    }
+    incidenciasLocales.push(nuevaIncidenciaLocal)
+    localStorage.setItem('incidenciasLocales', JSON.stringify(incidenciasLocales))
+
+    // HU011: Asignar puntos al usuario (solo si no es duplicada)
+    const puntosActuales = parseInt(localStorage.getItem('puntos') || '0', 10)
+    const nuevosPuntos = puntosActuales + PUNTOS_POR_INCIDENCIA
+    updatePuntos(nuevosPuntos)
+    setPuntosGanados(PUNTOS_POR_INCIDENCIA)
+
+    // Evaluar insignias localmente
+    const insigniasDesbloqueadas = JSON.parse(localStorage.getItem('insigniasDesbloqueadas') || '[]')
+    const nuevasInsigniasLocales = evaluarInsigniasLocales(incidenciasLocales.length, insigniasDesbloqueadas)
+    if (nuevasInsigniasLocales.length > 0) {
+      const todasInsignias = [...insigniasDesbloqueadas, ...nuevasInsigniasLocales]
+      localStorage.setItem('insigniasDesbloqueadas', JSON.stringify(todasInsignias))
+      setNuevasInsignias(nuevasInsigniasLocales)
+    } else {
+      setNuevasInsignias([])
+    }
+
+    if (onIncidenciaRegistrada) {
+      onIncidenciaRegistrada(nuevaIncidenciaLocal)
+    }
+
+    setShowSuccessModal(true)
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const errores = {
@@ -181,55 +259,58 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
       const respuesta = await registrarIncidencia(
         categoria,
         descripcion,
-        urlsCloudinary,                          // URLs si usó IA
+        urlsCloudinary,
         fotosComprimidas,
         ubicacion.address,
         ubicacion.lat,
         ubicacion.lng
       )
 
-      // HU011: Actualizar puntos en el frontend
       if (respuesta.puntosGanados) {
         setPuntosGanados(respuesta.puntosGanados)
-        try {
-          const puntosActuales = await obtenerPuntosUsuario()
-          updatePuntos(puntosActuales)
-        } catch (e) {
-          // Si falla la consulta, actualizar localmente con lo que devolvió el backend
-          const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
-          updatePuntos(puntosGuardados + respuesta.puntosGanados)
-        }
+        const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
+        updatePuntos(puntosGuardados + PUNTOS_POR_INCIDENCIA)
       }
 
-      // HU012: Mostrar insignias recién desbloqueadas
       if (respuesta.nuevasInsignias && respuesta.nuevasInsignias.length > 0) {
         setNuevasInsignias(respuesta.nuevasInsignias)
       } else {
         setNuevasInsignias([])
       }
-      // Crear nueva incidencia para actualizar métricas
+
       const nuevaIncidencia = {
         id: `INC-${Date.now().toString().slice(-6)}`,
         categoria: categoria,
         fecha: new Date().toISOString().split('T')[0],
-        estado: 'Pendiente', // Todas las nuevas incidencias comienzan como Pendientes
+        estado: 'Pendiente',
         descripcion: descripcion,
         direccionTexto: ubicacion.address,
         latitud: ubicacion.lat,
         longitud: ubicacion.lng
       }
 
-      // Notificar al componente padre para actualizar métricas
       if (onIncidenciaRegistrada) {
         onIncidenciaRegistrada(nuevaIncidencia)
       }
 
       setShowSuccessModal(true)
     } catch (err) {
-      setWarningMessage(err.message ?? 'Error al registrar la incidencia.');
-      setShowWarningModal(true);
+      const esErrorConexion = err.message && (
+        err.message.includes('Failed to fetch') ||
+        err.message.includes('No se pudo conectar con el backend') ||
+        err.message.includes('NetworkError') ||
+        err.message.includes('Load failed')
+      )
+
+      if (esErrorConexion) {
+        registrarIncidenciaLocal()
+      } else {
+        setWarningMessage(err.message ?? 'Error al registrar la incidencia.');
+        setShowWarningModal(true);
+      }
     }
   }
+
   function handleGenerarIA() {
     if (!tieneFotos) {
       alert('Debes subir al menos una foto antes de generar la descripción con IA.')
@@ -246,11 +327,9 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setErrorTecnico('')
 
     try {
-      // Subir fotos a Cloudinary y obtener URLs
       const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
       setUrlsCloudinary(urls)
 
-      // Enviar URLs a la IA
       const texto = (await describirFotosConIA(urls)).trim()
 
       if (esRespuestaFotosNoVisibles(texto)) {
@@ -291,19 +370,19 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setShowSuccessModal(false)
     resetFormulario()
   }
+
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     const archivos = Array.from(e.dataTransfer.files)
       .filter(file => file.type.startsWith("image/"));
     if (!archivos.length) return;
-    // Simula el evento que ya espera handleFotoChange
     handleFotoChange(0, { target: { files: archivos } });
   };
+
   return (
     <main className="registrar" style={{ fontSize: `${tamañoLetra}rem` }}>
       <h2 className="registrar__title">Registrar Incidencias</h2>
-      {/*Nuevo botón*/}
       <div className="registrar__controles-texto">
         <button
           type="button"
@@ -351,7 +430,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
                 </div>
               </button>
 
-              {/* Previsualización de todas las fotos */}
               <div className="registrar__fotos-preview">
                 {fotosSubidas.map((slot, index) => (
                   <div key={index} className="foto-slot">
@@ -414,7 +492,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
               <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
                 {caracteresRestantes} caracteres restantes
               </span>
-              {/* Botón de voz */}
               {browserSupportsSpeechRecognition && (
                 <div className="registrar__voz">
                   <button
@@ -422,9 +499,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
                     className={`registrar__btn--voz ${listening ? 'registrar__btn--voz--activo' : ''}`}
                     onClick={() => {
                       if (listening) {
-                        // 1. Se apaga el micrófono
                         SpeechRecognition.stopListening();
-                        // Permite guardar el texto al final
                         if (transcript) {
                           setDescripcion(transcript);
                           setCaracteresRestantes(MAX_CARACTERES - transcript.length);
@@ -459,7 +534,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
               </div>
             )}
           </div>
-          {/* Location Picker inserted below description */}
           <div className="registrar__field">
             <LocationPicker
               key={leafletKey}
@@ -502,7 +576,6 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
             />
           </Suspense>
         )}
-        {/*Nuevo modal */}
         {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
       </div>
     </main>

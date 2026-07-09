@@ -18,6 +18,7 @@ import java.util.Map;
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,11 @@ public class IncidenciaService  {
     public InsigniaService insigniaService;
     private static final int PUNTOS_POR_INCIDENCIA = 10;
 
+    public int getPuntosPorIncidencia() {
+        return PUNTOS_POR_INCIDENCIA;
+    }
+
+    @Transactional
     public List<InsigniaEntity> registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
                                                       List<MultipartFile> fotos,
                                                       List<String> urlsFotos, String nombreUsuario) throws IOException {
@@ -159,16 +165,16 @@ public class IncidenciaService  {
     }
     public MetricasResponseDTO obtenerMetricas(String nombreUsuario) {
         long total = incidenciaRepository.countByUsuario_NombreUsuario(nombreUsuario);
-        long resueltas = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
         long enProceso = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.EN_PROCESO);
         long pendientes = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.PENDIENTE);
+        long resueltos = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
         LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         long incidenciasEsteMes = incidenciaRepository.countDesdeFecha(nombreUsuario, inicioMes);
         MetricasResponseDTO dto = new MetricasResponseDTO();
         dto.setTotal(total);
-        dto.setResueltas(resueltas);
         dto.setEnProceso(enProceso);
         dto.setPendientes(pendientes);
+        dto.setResueltos(resueltos);
         dto.setIncidenciasEsteMes(incidenciasEsteMes);
         return dto;
     }

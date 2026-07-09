@@ -67,7 +67,7 @@ function App() {
         <Route path="/registrarse" element={<Registrarse />} />
         <Route path="/restablecer" element={<RestablecerContra />} />
         
-        {/* Ruta del layout principal (temporalmente sin protección para pruebas) */}
+        {/* Ruta del layout principal */}
         <Route element={<MainLayout />}>
           <Route path="/registro" element={
             <ProtectedRoute module="registro">
@@ -84,7 +84,11 @@ function App() {
               <EducacionMedioAmbiental />
             </ProtectedRoute>
           } />
-          <Route path="/recompensas" element={<RecompensasCiudadano />} />
+          <Route path="/recompensas" element={
+            <ProtectedRoute module="insignias">
+              <RecompensasCiudadano />
+            </ProtectedRoute>
+          } />
           <Route index element={<Navigate to="/registro" replace />} />
         </Route>
         
@@ -106,4 +110,4 @@ function SeguimientoConLayout() {
   return <SeguimientoIncidencias incidencias={incidencias} />;
 }
 
-export default App
+
