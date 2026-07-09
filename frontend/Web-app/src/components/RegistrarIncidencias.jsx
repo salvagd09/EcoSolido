@@ -381,7 +381,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   };
 
   return (
-    <main className="registrar" style={{ fontSize: `${tamañoLetra}rem` }}>
+    <main className="registrar" style={{ '--font-scale': tamañoLetra }}>
       <h2 className="registrar__title">Registrar Incidencias</h2>
       <div className="registrar__controles-texto">
         <button
@@ -392,9 +392,9 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           ¿Cómo funciona?
         </button>
         <div className="registrar__font-controls">
-          <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>A-</button>
-          <button type="button" onClick={() => setTamañoLetra(1)}>A</button>
-          <button type="button" onClick={() => setTamañoLetra(t => Math.min(1.5, t + 0.1))}>A+</button>
+          <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
+          <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
+          <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.5, t + 0.1))}>🗚+</button>
         </div>
       </div>
 
@@ -538,7 +538,8 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
             <LocationPicker
               key={leafletKey}
               value={ubicacion}
-              onConfirm={setUbicacion} />
+              onConfirm={setUbicacion}
+              fontScale={tamañoLetra} />
           </div>
           <div className="registrar__actions">
             <button type="submit" className="registrar__btn registrar__btn--primary">
@@ -576,7 +577,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
             />
           </Suspense>
         )}
-        {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
+        {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
       </div>
     </main>
   )

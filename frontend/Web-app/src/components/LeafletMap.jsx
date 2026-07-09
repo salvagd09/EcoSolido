@@ -137,6 +137,7 @@ export default function LeafletMap({
   onMapReady,
   draggable = false,
   onGPS,
+  fontScale = 1 
 }) {
   const [position, setPosition] = useState(initialPosition);
   const [address, setAddress] = useState('');
@@ -177,7 +178,7 @@ export default function LeafletMap({
   }, [position]);
 
   return (
-    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column','--font-scale': fontScale }}>
       <div style={{ flex: 1, position: 'relative' }}>
         <MapContainerWrapper
           onMapCreated={handleMapCreated}
@@ -207,13 +208,13 @@ export default function LeafletMap({
       </div>
       <div style={{ padding: '0.75rem', background: '#e8f5e9', borderRadius: '6px', marginBottom: '0', borderLeft: '3px solid #28a745' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <span style={{ fontSize: '1.2rem' }}>📍</span>
-          <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#28a745', textTransform: 'uppercase' }}>Ubicación seleccionada</span>
+          <span style={{ fontSize: 'calc(1.2rem * var(--font-scale, 1))' }}>📍</span>
+          <span style={{ fontSize: 'calc(0.85rem * var(--font-scale, 1))', fontWeight: '600', color: '#28a745', textTransform: 'uppercase' }}>Ubicación seleccionada</span>
         </div>
-        <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#333' }}>
+        <p style={{ margin: '0.25rem 0', fontSize: 'calc(0.9rem * var(--font-scale, 1))', color: '#333' }}>
           <strong>Coordenadas:</strong> {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
         </p>
-        <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#333' }}>
+        <p style={{ margin: '0.25rem 0', fontSize: 'calc(0.9rem * var(--font-scale, 1))', color: '#333' }}>
           <strong>Dirección:</strong> {address || 'Cargando...'}
         </p>
       </div>
