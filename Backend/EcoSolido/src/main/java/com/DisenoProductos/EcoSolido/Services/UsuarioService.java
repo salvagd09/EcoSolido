@@ -56,7 +56,7 @@ public class UsuarioService {
             throw new RuntimeException("Contraseña incorrecta");
         }
         String nuevoToken = jwtUtil.generarToken(usuario.getNombreUsuario());
-        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario());
+        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario(), usuario.getPuntos());
     }
     public VerificarCorreoTelResponseDTO verificarCorreoOTelefono(VerificarCorreoTelRequestDTO requestDTO) {
         boolean existe;
@@ -80,6 +80,10 @@ public class UsuarioService {
                 .map(UsuarioEntity::getPreguntaSeguridad)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
+    public Optional<UsuarioEntity> obtenerUsuarioPorNombreUsuario(String nombreUsuario) {
+        return usuarioRepository.findByNombreUsuario(nombreUsuario);
+    }
+
     public RespuestaSeguridadResponseDTO verificarRespuesta(RespuestaSeguridadRequestDTO requestDTO){
         Optional<UsuarioEntity> usuarioOpt;
         if (requestDTO.getCorreo() != null && !requestDTO.getCorreo().isEmpty()) {

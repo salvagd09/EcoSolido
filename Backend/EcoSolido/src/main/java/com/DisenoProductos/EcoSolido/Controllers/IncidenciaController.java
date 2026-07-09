@@ -40,7 +40,10 @@ public class IncidenciaController {
         }
         String nombreUsuario = authentication.getName();
         incidenciaService.registrarIncidencia(incidenciaDTO, fotos, urlsFotos, nombreUsuario);
-        return ResponseEntity.ok("Su incidencia ha sido registrada exitosamente...");
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Su incidencia ha sido registrada exitosamente...",
+                "puntosGanados", 10
+        ));
     }
     @GetMapping("/metricas")
     public ResponseEntity<?> mostrarMetricas(Authentication authentication){

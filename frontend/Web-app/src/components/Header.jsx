@@ -18,9 +18,10 @@ export default function Header({ onMenuClick,onLogout }) {
     obtenerTemaInicial()
   })
   const navigate = useNavigate()
-  const nombreUsuario = localStorage.getItem("nombreUsuario") 
   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const nombreUsuario = user?.nombreUsuario || localStorage.getItem("nombreUsuario")
+  const puntos = user?.puntos ?? localStorage.getItem("puntos") ?? '0'
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {
@@ -74,6 +75,7 @@ export default function Header({ onMenuClick,onLogout }) {
         <button type="button" className="header__icon-btn" aria-label="Perfil de usuario">
           <IconUsuario />
           <span className="header__username">{nombreUsuario}</span>
+          <span className="header__points">⭐ {puntos} pts</span>
         </button>
         <button
           type="button"

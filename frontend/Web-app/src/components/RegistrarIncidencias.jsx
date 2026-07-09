@@ -3,8 +3,10 @@ import {
   describirFotosConIA,
   esErrorTecnicoIA,
   subirFotosACloudinary,
-  registrarIncidencia
+  registrarIncidencia,
+  obtenerPuntosUsuario
 } from '../services/incidenciasApi'
+import { useAuth } from '../hooks/useAuth'
 import { esRespuestaFotosNoVisibles, MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 import AIConfirmModal from './AIConfirmModal'
 import { IconIA, IconNube } from './icons'
@@ -58,6 +60,8 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   const modalAbierto = showSuccessModal || showAIModal || showWarningModal
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [tamañoLetra, setTamañoLetra] = useState(1)
+  const [puntosGanados, setPuntosGanados] = useState(0)
+  const { updatePuntos } = useAuth()
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   function mostrarMensajeFotosNoVisibles() {
     setDescripcion(MENSAJE_FOTOS_NO_VISIBLES)
@@ -173,7 +177,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
       const fotosComprimidas = await Promise.all(
         fotosSubidas.map(slot => comprimirImagen(slot.file))
       );
-      await registrarIncidencia(
+      const respuesta = await registrarIncidencia(
         categoria,
         descripcion,
         urlsCloudinary,                          // URLs si usó IA
@@ -182,6 +186,19 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         ubicacion.lat,
         ubicacion.lng
       )
+
+      // HU011: Actualizar puntos en el frontend
+      if (respuesta.puntosGanados) {
+        setPuntosGanados(respuesta.puntosGanados)
+        try {
+          const puntosActuales = await obtenerPuntosUsuario()
+          updatePuntos(puntosActuales)
+        } catch (e) {
+          // Si falla la consulta, actualizar localmente con lo que devolvió el backend
+          const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
+          updatePuntos(puntosGuardados + respuesta.puntosGanados)
+        }
+      }
       // Crear nueva incidencia para actualizar métricas
       const nuevaIncidencia = {
         id: `INC-${Date.now().toString().slice(-6)}`,
@@ -466,7 +483,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
         {showSuccessModal && (
           <Suspense fallback={<div>Cargando...</div>}>
-            <SuccessModal onClose={handleCloseSuccessModal} />
+            <SuccessModal onClose={handleCloseSuccessModal} puntosGanados={puntosGanados} />
           </Suspense>
         )}
         {showWarningModal && (

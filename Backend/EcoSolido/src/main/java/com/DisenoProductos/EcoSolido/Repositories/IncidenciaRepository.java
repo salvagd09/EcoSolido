@@ -18,4 +18,8 @@ public interface IncidenciaRepository extends JpaRepository<IncidenciaEntity,Int
     @Query("SELECT COUNT(i) FROM IncidenciaEntity i WHERE i.usuario.nombreUsuario = :nombreUsuario " +
             "AND i.fecha >= :inicioMes")
     long countDesdeFecha(@Param("nombreUsuario") String nombreUsuario, @Param("inicioMes") LocalDateTime inicioMes);
+
+    // HU011: Verificar si ya existe una incidencia idéntica del mismo usuario
+    boolean existsByUsuario_NombreUsuarioAndCategoriaAndDescripcionAndLatitudAndLongitud(
+            String nombreUsuario, String categoria, String descripcion, Double latitud, Double longitud);
 }

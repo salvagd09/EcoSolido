@@ -1,7 +1,7 @@
 import { IconCerrar } from './icons'
 import './SuccessModal.css'
 
-export default function SuccessModal({ onClose }) {
+export default function SuccessModal({ onClose, puntosGanados = 0 }) {
   return (
     <div className="modal-overlay" role="presentation" onClick={onClose}>
       <div
@@ -24,8 +24,13 @@ export default function SuccessModal({ onClose }) {
         </h2>
         <p className="modal__message">
           Su incidencia ha sido registrada exitosamente y ha sido establecida como
-          Pendiente en el panel de &apos;Seguimiento de Incidencias&apos;
+          Pendiente en el panel de 'Seguimiento de Incidencias'.
         </p>
+        {puntosGanados > 0 && (
+          <p className="modal__points">
+            🎉 ¡Has ganado <strong>{puntosGanados}</strong> puntos!
+          </p>
+        )}
       </div>
     </div>
   )

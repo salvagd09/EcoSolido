@@ -20,10 +20,11 @@ export function useAuth() {
     const token = localStorage.getItem('token');
     const nombreUsuario = localStorage.getItem('nombreUsuario');
     const userPermissions = localStorage.getItem('permissions');
+    const puntosGuardados = localStorage.getItem('puntos');
 
     if (token && nombreUsuario) {
       setIsAuthenticated(true);
-      setUser({ nombreUsuario });
+      setUser({ nombreUsuario, puntos: puntosGuardados ? parseInt(puntosGuardados, 10) : 0 });
       
       // Parsear permisos si existen
       if (userPermissions) {
@@ -80,6 +81,7 @@ export function useAuth() {
       // Guardar token y usuario
       localStorage.setItem('token', data.token);
       localStorage.setItem('nombreUsuario', data.nombreUsuario);
+      localStorage.setItem('puntos', data.puntos ?? 0);
       
       // Guardar permisos (pueden venir del backend o ser por defecto)
       const userPermissions = data.permissions || {
@@ -91,7 +93,7 @@ export function useAuth() {
       localStorage.setItem('permissions', JSON.stringify(userPermissions));
       
       setIsAuthenticated(true);
-      setUser({ nombreUsuario: data.nombreUsuario });
+      setUser({ nombreUsuario: data.nombreUsuario, puntos: data.puntos ?? 0 });
       setPermissions(userPermissions);
       
       return { success: true };
@@ -104,6 +106,7 @@ export function useAuth() {
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('puntos');
     localStorage.removeItem('permissions');
     
     setIsAuthenticated(false);
@@ -137,6 +140,12 @@ export function useAuth() {
     return isAuthenticated && permissions.isAdmin;
   }, [isAuthenticated, permissions]);
 
+  // Actualizar puntos del usuario
+  const updatePuntos = useCallback((nuevosPuntos) => {
+    localStorage.setItem('puntos', nuevosPuntos);
+    setUser((prev) => ({ ...prev, puntos: nuevosPuntos }));
+  }, []);
+
   return {
     isAuthenticated,
     user,
@@ -145,7 +154,8 @@ export function useAuth() {
     login,
     logout,
     hasPermission,
-    isAdmin
+    isAdmin,
+    updatePuntos
   };
 }
 

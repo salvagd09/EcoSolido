@@ -81,3 +81,10 @@
   line-height: 1.6;
   color: var(--color-text-secondary);
 }
+
+.modal__points {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  color: var(--color-btn-primary);
+  font-weight: 700;
+}

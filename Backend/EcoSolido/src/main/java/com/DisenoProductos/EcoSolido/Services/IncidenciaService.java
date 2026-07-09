@@ -32,6 +32,8 @@ public class IncidenciaService  {
     public HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
     public UsuarioRepository usuarioRepository;
+    private static final int PUNTOS_POR_INCIDENCIA = 10;
+
     public void registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
                                     List<MultipartFile> fotos,
                                     List<String> urlsFotos, String nombreUsuario) throws IOException {
@@ -44,6 +46,19 @@ public class IncidenciaService  {
         }
         UsuarioEntity usuario = usuarioRepository.findByNombreUsuario(nombreUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // HU011: Validar incidencia duplicada
+        boolean esDuplicada = incidenciaRepository.existsByUsuario_NombreUsuarioAndCategoriaAndDescripcionAndLatitudAndLongitud(
+                nombreUsuario,
+                incidenciaDTO.getCategoria(),
+                incidenciaDTO.getDescripcion(),
+                incidenciaDTO.getLatitud(),
+                incidenciaDTO.getLongitud()
+        );
+        if (esDuplicada) {
+            throw new IllegalStateException("Esta incidencia ya fue registrada anteriormente. No se asignarán puntos adicionales.");
+        }
+
         IncidenciaEntity incidencia = new IncidenciaEntity();
         incidencia.setDescripcion(incidenciaDTO.getDescripcion());
         incidencia.setCategoria(incidenciaDTO.getCategoria());
@@ -88,6 +103,10 @@ public class IncidenciaService  {
         incidencia.setLongitud(incidenciaDTO.getLongitud());
         incidencia.setDireccionTexto(incidenciaDTO.getDireccionTexto());
         incidenciaRepository.save(incidencia);
+
+        // HU011: Asignar puntos al usuario
+        usuario.setPuntos(usuario.getPuntos() + PUNTOS_POR_INCIDENCIA);
+        usuarioRepository.save(usuario);
     }
     public String generarDescripcion(List<String> urlFotos){
         /* Mejora para tener código eficiente:

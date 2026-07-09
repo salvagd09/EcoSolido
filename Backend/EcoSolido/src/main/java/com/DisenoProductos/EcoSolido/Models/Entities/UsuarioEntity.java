@@ -25,6 +25,8 @@ public class UsuarioEntity {
     private String preguntaSeguridad;
     @Column(name="respuesta_pregunta")
     private String respuestaPregunta;
+    @Column(name="puntos", nullable = false)
+    private Integer puntos = 0;
     public Integer getIdUsuario() {
         return idUsuario;
     }
@@ -77,4 +79,6 @@ public class UsuarioEntity {
     public void setRespuestaPregunta(String respuestaPregunta) {this.respuestaPregunta = respuestaPregunta;}
     public String getCorreoElectronico() {return correoElectronico;}
     public void setCorreoElectronico(String correoElectronico) {this.correoElectronico = correoElectronico;}
+    public Integer getPuntos() {return puntos;}
+    public void setPuntos(Integer puntos) {this.puntos = puntos;}
 }
