@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './EducacionMedioAmbiental.css'
+import { generarRecomendaciones } from '../services/RecomendacionApi'
 
 const ARTICULOS = [
   {
@@ -53,17 +54,70 @@ const ARTICULOS = [
 ]
 
 const CATEGORIAS = ['Todas', 'Huella de Carbono', 'Reciclaje', 'Contaminación', 'Energía', 'Compostaje', 'Movilidad']
-
+const CATEGORIAS2 = ['Orgánicos', 'Inorgánicos no aprovechables', 'Inorgánicos aprovechables']
 export default function EducacionMedioAmbiental() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todas')
   const [articuloSeleccionado, setArticuloSeleccionado] = useState(null)
-
+  const [tipoMaterial, setTipoMaterial] = useState("")
+  const [contextoExtra, setContextoExtra] = useState("")
+  const [recomendaciones, setRecomendaciones] = useState([])
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
   const articulosFiltrados = categoriaActiva === 'Todas'
     ? ARTICULOS
     : ARTICULOS.filter(articulo => articulo.categoria === categoriaActiva)
-
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!tipoMaterial || tipoMaterial === '--Selecione alguna opción--') {
+      setError('Debe seleccionar un tipo de material.')
+      return
+    }
+    setCargando(true)
+    setError('')
+    try {
+      const resultado = await generarRecomendaciones(tipoMaterial, contextoExtra)
+      setRecomendaciones(resultado)
+    } catch (err) {
+      setError(err.message ?? 'Error al generar recomendaciones.')
+    } finally {
+      setCargando(false)
+    }
+  }
   return (
     <main className="educacion">
+      <div className="recomendaciones_espacio">
+        <h2 className="educacion__title">Recomendaciones para el buen tratamiento de residuos sólidos</h2>
+        <p className="educacion__subtitle">
+          Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
+        </p>
+        <form onSubmit={handleSubmit} className="educacion__form">
+          <label className="educacion__label">Selecciona un tipo de residuo sólido*:</label>
+          <select className="educacion__dropdown" name="tipoMaterial" value={tipoMaterial} onChange={(e) => { setTipoMaterial(e.target.value) }}>
+            <option value="" disabled>--Selecione alguna opción--</option>
+            {CATEGORIAS2.map(categoria => (
+              <option key={categoria} value={categoria}>{categoria}</option>
+            ))}
+          </select>
+          <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
+          <textarea className="educacion__textarea" name="contexto" value={contextoExtra} onChange={(e) => { setContextoExtra(e.target.value) }}></textarea>
+          <button type="submit" className="educacion_buttonOR">Obtener recomendaciones</button>
+        </form>
+        {cargando && <p>Generando recomendaciones...</p>}
+        {error && <p className="educacion__error">{error}</p>}
+        {recomendaciones.length > 0 && (<>
+          <div className="espacio_recomendaciones">
+            <h2 className="reco_titulo">Recomendaciones</h2>
+            <ul className="educacion__recomendaciones">
+              {recomendaciones.map((rec, index) => (
+                <li key={index} className="educacion__recomendacion-item">
+                  {rec}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+        )}
+      </div>
       <div className="educacion__header">
         <h2 className="educacion__title">Educación Medio Ambiental</h2>
         <p className="educacion__subtitle">
@@ -112,13 +166,13 @@ export default function EducacionMedioAmbiental() {
                   {articuloSeleccionado.resumen}
                 </p>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor 
-                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
                   nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                 </p>
                 <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
-                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore
+                  eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
                   sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </p>
               </div>
