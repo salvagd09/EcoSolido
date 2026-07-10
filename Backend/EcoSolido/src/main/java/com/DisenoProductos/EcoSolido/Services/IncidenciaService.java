@@ -25,13 +25,21 @@ import java.util.stream.Collectors;
 @Service
 public class IncidenciaService  {
     @Autowired
-    public IncidenciaRepository incidenciaRepository;
+    private final IncidenciaRepository incidenciaRepository;
     @Autowired
-    public CloudinaryIntegration cloudinaryIntegration;
+    private final CloudinaryIntegration cloudinaryIntegration;
     @Autowired
-    public HuggingFaceIntegration huggingFaceIntegration;
+    private final HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
-    public UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public IncidenciaService(IncidenciaRepository incidenciaRepository, CloudinaryIntegration cloudinaryIntegration, HuggingFaceIntegration huggingFaceIntegration, UsuarioRepository usuarioRepository) {
+        this.incidenciaRepository = incidenciaRepository;
+        this.cloudinaryIntegration = cloudinaryIntegration;
+        this.huggingFaceIntegration = huggingFaceIntegration;
+        this.usuarioRepository = usuarioRepository;
+    }
+
     public void registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
                                     List<MultipartFile> fotos,
                                     List<String> urlsFotos, String nombreUsuario) throws IOException {
