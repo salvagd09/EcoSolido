@@ -23,25 +23,14 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const nombreUsuario = localStorage.getItem('nombreUsuario');
-    const userPermissions = localStorage.getItem('permissions');
+    const puntos = parseInt(localStorage.getItem('puntos') || '0', 10);
+    const savedPermissions = localStorage.getItem('permissions');
 
     if (token && nombreUsuario) {
       setIsAuthenticated(true);
-      setUser({ nombreUsuario, puntos: 0 });
-      localStorage.setItem('puntos', 0);
-      
-      // Parsear permisos si existen
-      if (userPermissions) {
-        try {
-          setPermissions(JSON.parse(userPermissions));
-        } catch (e) {
-          setPermissions({
-            canRegister: true,
-            canTrack: true,
-            canAccessEducation: true,
-            isAdmin: false
-          });
-        }
+      setUser({ nombreUsuario, puntos });
+      if (savedPermissions) {
+        setPermissions(JSON.parse(savedPermissions));
       } else {
         setPermissions({
           canRegister: true,
@@ -50,24 +39,14 @@ export function AuthProvider({ children }) {
           isAdmin: false
         });
       }
-    } else {
-      setIsAuthenticated(false);
-      setUser(null);
-      setPermissions({
-        canRegister: false,
-        canTrack: false,
-        canAccessEducation: false,
-        isAdmin: false
-      });
     }
-    
     setIsLoading(false);
   }, []);
 
   // Función de login
   const login = useCallback(async (nombreUsuario, contrasena) => {
     try {
-      const respuesta = await fetch('http://localhost:8080/usuario/autenticar', {
+      const respuesta = await fetch('http://localhost:8081/usuario/autenticar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombreUsuario, contrasena })

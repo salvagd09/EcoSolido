@@ -35,7 +35,7 @@ export default function RestablecerContra() {
                 ? { telefono: campo }
                 : { correo: campo };
 
-            const respuesta = await fetch("http://localhost:8080/usuario/verificar-cor-o-tel", {
+            const respuesta = await fetch("http://localhost:8081/usuario/verificar-cor-o-tel", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -69,7 +69,7 @@ export default function RestablecerContra() {
                 ? `?telefono=${encodeURIComponent(campo)}`
                 : `?correo=${encodeURIComponent(campo)}`;
 
-            const respuesta = await fetch(`http://localhost:8080/usuario/pregunta-seguridad${params}`, {
+            const respuesta = await fetch(`http://localhost:8081/usuario/pregunta-seguridad${params}`, {
                 method: "GET",
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -103,7 +103,7 @@ export default function RestablecerContra() {
                 ? { telefono: telOCel, respuesta: respuestaSeguridad }
                 : { correo: correo, respuesta: respuestaSeguridad };
 
-            const respuesta = await fetch("http://localhost:8080/usuario/verificar-respuesta", {
+            const respuesta = await fetch("http://localhost:8081/usuario/verificar-respuesta", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -150,7 +150,7 @@ export default function RestablecerContra() {
                     nuevaContrasenaRepetida: confirmarContrasena
                 };
 
-            const respuesta = await fetch("http://localhost:8080/usuario/restablecer-contrasena", {
+            const respuesta = await fetch("http://localhost:8081/usuario/restablecer-contrasena", {
                 method: "PATCH",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)

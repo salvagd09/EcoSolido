@@ -55,7 +55,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function obtenerMetricas() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/incidencias/metricas', {
+        const response = await fetch('http://localhost:8081/incidencias/metricas', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -75,7 +75,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function mostrarIncidencias() {
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch('http://localhost:8080/incidencias/seguir', {
+            const response = await fetch('http://localhost:8081/incidencias/seguir', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

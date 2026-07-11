@@ -39,6 +39,15 @@ public class GlobalExceptionHandler {
                 ));
     }
     
+    @ExceptionHandler(com.DisenoProductos.EcoSolido.Services.DuplicateIncidentException.class)
+    public ResponseEntity<?> handleDuplicateIncidentError(com.DisenoProductos.EcoSolido.Services.DuplicateIncidentException ex) {
+        return ResponseEntity.status(409)
+                .body(Map.of(
+                    "error", "Conflicto",
+                    "message", ex.getMessage()
+                ));
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericError(Exception ex) {
         return ResponseEntity.internalServerError()

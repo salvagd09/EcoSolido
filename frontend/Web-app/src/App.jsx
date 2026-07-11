@@ -110,4 +110,4 @@ function SeguimientoConLayout() {
   return <SeguimientoIncidencias incidencias={incidencias} />;
 }
 
-
+export default App;

@@ -43,6 +43,21 @@ function evaluarInsigniasLocales(totalIncidencias, insigniasYaDesbloqueadas = []
   )
 }
 
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Radio de la Tierra en metros
+  const phi1 = lat1 * Math.PI / 180;
+  const phi2 = lat2 * Math.PI / 180;
+  const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+  const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
 function crearSlotsVacios() {
   return Array.from({ length: MAX_FOTOS }, () => ({ preview: null, file: null }))
 }
@@ -177,13 +192,12 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
   };
 
   // Verifica si la incidencia ya existe (duplicada) en el almacenamiento local
-  // Lógica espejo del backend: misma categoria + descripcion + latitud + longitud
+  // Lógica espejo del backend: misma categoria + descripcion + latitud + longitud en radio de 50m
   function esIncidenciaDuplicadaLocal(incidenciasLocales) {
     return incidenciasLocales.some(inc =>
       inc.categoria === categoria &&
       inc.descripcion === descripcion &&
-      inc.latitud === ubicacion.lat &&
-      inc.longitud === ubicacion.lng
+      calcularDistancia(inc.latitud, inc.longitud, ubicacion.lat, ubicacion.lng) <= 50
     )
   }
 
@@ -573,6 +587,8 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
           <Suspense fallback={<div className="modal-loading">Cargando...</div>}>
             <WarningModal
               message={warningMessage}
+              title={warningMessage === 'Esta incidencia ya fue registrada anteriormente. No se asignarán puntos adicionales.' ? 'Incidencia duplicada' : undefined}
+              hidePrefix={warningMessage === 'Esta incidencia ya fue registrada anteriormente. No se asignarán puntos adicionales.'}
               onClose={() => setShowWarningModal(false)}
             />
           </Suspense>

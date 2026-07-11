@@ -13,5 +13,4 @@ public class EcoSolidoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EcoSolidoApplication.class, args);
 	}
-
 }
