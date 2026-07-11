@@ -1,7 +1,10 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
+import jakarta.validation.constraints.Size;
+
 public class GenerarRecomendacionesRequest {
     private String tipoMaterial;
+    @Size(max = 200, message = "El contexto no puede superar los 200 caracteres")
     private String contexto;
     public String getTipoMaterial() {
         return tipoMaterial;

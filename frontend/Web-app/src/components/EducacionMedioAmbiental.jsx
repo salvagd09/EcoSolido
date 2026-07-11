@@ -56,13 +56,21 @@ const ARTICULOS = [
 const CATEGORIAS = ['Todas', 'Huella de Carbono', 'Reciclaje', 'Contaminación', 'Energía', 'Compostaje', 'Movilidad']
 const CATEGORIAS2 = ['Orgánicos', 'Inorgánicos no aprovechables', 'Inorgánicos aprovechables']
 export default function EducacionMedioAmbiental() {
+  const MAX_CONTEXTO=200
   const [categoriaActiva, setCategoriaActiva] = useState('Todas')
   const [articuloSeleccionado, setArticuloSeleccionado] = useState(null)
   const [tipoMaterial, setTipoMaterial] = useState("")
   const [contextoExtra, setContextoExtra] = useState("")
   const [recomendaciones, setRecomendaciones] = useState([])
   const [cargando, setCargando] = useState(false)
+  const [caracteresRestantes, setCaracteresRestantes] = useState(MAX_CONTEXTO)
   const [error, setError] = useState('')
+  function handleContextoChange(event) {
+    const nuevoValor = event.target.value;
+    setContextoExtra(nuevoValor);
+    setCaracteresRestantes(MAX_CONTEXTO - nuevoValor.length);
+    setError('');  
+  }
   const articulosFiltrados = categoriaActiva === 'Todas'
     ? ARTICULOS
     : ARTICULOS.filter(articulo => articulo.categoria === categoriaActiva)
@@ -91,7 +99,7 @@ export default function EducacionMedioAmbiental() {
           Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
         </p>
         <form onSubmit={handleSubmit} className="educacion__form">
-          <label className="educacion__label">Selecciona un tipo de residuo sólido*:</label>
+          <label className="educacion__label">Selecciona un tipo de residuo sólido <span style={{ color: '#ff7a00' }}>*</span>:</label>
           <select className="educacion__dropdown" name="tipoMaterial" value={tipoMaterial} onChange={(e) => { setTipoMaterial(e.target.value) }}>
             <option value="" disabled>--Selecione alguna opción--</option>
             {CATEGORIAS2.map(categoria => (
@@ -99,9 +107,13 @@ export default function EducacionMedioAmbiental() {
             ))}
           </select>
           <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
-          <textarea className="educacion__textarea" name="contexto" value={contextoExtra} onChange={(e) => { setContextoExtra(e.target.value) }}></textarea>
+          <textarea className="educacion__textarea" name="contexto" value={contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
+           <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
+                {caracteresRestantes} caracteres restantes
+            </span>
           <button type="submit" className="educacion_buttonOR">Obtener recomendaciones</button>
         </form>
+        <span style={{ color: '#ff7a00',width:'100%',textAlign:'-webkit-left',fontSize:'0.8rem' }}>* Obligatorio a establecer</span>
         {cargando && <p>Generando recomendaciones...</p>}
         {error && <p className="educacion__error">{error}</p>}
         {recomendaciones.length > 0 && (<>
