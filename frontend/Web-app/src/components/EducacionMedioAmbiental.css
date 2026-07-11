@@ -9,6 +9,28 @@
   flex-wrap:wrap;
   gap:5px;
 }
+.registrar__contador {
+  width:100%;
+  font-size:0.8rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  align-self: flex-end;
+}
+.educacion__error{
+  background: var(--color-accent-red-light);
+  border: 1px solid var(--color-btn-danger);
+  color: var(--color-btn-danger);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.registrar__contador--alerta {
+  font-size: calc(0.85rem*var(--font-scale,1));
+  color: var(--color-btn-warning);
+  font-weight: 600;
+}
 .educacion__textarea{
   font-size:0.8rem;
   padding:10px;
@@ -289,7 +311,9 @@
   .educacion {
     padding: 16px;
   }
-
+  .educacion__form{
+    width:100%;
+  }
   .educacion__title {
     font-size: 1.25rem;
   }
