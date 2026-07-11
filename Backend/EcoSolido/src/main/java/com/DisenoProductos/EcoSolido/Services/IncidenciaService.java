@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 @Service
 public class IncidenciaService  {
     @Autowired
-    public IncidenciaRepository incidenciaRepository;
+    private final IncidenciaRepository incidenciaRepository;
     @Autowired
-    public CloudinaryIntegration cloudinaryIntegration;
+    private final CloudinaryIntegration cloudinaryIntegration;
     @Autowired
-    public HuggingFaceIntegration huggingFaceIntegration;
+    private final HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
     public UsuarioRepository usuarioRepository;
     @Autowired
