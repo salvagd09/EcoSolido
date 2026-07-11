@@ -160,7 +160,48 @@ export async function registrarIncidencia(categoria, descripcion, urlsFotos, arc
     throw new Error(extraerMensajeError(cuerpo, response.status))
   }
 
-  return cuerpo
+  try {
+    return JSON.parse(cuerpo)
+  } catch {
+    return { mensaje: cuerpo, puntosGanados: 0 }
+  }
+}
+
+export async function obtenerPuntosUsuario() {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE}/usuario/puntos`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  const data = JSON.parse(cuerpo)
+  return data.puntos ?? 0
+}
+
+export async function obtenerInsigniasUsuario() {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${API_BASE}/insignias/mis-insignias`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${token}`
+    }
+  })
+
+  const cuerpo = await response.text()
+
+  if (!response.ok) {
+    throw new Error(extraerMensajeError(cuerpo, response.status))
+  }
+
+  return JSON.parse(cuerpo)
 }
 
 export function esErrorTecnicoIA(mensaje) {

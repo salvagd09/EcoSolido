@@ -45,7 +45,7 @@ export default function Registrarse() {
         }
 
         try {
-            const respuesta = await fetch("http://localhost:8080/usuario/registrar", {
+            const respuesta = await fetch("http://localhost:8081/usuario/registrar", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
