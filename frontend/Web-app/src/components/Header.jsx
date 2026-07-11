@@ -5,6 +5,7 @@ import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/LOGO ECOSOLIDO.png'
+import { obtenerPuntosUsuario } from '../services/incidenciasApi'
 const obtenerTemaInicial = () => {
     const temaGuardado = localStorage.getItem('theme');
     if (temaGuardado) {
@@ -21,18 +22,29 @@ export default function Header({ onMenuClick,onLogout }) {
   const [showCerrarSModal, setShowCerrarSModal] = useState(false)
   const { logout, user } = useAuth();
   const nombreUsuario = user?.nombreUsuario || localStorage.getItem("nombreUsuario")
-  const puntos = user?.puntos ?? 0
+  const [puntos, setPuntos] = useState(0)
   useEffect(() => {
     const root = document.documentElement
     if (temaOscuro) {
-      root.setAttribute('data-theme', 'dark')
-      localStorage.setItem('theme', 'dark')
+        root.setAttribute('data-theme', 'dark')
+        localStorage.setItem('theme', 'dark')
     } else {
-      root.removeAttribute('data-theme')
-      localStorage.setItem('theme', 'light')
+        root.removeAttribute('data-theme')
+        localStorage.setItem('theme', 'light')
     }
   }, [temaOscuro])
-
+  useEffect(() => {
+    async function cargarPuntos() {
+        try {
+            const resultado = await obtenerPuntosUsuario()
+            setPuntos(resultado)
+            localStorage.setItem('puntos', resultado)
+        } catch (error) {
+            console.error('Error al obtener puntos:', error)
+        }
+    }
+    cargarPuntos()
+  }, [])
   function toggleTema() {
     setTemaOscuro(prev => !prev)
   }

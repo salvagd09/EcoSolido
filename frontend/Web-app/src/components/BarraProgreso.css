@@ -1,0 +1,48 @@
+.barraProgreso {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    padding: 8px 0;
+}
+
+.barraProgreso__info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.barraProgreso__puntos{
+    color:var(--color-text-secondary);
+    font-size:0.8rem;
+}
+.barraProgreso__sigInsignia{
+    color:var(--color-text-secondary);
+    font-weight:800px;
+    font-size:0.9rem;
+}
+.barraProgreso__contenedor {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.barraProgreso__sinContribuciones{
+    font-size:1.25rem;
+    background-color: var(--color-required);
+    color:white;
+    padding:10px;
+    border-radius:5px;;
+}
+.barraProgreso__relleno {
+    height: 100%;
+    background: linear-gradient(90deg,#4fec54 , #0d6211);
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.barraProgreso__meta {
+    font-size: 0.78rem;
+    color: #666;
+}

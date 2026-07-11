@@ -41,7 +41,8 @@ public class RENIECIntegration {
 
         HttpResponse<String> response = httpClient
                 .send(request, HttpResponse.BodyHandlers.ofString());
-
+        System.out.println("Respuesta RENIEC: " + response.body()); // ← Agrega esto
+        System.out.println("Status RENIEC: " + response.statusCode()); // ← Y esto
         ReniecResponseDTO datos = mapper.readValue(response.body(), ReniecResponseDTO.class);
         if (!datos.isSuccess()) {
             throw new RuntimeException("DNI no encontrado en RENIEC");

@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
   // Función de login
   const login = useCallback(async (nombreUsuario, contrasena) => {
     try {
-      const respuesta = await fetch('http://localhost:8081/usuario/autenticar', {
+      const respuesta = await fetch('http://localhost:8080/usuario/autenticar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombreUsuario, contrasena })

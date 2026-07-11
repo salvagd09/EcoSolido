@@ -108,7 +108,7 @@ export default function EducacionMedioAmbiental() {
           </select>
           <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
           <textarea className="educacion__textarea" name="contexto" value={contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
-           <span className={`registrar__contador ${caracteresRestantes < 50 ? 'registrar__contador--alerta' : ''}`}>
+           <span className={`registrar__contador2 ${caracteresRestantes < 50 ? 'registrar__contador2--alerta' : ''}`}>
                 {caracteresRestantes} caracteres restantes
             </span>
           <button type="submit" className="educacion_buttonOR">Obtener recomendaciones</button>
