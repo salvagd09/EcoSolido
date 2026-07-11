@@ -2,6 +2,8 @@ package com.DisenoProductos.EcoSolido.Models.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReniecResponseDTO {
     private boolean success;

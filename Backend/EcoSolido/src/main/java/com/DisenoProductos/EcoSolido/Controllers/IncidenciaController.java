@@ -1,10 +1,12 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
 import com.DisenoProductos.EcoSolido.Models.DTOs.SeguirIncidenciaResponseDTO;
+import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
+import com.DisenoProductos.EcoSolido.Services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,8 +22,10 @@ import java.util.stream.Collectors;
 public class IncidenciaController {
 
     private final IncidenciaService incidenciaService;
-    public IncidenciaController(IncidenciaService incidenciaService) {
+    private final UsuarioService usuarioService;
+    public IncidenciaController(IncidenciaService incidenciaService, UsuarioService usuarioService) {
         this.incidenciaService = incidenciaService;
+        this.usuarioService = usuarioService;
     }
     @GetMapping("/seguir")
     public ResponseEntity<?> mostrarIncidencias(Authentication authentication) {
@@ -86,5 +90,12 @@ public class IncidenciaController {
                     .body("Error al subir las fotos.");
         }
     }
-
+    // HU011: Endpoint para consultar puntos del usuario autenticado
+    @GetMapping("/puntos")
+    public ResponseEntity<?> obtenerPuntos(Authentication authentication) {
+        String nombreUsuario = authentication.getName();
+        UsuarioEntity usuario = usuarioService.obtenerUsuarioPorNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return ResponseEntity.ok(Map.of("puntos", usuario.getPuntos()));
+    }
 }

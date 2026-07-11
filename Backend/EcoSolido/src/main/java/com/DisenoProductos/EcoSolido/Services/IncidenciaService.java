@@ -38,6 +38,14 @@ public class IncidenciaService  {
     public InsigniaService insigniaService;
     private static final int PUNTOS_POR_INCIDENCIA = 10;
 
+    public IncidenciaService(IncidenciaRepository incidenciaRepository, CloudinaryIntegration cloudinaryIntegration, HuggingFaceIntegration huggingFaceIntegration, UsuarioRepository usuarioRepository, InsigniaService insigniaService) {
+        this.incidenciaRepository = incidenciaRepository;
+        this.cloudinaryIntegration = cloudinaryIntegration;
+        this.huggingFaceIntegration = huggingFaceIntegration;
+        this.usuarioRepository = usuarioRepository;
+        this.insigniaService = insigniaService;
+    }
+
     public int getPuntosPorIncidencia() {
         return PUNTOS_POR_INCIDENCIA;
     }
@@ -153,11 +161,7 @@ public class IncidenciaService  {
         for (MultipartFile foto : fotos) {
             Map resultado = cloudinaryIntegration.subir(foto);
             String secureUrl = (String) resultado.get("secure_url");
-            // Mejora de código eficiente: Modifica la URL para
-            // forzar formatos livianos (WebP/AVIF) y compresión inteligente (q_auto)
-            // de modo que el ciudadano gaste menos datos móviles al navegar y cargar la app.
-            String urlOptimizada = secureUrl.replace("/upload/", "/upload/f_auto,q_auto/");
-            urls.add(urlOptimizada);
+            urls.add(secureUrl);
         }
         return urls;
     }
@@ -172,7 +176,7 @@ public class IncidenciaService  {
             muestraIncidencia.setFecha(incidencia.getFecha().toString());
             muestraIncidencia.setUrlsImagenes(
                     incidencia.getFotos().stream()
-                            .map(IncidenciaFotoEntity::getUrlFoto)
+                            .map(foto -> normalizarUrlCloudinary(foto.getUrlFoto()))
                             .collect(Collectors.toList())
             );
             muestraIncidencia.setDireccionTexto(incidencia.getDireccionTexto());
@@ -193,5 +197,15 @@ public class IncidenciaService  {
         dto.setResueltos(resueltos);
         dto.setIncidenciasEsteMes(incidenciasEsteMes);
         return dto;
+    }
+    private String normalizarUrlCloudinary(String url) {
+        if (url == null) return null;
+        // Si ya tiene f_auto,q_auto, la devuelve tal cual
+        if (url.contains("f_auto,q_auto")) return url;
+        // Si no, agrega la optimización
+        if (url.contains("/upload/")) {
+            return url.replace("/upload/", "/upload/f_auto,q_auto/");
+        }
+        return url;
     }
 }

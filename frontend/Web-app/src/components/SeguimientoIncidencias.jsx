@@ -55,7 +55,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function obtenerMetricas() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8081/incidencias/metricas', {
+        const response = await fetch('http://localhost:8080/incidencias/metricas', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -75,7 +75,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function mostrarIncidencias() {
         try {
             const token = localStorage.getItem('token')
-            const response = await fetch('http://localhost:8081/incidencias/seguir', {
+            const response = await fetch('http://localhost:8080/incidencias/seguir', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -226,9 +226,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
                     {incidencia.estado}
                   </span>
                 </div>
-                <p className="incidencia-tarjeta__fecha">{formatearFecha(incidencia.fecha)} </p>
+                <p className="incidencia-tarjeta__fecha">Fecha: {formatearFecha(incidencia.fecha)} </p>
                 <p className="incidencia-tarjeta__descripcion">{incidencia.descripcion}</p>
-                <p className="incidencia-tarjeta__ubicacion"> {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
+                <p className="incidencia-tarjeta__ubicacion">Ubicación: {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
                 {incidencia.urlsImagenes && incidencia.urlsImagenes.length > 0 && (
                 <img 
                       src={incidencia.urlsImagenes[0]} 

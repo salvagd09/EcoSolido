@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { obtenerInsigniasUsuario } from '../services/incidenciasApi'
+import { obtenerInsigniasUsuario} from '../services/incidenciasApi'
 import primerInsignia from '../assets/PRIMER INSIGNIA.png'
 import segundaInsignia from '../assets/SEGUNDA INSIGNIA.png'
 import tercerInsignia from '../assets/TERCER INSIGNIA.png'
 import cuartaInsignia from '../assets/CUARTA INSIGNIA.png'
 import quintaInsignia from '../assets/QUINTA INSIGNIA.png'
 import './RecompensasCiudadano.css'
+import BarraProgreso from './BarraProgreso'
 
 const IMAGENES_INSIGNIAS = {
   1: primerInsignia,
@@ -62,12 +63,11 @@ const MOCK_INSIGNIAS = [
     fechaDesbloqueo: null
   }
 ]
-
 export default function RecompensasCiudadano() {
   const [insignias, setInsignias] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
-
+  const valor=localStorage.getItem('puntos')
   useEffect(() => {
     async function cargarInsignias() {
       try {
@@ -87,13 +87,12 @@ export default function RecompensasCiudadano() {
 
   const desbloqueadas = insignias.filter(i => i.desbloqueada)
   const pendientes = insignias.filter(i => !i.desbloqueada)
-
   return (
     <main className="recompensas">
       <div className="recompensas__header">
-        <h2 className="recompensas__title">Mis insignias</h2>
+        <h2 className="recompensas__title">Área de Recompensas</h2>
         <p className="recompensas__subtitle">
-          Visualiza tus logros y las insignias que has ganado con la municipalidad por tu compromiso ambiental.
+          Esta es el área en la cuál vas a poder ver tus insignias y los premios que mereces por obtener cada 1.
         </p>
       </div>
 
@@ -103,6 +102,15 @@ export default function RecompensasCiudadano() {
       {!cargando && !error && (
         <>
           <section className="recompensas__seccion">
+              <h3 className="recompensas__seccion-title">
+                Mis puntos
+              </h3>
+              <p className="recompensas_seccion_texto">
+                Aquí vas a poder cuanto puntos tienes y cuánto es tu progreso para obtener la siguiente insignia
+              </p>
+              <BarraProgreso 
+              puntos={valor}
+              />
             <h3 className="recompensas__seccion-title">
               🏅 Insignias desbloqueadas ({desbloqueadas.length})
             </h3>

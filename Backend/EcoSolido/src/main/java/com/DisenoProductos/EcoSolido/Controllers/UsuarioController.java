@@ -80,12 +80,5 @@ public class UsuarioController {
         }
     }
 
-    // HU011: Endpoint para consultar puntos del usuario autenticado
-    @GetMapping("/puntos")
-    public ResponseEntity<?> obtenerPuntos(Authentication authentication) {
-        String nombreUsuario = authentication.getName();
-        UsuarioEntity usuario = usuarioService.obtenerUsuarioPorNombreUsuario(nombreUsuario)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        return ResponseEntity.ok(Map.of("puntos", usuario.getPuntos()));
-    }
+
 }

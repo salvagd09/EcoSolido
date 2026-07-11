@@ -169,7 +169,8 @@ export async function registrarIncidencia(categoria, descripcion, urlsFotos, arc
 
 export async function obtenerPuntosUsuario() {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${API_BASE}/usuario/puntos`, {
+  console.log('Token puntos:', token)
+  const response = await fetch(`${API_BASE}/incidencias/puntos`, {
     method: 'GET',
     headers: {
         'Authorization': `Bearer ${token}`
