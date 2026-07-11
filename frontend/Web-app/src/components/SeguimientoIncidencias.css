@@ -83,19 +83,6 @@
   color: var(--color-btn-primary);
 }
 
-.metrica-card--resueltas {
-  border-left: 4px solid #4CAF50;
-}
-
-.metrica-card--resueltas .metrica-card__icon {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-}
-
-.metrica-card--resueltas .metrica-card__numero {
-  color: #4CAF50;
-}
-
 .metrica-card--proceso {
   border-left: 4px solid #FF9800;
 }
@@ -120,6 +107,19 @@
 
 .metrica-card--pendientes .metrica-card__numero {
   color: #F44336;
+}
+
+.metrica-card--resueltos {
+  border-left: 4px solid #4CAF50;
+}
+
+.metrica-card--resueltos .metrica-card__icon {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
+}
+
+.metrica-card--resueltos .metrica-card__numero {
+  color: #4CAF50;
 }
 
 /* Mensaje cuando no hay incidencias */

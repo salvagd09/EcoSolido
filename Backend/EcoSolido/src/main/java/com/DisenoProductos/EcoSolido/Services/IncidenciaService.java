@@ -7,6 +7,7 @@ import com.DisenoProductos.EcoSolido.Models.DTOs.MetricasResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.SeguirIncidenciaResponseDTO;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.IncidenciaFotoEntity;
+import com.DisenoProductos.EcoSolido.Models.Entities.InsigniaEntity;
 import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Repositories.IncidenciaRepository;
@@ -17,6 +18,7 @@ import java.util.Map;
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +33,34 @@ public class IncidenciaService  {
     @Autowired
     private final HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
-    private final UsuarioRepository usuarioRepository;
+    public UsuarioRepository usuarioRepository;
+    @Autowired
+    public InsigniaService insigniaService;
+    private static final int PUNTOS_POR_INCIDENCIA = 10;
 
-    public IncidenciaService(IncidenciaRepository incidenciaRepository, CloudinaryIntegration cloudinaryIntegration, HuggingFaceIntegration huggingFaceIntegration, UsuarioRepository usuarioRepository) {
-        this.incidenciaRepository = incidenciaRepository;
-        this.cloudinaryIntegration = cloudinaryIntegration;
-        this.huggingFaceIntegration = huggingFaceIntegration;
-        this.usuarioRepository = usuarioRepository;
+    public int getPuntosPorIncidencia() {
+        return PUNTOS_POR_INCIDENCIA;
     }
 
-    public void registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
-                                    List<MultipartFile> fotos,
-                                    List<String> urlsFotos, String nombreUsuario) throws IOException {
+    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
+        int R = 6371000; // Radio de la Tierra en metros
+        double phi1 = Math.toRadians(lat1);
+        double phi2 = Math.toRadians(lat2);
+        double deltaPhi = Math.toRadians(lat2 - lat1);
+        double deltaLambda = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                Math.cos(phi1) * Math.cos(phi2) *
+                Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // en metros
+    }
+
+    @Transactional
+    public List<InsigniaEntity> registrarIncidencia(IncidenciaRequestDTO incidenciaDTO,
+                                                      List<MultipartFile> fotos,
+                                                      List<String> urlsFotos, String nombreUsuario) throws IOException {
         boolean tieneUrls = urlsFotos != null && !urlsFotos.isEmpty();
         boolean tieneArchivos = fotos != null && !fotos.isEmpty() && fotos.stream().anyMatch(f -> !f.isEmpty());
 
@@ -52,6 +70,20 @@ public class IncidenciaService  {
         }
         UsuarioEntity usuario = usuarioRepository.findByNombreUsuario(nombreUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // HU011: Validar incidencia duplicada (50m)
+        List<IncidenciaEntity> posiblesDuplicados = incidenciaRepository.findByUsuario_NombreUsuarioAndCategoriaAndDescripcion(
+                nombreUsuario,
+                incidenciaDTO.getCategoria(),
+                incidenciaDTO.getDescripcion()
+        );
+        for (IncidenciaEntity prev : posiblesDuplicados) {
+            double distancia = calcularDistancia(prev.getLatitud(), prev.getLongitud(), incidenciaDTO.getLatitud(), incidenciaDTO.getLongitud());
+            if (distancia <= 50.0) {
+                throw new DuplicateIncidentException("Esta incidencia ya fue registrada anteriormente. No se asignarán puntos adicionales.");
+            }
+        }
+
         IncidenciaEntity incidencia = new IncidenciaEntity();
         incidencia.setDescripcion(incidenciaDTO.getDescripcion());
         incidencia.setCategoria(incidenciaDTO.getCategoria());
@@ -96,6 +128,13 @@ public class IncidenciaService  {
         incidencia.setLongitud(incidenciaDTO.getLongitud());
         incidencia.setDireccionTexto(incidenciaDTO.getDireccionTexto());
         incidenciaRepository.save(incidencia);
+
+        // HU011: Asignar puntos al usuario
+        usuario.setPuntos(usuario.getPuntos() + PUNTOS_POR_INCIDENCIA);
+        usuarioRepository.save(usuario);
+
+        // HU012: Evaluar y desbloquear insignias
+        return insigniaService.evaluarYDesbloquearInsignias(nombreUsuario);
     }
     public String generarDescripcion(List<String> urlFotos){
         /* Mejora para tener código eficiente:
@@ -142,16 +181,16 @@ public class IncidenciaService  {
     }
     public MetricasResponseDTO obtenerMetricas(String nombreUsuario) {
         long total = incidenciaRepository.countByUsuario_NombreUsuario(nombreUsuario);
-        long resueltas = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
         long enProceso = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.EN_PROCESO);
         long pendientes = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.PENDIENTE);
+        long resueltos = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.RESUELTO);
         LocalDateTime inicioMes = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0);
         long incidenciasEsteMes = incidenciaRepository.countDesdeFecha(nombreUsuario, inicioMes);
         MetricasResponseDTO dto = new MetricasResponseDTO();
         dto.setTotal(total);
-        dto.setResueltas(resueltas);
         dto.setEnProceso(enProceso);
         dto.setPendientes(pendientes);
+        dto.setResueltos(resueltos);
         dto.setIncidenciasEsteMes(incidenciasEsteMes);
         return dto;
     }

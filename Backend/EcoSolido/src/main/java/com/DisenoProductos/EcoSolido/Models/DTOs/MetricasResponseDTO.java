@@ -2,9 +2,9 @@ package com.DisenoProductos.EcoSolido.Models.DTOs;
 
 public class MetricasResponseDTO {
     private long total;
-    private long resueltas;
     private long enProceso;
     private long pendientes;
+    private long resueltos;
     private long incidenciasEsteMes;
     public long getTotal() {
         return total;
@@ -18,14 +18,6 @@ public class MetricasResponseDTO {
 
     public void setTotal(long total) {
         this.total = total;
-    }
-
-    public long getResueltas() {
-        return resueltas;
-    }
-
-    public void setResueltas(long resueltas) {
-        this.resueltas = resueltas;
     }
 
     public long getEnProceso() {
@@ -42,5 +34,13 @@ public class MetricasResponseDTO {
 
     public void setPendientes(long pendientes) {
         this.pendientes = pendientes;
+    }
+
+    public long getResueltos() {
+        return resueltos;
+    }
+
+    public void setResueltos(long resueltos) {
+        this.resueltos = resueltos;
     }
 }

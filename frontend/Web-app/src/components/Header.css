@@ -82,6 +82,15 @@
 .header__username{
   margin-left:10px;
 }
+.header__points {
+  margin-left: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffd700;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
 .header__icon-btn:hover {
   opacity: 1;
   transform: scale(1.05);

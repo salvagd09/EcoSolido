@@ -43,7 +43,6 @@ export default function ProtectedRoute({ children, module, requireAdmin = false 
     );
   }
 
-  // Si pasa todas las verificaciones, renderizar los hijos
   return children;
 }
 

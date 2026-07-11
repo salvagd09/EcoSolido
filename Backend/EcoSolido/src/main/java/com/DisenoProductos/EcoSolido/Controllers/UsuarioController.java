@@ -5,6 +5,7 @@ import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
 import com.DisenoProductos.EcoSolido.Services.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -77,5 +78,14 @@ public class UsuarioController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    // HU011: Endpoint para consultar puntos del usuario autenticado
+    @GetMapping("/puntos")
+    public ResponseEntity<?> obtenerPuntos(Authentication authentication) {
+        String nombreUsuario = authentication.getName();
+        UsuarioEntity usuario = usuarioService.obtenerUsuarioPorNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        return ResponseEntity.ok(Map.of("puntos", usuario.getPuntos()));
     }
 }

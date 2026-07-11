@@ -195,3 +195,11 @@ export function IconBuscar() {
     </svg>
   )
 }
+
+export function IconInsignia() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2l2.5 5.5L20 8.5l-4 4.2L17 19 12 16l-5 3 1-6.3-4-4.2L9.5 7.5 12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  )
+}

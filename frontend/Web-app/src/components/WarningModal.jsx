@@ -1,6 +1,6 @@
 import './WarningModal.css'
 
-export default function WarningModal({ onClose, message }) {
+export default function WarningModal({ onClose, message, title, hidePrefix }) {
   return (
     <div className="warning-modal-overlay" role="presentation" onClick={onClose}>
       <div
@@ -11,10 +11,14 @@ export default function WarningModal({ onClose, message }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="warning-modal-title" className="warning-modal__title">
-          Advertencia ⚠
+          {title || 'Advertencia ⚠'}
         </h2>
         <p className="warning-modal__message">
-          Su incidencia no se ha podido registrar.<br />
+          {!hidePrefix && (
+            <>
+              Su incidencia no se ha podido registrar.<br />
+            </>
+          )}
           {message || 'No ha colocado foto alguna.'}
         </p>
         <div className="warning-modal__actions">

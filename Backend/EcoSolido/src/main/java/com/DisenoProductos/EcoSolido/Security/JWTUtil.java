@@ -16,12 +16,12 @@ public class JwtUtil {
                 .setSubject(nombreUsuario)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
                 .compact();
     }
     public String extraerNombreUsuario(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(SECRET_KEY.getBytes())
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -29,7 +29,7 @@ public class JwtUtil {
     public boolean validarToken(String token) {
         try {
             Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
+                    .setSigningKey(SECRET_KEY.getBytes())
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
