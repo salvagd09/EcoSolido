@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './EducacionMedioAmbiental.css'
 import { generarRecomendaciones } from '../services/RecomendacionApi'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
 const ARTICULOS = [
   {
@@ -66,6 +67,7 @@ export default function EducacionMedioAmbiental() {
   const [cargando, setCargando] = useState(false)
   const [caracteresRestantes, setCaracteresRestantes] = useState(MAX_CONTEXTO)
   const [error, setError] = useState('')
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   function handleContextoChange(event) {
     const nuevoValor = event.target.value;
     setContextoExtra(nuevoValor);
@@ -115,7 +117,32 @@ export default function EducacionMedioAmbiental() {
             ))}
           </select>
           <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
-          <textarea className="educacion__textarea" name="contexto" value={contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
+          <textarea className="educacion__textarea" name="contexto"value={listening ? transcript : contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
+          {browserSupportsSpeechRecognition && (
+                <div className="registrar__voz2">
+                  <button
+                    type="button"
+                    className={`registrar__btn2--voz ${listening ? 'registrar__btn2--voz--activo' : ''}`}
+                    onClick={() => {
+                      if (listening) {
+                        SpeechRecognition.stopListening();
+                        if (transcript) {
+                          setContextoExtra(transcript);
+                          setCaracteresRestantes(MAX_CONTEXTO - transcript.length);
+                        }
+                      } else {
+                        resetTranscript();
+                        SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
+                      }
+                    }}
+                  >
+                    {listening ? '⏹️ Detener grabación' : '🗣️ Dictar descripción'}
+                  </button>
+                  {listening && (
+                    <span className="registrar__voz-estado">Escuchando...</span>
+                  )}
+                </div>
+              )}
           <span className={`registrar__contador2 ${caracteresRestantes < 50 ? 'registrar__contador2--alerta' : ''}`}>
             {caracteresRestantes} caracteres restantes
           </span>

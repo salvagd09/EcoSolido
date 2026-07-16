@@ -681,7 +681,10 @@
     gap: 12px;
     margin-top: 8px;
 }
-
+[data-theme="dark"] .registrar__btn--voz{
+  color: var(--color-text) !important;
+  background: var(--color-bg-white) !important;
+}
 .registrar__btn--voz {
     padding: 8px 16px;
     border: 2px solid #4caf50;

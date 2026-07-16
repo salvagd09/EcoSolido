@@ -26,6 +26,35 @@
   font-weight: 600;
   color: var(--color-text);
 }
+.registrar__voz2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+.registrar__btn2--voz {
+    padding: 8px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    background: white;
+    color: #4caf50;
+    cursor: pointer;
+    font-size:  calc(0.95rem * var(--font-scale, 1));
+}
+.registrar__btn2--voz--activo {
+    background: #4caf50;
+    color: white;
+    animation: pulsar 1.5s infinite;
+}
+.registrar__voz2-estado {
+    color: #e53e3e;
+    font-size: calc(0.85rem * var(--font-scale, 1));
+    font-style: italic;
+}
+[data-theme="dark"] .registrar__btn2--voz{
+  color: var(--color-text) !important;
+  background: var(--color-bg-white) !important;
+}
 .recomendaciones_header{
   display:flex;
   justify-content: space-between;
