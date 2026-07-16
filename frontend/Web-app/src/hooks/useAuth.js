@@ -25,10 +25,10 @@ export function AuthProvider({ children }) {
     const nombreUsuario = localStorage.getItem('nombreUsuario');
     const puntos = parseInt(localStorage.getItem('puntos') || '0', 10);
     const savedPermissions = localStorage.getItem('permissions');
-
+    const rol = localStorage.getItem('rol');
     if (token && nombreUsuario) {
       setIsAuthenticated(true);
-      setUser({ nombreUsuario, puntos });
+      setUser({ nombreUsuario, puntos, rol }); 
       if (savedPermissions) {
         setPermissions(JSON.parse(savedPermissions));
       } else {
@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('nombreUsuario', data.nombreUsuario);
       localStorage.setItem('puntos', 0);
-      
+      localStorage.setItem('rol', data.rol); 
       // Guardar permisos (pueden venir del backend o ser por defecto)
       const userPermissions = data.permissions || {
         canRegister: true,
@@ -74,10 +74,10 @@ export function AuthProvider({ children }) {
       localStorage.setItem('permissions', JSON.stringify(userPermissions));
       
       setIsAuthenticated(true);
-      setUser({ nombreUsuario: data.nombreUsuario, puntos: 0 });
+      setUser({ nombreUsuario: data.nombreUsuario, puntos: 0, rol: data.rol });
       setPermissions(userPermissions);
       
-      return { success: true };
+      return { success: true, rol: data.rol };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -101,27 +101,25 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Verificar si tiene permiso para un módulo específico
-  const hasPermission = useCallback((module) => {
-    if (!isAuthenticated) return false;
-    
-    switch (module) {
-      case 'registro':
-        return permissions.canRegister;
-      case 'seguimiento':
-        return permissions.canTrack;
-      case 'educacion':
-        return permissions.canAccessEducation;
-      case 'insignias':
-        return true;
-      default:
-        return false;
-    }
-  }, [isAuthenticated, permissions]);
+ const hasPermission = useCallback((module) => {
+  if (!isAuthenticated || !user?.rol) return false;
+
+  const modulePermissions = {
+    registro: ['CIUDADANO'],
+    seguimiento: ['CIUDADANO'],
+    educacion: ['CIUDADANO'],
+    insignias: ['CIUDADANO'],
+    gestion: ['ADMIN'],
+    dashboard: ['ADMIN'],
+  };
+
+  return modulePermissions[module]?.includes(user.rol) ?? false;
+}, [isAuthenticated, user]);
 
   // Verificar si es administrador
   const isAdmin = useCallback(() => {
-    return isAuthenticated && permissions.isAdmin;
-  }, [isAuthenticated, permissions]);
+    return isAuthenticated && user?.rol === 'ADMIN';
+  }, [isAuthenticated, user]);
 
   // Actualizar puntos del usuario
   const updatePuntos = useCallback((nuevosPuntos) => {

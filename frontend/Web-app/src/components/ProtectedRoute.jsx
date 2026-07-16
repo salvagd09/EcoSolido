@@ -9,10 +9,9 @@ import './ProtectedRoute.css';
  * @param {boolean} requireAdmin - Si es true, solo permite acceso a administradores
  */
 export default function ProtectedRoute({ children, module, requireAdmin = false }) {
-  const { isAuthenticated, hasPermission, isAdmin, isLoading } = useAuth();
+  const { isAuthenticated, hasPermission, isAdmin, isLoading, user } = useAuth();
   const location = useLocation();
 
-  // Mientras carga, mostrar un spinner o nada
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -22,17 +21,14 @@ export default function ProtectedRoute({ children, module, requireAdmin = false 
     );
   }
 
-  // Si no está autenticado, redirigir a login
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Si requiere admin y no lo es, redirigir a home
   if (requireAdmin && !isAdmin()) {
-    return <Navigate to="/registro" replace />;
+    return <Navigate to={user?.rol === 'ADMIN' ? '/dashboard' : '/registro'} replace />;
   }
 
-  // Si tiene un módulo específico, verificar permisos
   if (module && !hasPermission(module)) {
     return (
       <div className="access-denied">
@@ -51,7 +47,7 @@ export default function ProtectedRoute({ children, module, requireAdmin = false 
  * Si el usuario ya está autenticado, lo redirige a home
  */
 export function PublicRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -65,7 +61,7 @@ export function PublicRoute({ children }) {
 
   // Si ya está autenticado y viene de login, redirigir a home
   if (isAuthenticated && location.pathname === '/login') {
-    return <Navigate to="/registro" replace />;
+    return <Navigate to={user?.rol === 'ADMIN' ? '/dashboard' : '/registro'} replace />;
   }
 
   return children;

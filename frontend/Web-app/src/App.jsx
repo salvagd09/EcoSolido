@@ -13,6 +13,9 @@ import RestablecerContra from './components/RestablecerContraseña'
 import { useNavigationShortcuts } from './hooks/useKeyboardShortcuts'
 import { useAuth } from './hooks/useAuth'
 import ProtectedRoute, { PublicRoute } from './components/ProtectedRoute'
+import Dashboard from './components/Dashboard'
+import ManejarIncidencias from './components/ManejarIncidencias'
+import DefaultRedirect from './components/DefaultRedirect'
 
 // Componente de diseño para el layout principal (con Header y Sidebar)
 function MainLayout() {
@@ -79,6 +82,16 @@ function App() {
               <SeguimientoConLayout />
             </ProtectedRoute>
           } />
+          <Route path="/gestion" element={
+            <ProtectedRoute module="gestion">
+              < ManejarIncidencias/>
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute module="dashboard">
+              < Dashboard/>
+            </ProtectedRoute>
+          } />
           <Route path="/educacion" element={
             <ProtectedRoute module="educacion">
               <EducacionMedioAmbiental />
@@ -89,11 +102,11 @@ function App() {
               <RecompensasCiudadano />
             </ProtectedRoute>
           } />
-          <Route index element={<Navigate to="/registro" replace />} />
+        <Route index element={<DefaultRedirect />} />
         </Route>
         
         {/* Redirigir rutas desconocidas */}
-        <Route path="*" element={<Navigate to="/registro" replace />} />
+        <Route path="*" element={<DefaultRedirect />} />
       </Routes>
     </Router>
   )

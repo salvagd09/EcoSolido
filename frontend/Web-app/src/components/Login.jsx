@@ -9,15 +9,14 @@ export default function Login({ onLogin }) {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [verContra, setVerContra] = useState(false)
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     
     const handleSubmit = async (e) => {
         e.preventDefault()
         const result = await login(nombreUs, contra);
-        
         if (result.success) {
             onLogin?.();
-            navigate("/registro");
+            navigate(result.rol === 'ADMIN' ? '/dashboard' : '/registro');
         } else {
             setError(result.error);
         }

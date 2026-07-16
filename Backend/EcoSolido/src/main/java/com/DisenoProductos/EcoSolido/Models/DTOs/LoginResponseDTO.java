@@ -1,13 +1,23 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
+import com.DisenoProductos.EcoSolido.Models.States.Rol;
+
 public class LoginResponseDTO {
     private String token;
     private String nombreUsuario;
+    private Rol rol;
     private Integer puntos;
-    public LoginResponseDTO(String token, String nombreUsuario, Integer puntos) {
+    public LoginResponseDTO(String token, String nombreUsuario,Rol rol, Integer puntos) {
         this.token = token;
         this.nombreUsuario = nombreUsuario;
         this.puntos = puntos;
+        this.rol=rol;
+    }
+    public Rol getRol() {
+        return rol;
+    }
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
     public String getNombreUsuario() {return nombreUsuario;}
     public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}

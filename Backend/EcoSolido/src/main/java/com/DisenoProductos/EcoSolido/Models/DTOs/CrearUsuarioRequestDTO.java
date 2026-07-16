@@ -1,5 +1,7 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
+
+
 public class CrearUsuarioRequestDTO {
     private String nombreCompleto;
     private String apellidoCompleto;

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { IconRegistro, IconSeguimiento, IconEducacion, IconCerrarMenu, IconMenu, IconInsignia } from './icons'
+import { IconRegistro, IconSeguimiento, IconEducacion, IconCerrarMenu, IconMenu, IconInsignia, IconIncidencias, IconDashboard } from './icons'
 import './Sidebar.css'
+import { useAuth } from '../hooks/useAuth'
 
 const MENU_ITEMS = [
   { 
@@ -9,38 +10,59 @@ const MENU_ITEMS = [
     label: 'Registro de Incidencias', 
     icon: IconRegistro, 
     path: '/registro',
-    enabled: true 
+    enabled: true,
+    roles: ['CIUDADANO']
   },
   { 
     id: 'seguimiento', 
     label: 'Seguimiento de Incidencias', 
     icon: IconSeguimiento, 
     path: '/seguimiento',
-    enabled: true  // ← Habilitado para acceso directo
+    enabled:true,
+    roles: ['CIUDADANO'] // ← Habilitado para acceso directo
   },
   { 
     id: 'educacion', 
     label: 'Educación Medio Ambiental', 
     icon: IconEducacion, 
     path: '/educacion',
-    enabled: true  // ← Habilitado para acceso directo
+    enabled: true,// ← Habilitado para acceso directo
+    roles: ['CIUDADANO']  
   },
   { 
     id: 'recompensas', 
     label: 'Recompensas al Ciudadano', 
     icon: IconInsignia, 
     path: '/recompensas',
-    enabled: true
+    enabled: true,
+    roles: ['CIUDADANO']
   },
+    { 
+    id: 'gestion', 
+    label: 'Gestión de ciudadanos', 
+    icon: IconIncidencias, 
+    path: '/gestion',
+    enabled: true,
+    roles: ['ADMIN']
+  },{
+    id:"Dashboard",
+    label:'Dashboard de incidencias',
+    icon:IconDashboard,
+    path:'/dashboard',
+    enabled:true,
+    roles: ['ADMIN']
+  }
 ]
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation()
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
-
+  const { user } = useAuth()
   const isActive = (path) => location.pathname === path
-
+  const visibleItems = MENU_ITEMS.filter(item => 
+    !item.roles || item.roles.includes(user?.rol)
+  )
   const handleNavigation = (item) => {
     if (!item.enabled) {
       return
@@ -89,7 +111,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         <nav className="sidebar__nav" aria-label="Menú principal">
           <ul className="sidebar__list">
-            {MENU_ITEMS.map(({ id, label, icon: Icon, path, enabled }) => {
+            {visibleItems.map(({ id, label, icon: Icon, path, enabled }) => {
               const active = isActive(path)
               return (
                 <li key={id}>

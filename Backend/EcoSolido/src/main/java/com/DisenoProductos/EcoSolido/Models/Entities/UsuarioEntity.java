@@ -1,5 +1,6 @@
 package com.DisenoProductos.EcoSolido.Models.Entities;
 
+import com.DisenoProductos.EcoSolido.Models.States.Rol;
 import jakarta.persistence.*;
 
 @Entity
@@ -27,8 +28,17 @@ public class UsuarioEntity {
     private String respuestaPregunta;
     @Column(name="puntos", nullable = false)
     private Integer puntos = 0;
+    @Column(name="rol")
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
     public Integer getIdUsuario() {
         return idUsuario;
+    }
+    public Rol getRol() {
+        return rol;
+    }
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;

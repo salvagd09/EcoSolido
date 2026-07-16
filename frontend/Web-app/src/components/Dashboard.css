@@ -1,0 +1,15 @@
+.titulo__dashboard{
+  margin: 0 0 28px;
+  font-size:1.75rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+.texto__complementario{
+    font-size: 1.25rem;
+    color:var(--color-text-secondary);
+    font-weight: 600;
+    margin: 0;
+}

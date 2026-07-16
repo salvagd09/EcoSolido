@@ -183,6 +183,24 @@ public class IncidenciaService  {
             return muestraIncidencia;
         }).collect(Collectors.toList());
     }
+    public List<SeguirIncidenciaResponseDTO> mostrarIncidenciasTotales(){
+        List<IncidenciaEntity> incidencias=incidenciaRepository.findAll();
+        return incidencias.stream().distinct().map(incidencia->{
+            SeguirIncidenciaResponseDTO muestraIncidencia=new SeguirIncidenciaResponseDTO();
+            muestraIncidencia.setIdIncidencia(incidencia.getIdIncidencia());
+            muestraIncidencia.setDescripcion(incidencia.getDescripcion());
+            muestraIncidencia.setEstado(incidencia.getEstado().name());
+            muestraIncidencia.setTitulo(incidencia.getTitulo());
+            muestraIncidencia.setFecha(incidencia.getFecha().toString());
+            muestraIncidencia.setUrlsImagenes(
+                    incidencia.getFotos().stream()
+                            .map(foto -> normalizarUrlCloudinary(foto.getUrlFoto()))
+                            .collect(Collectors.toList())
+            );
+            muestraIncidencia.setDireccionTexto(incidencia.getDireccionTexto());
+            return muestraIncidencia;
+        }).collect(Collectors.toList());
+    }
     public MetricasResponseDTO obtenerMetricas(String nombreUsuario) {
         long total = incidenciaRepository.countByUsuario_NombreUsuario(nombreUsuario);
         long enProceso = incidenciaRepository.countByUsuario_NombreUsuarioAndEstado(nombreUsuario, IncidenciaEstados.EN_PROCESO);
