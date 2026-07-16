@@ -7,6 +7,7 @@ import cuartaInsignia from '../assets/CUARTA INSIGNIA.png'
 import quintaInsignia from '../assets/QUINTA INSIGNIA.png'
 import './RecompensasCiudadano.css'
 import BarraProgreso from './BarraProgreso'
+import HelpModal from './HelpModal'
 
 const IMAGENES_INSIGNIAS = {
   1: primerInsignia,
@@ -68,6 +69,7 @@ export default function RecompensasCiudadano() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
   const [tamañoLetra,setTamañoLetra]=useState(1);
+  const [showHelpModal,setShowHelpModal]=useState(false);
   const valor=localStorage.getItem('puntos')
   useEffect(() => {
     async function cargarInsignias() {
@@ -92,6 +94,13 @@ export default function RecompensasCiudadano() {
     <main className="recompensas" style={{ '--font-scale': tamañoLetra }}>
       <div className="recompensas__header">
         <h2 className="recompensas__title">Área de Recompensas</h2>
+         <button
+          type="button"
+          className="registrar__help2-btn"
+          onClick={() => setShowHelpModal(true)}
+        >
+          ¿Cómo funciona?
+        </button>
         <div className="registrar__font-controls">
           <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
           <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
@@ -174,6 +183,7 @@ export default function RecompensasCiudadano() {
           </section>
         </>
       )}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
     </main>
   )
 }

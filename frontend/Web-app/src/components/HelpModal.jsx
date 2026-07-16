@@ -44,6 +44,9 @@ const FAQS = [
     },
     {   pregunta: "¿Cómo funciona el botón de dictar descripción?",
         respuesta:"Funciona de manera similar al botón de grabación de voz de WhatsApp. Mantén presionado el botón mientras dictas la descripción de la incidencia y tu voz se convertirá automáticamente en texto, permitiéndote registrar el reporte de forma más rápida."
+    },
+    {   pregunta: "¿Cómo funciona lo uso en Seguimiento de incidencias?",
+        respuesta:"Haz click en el botón que tiene un micrófono 🎤.Luego menciona el título de la incidencia que quieras decir y presiona ese botón que ahora tiene el símbolo de ⏹ cuando ya hayas dicho todo el título. El botón solo funciona con títulos"
     }
 ]
 

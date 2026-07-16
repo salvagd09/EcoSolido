@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './EducacionMedioAmbiental.css'
 import { generarRecomendaciones } from '../services/RecomendacionApi'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import HelpModal from './HelpModal'
 
 const ARTICULOS = [
   {
@@ -65,6 +66,7 @@ export default function EducacionMedioAmbiental() {
   const [contextoExtra, setContextoExtra] = useState("")
   const [recomendaciones, setRecomendaciones] = useState([])
   const [cargando, setCargando] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const [caracteresRestantes, setCaracteresRestantes] = useState(MAX_CONTEXTO)
   const [error, setError] = useState('')
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
@@ -99,6 +101,13 @@ export default function EducacionMedioAmbiental() {
       <div className="recomendaciones_espacio">
         <div className="recomendaciones_header">
           <h2 className="educacion__title">Recomendaciones para el buen tratamiento de residuos sólidos</h2>
+          <button
+            type="button"
+            className="registrar__help2-btn"
+            onClick={() => setShowHelpModal(true)}
+          >
+            ¿Cómo funciona?
+          </button>
           <div className="registrar__font2-controls">
             <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
             <button type="button" onClick={() => setTamañoLetra(1)}>A</button>
@@ -106,7 +115,7 @@ export default function EducacionMedioAmbiental() {
           </div>
         </div>
         <p className="educacion__subtitle">
-            Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
+          Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
         </p>
         <form onSubmit={handleSubmit} className="educacion__form">
           <label className="educacion__label">Selecciona un tipo de residuo sólido <span style={{ color: '#ff7a00' }}>*</span>:</label>
@@ -117,32 +126,32 @@ export default function EducacionMedioAmbiental() {
             ))}
           </select>
           <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
-          <textarea className="educacion__textarea" name="contexto"value={listening ? transcript : contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
+          <textarea className="educacion__textarea" name="contexto" value={listening ? transcript : contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
           {browserSupportsSpeechRecognition && (
-                <div className="registrar__voz2">
-                  <button
-                    type="button"
-                    className={`registrar__btn2--voz ${listening ? 'registrar__btn2--voz--activo' : ''}`}
-                    onClick={() => {
-                      if (listening) {
-                        SpeechRecognition.stopListening();
-                        if (transcript) {
-                          setContextoExtra(transcript);
-                          setCaracteresRestantes(MAX_CONTEXTO - transcript.length);
-                        }
-                      } else {
-                        resetTranscript();
-                        SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
-                      }
-                    }}
-                  >
-                    {listening ? '⏹️ Detener grabación' : '🗣️ Dictar descripción'}
-                  </button>
-                  {listening && (
-                    <span className="registrar__voz-estado">Escuchando...</span>
-                  )}
-                </div>
+            <div className="registrar__voz2">
+              <button
+                type="button"
+                className={`registrar__btn2--voz ${listening ? 'registrar__btn2--voz--activo' : ''}`}
+                onClick={() => {
+                  if (listening) {
+                    SpeechRecognition.stopListening();
+                    if (transcript) {
+                      setContextoExtra(transcript);
+                      setCaracteresRestantes(MAX_CONTEXTO - transcript.length);
+                    }
+                  } else {
+                    resetTranscript();
+                    SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
+                  }
+                }}
+              >
+                {listening ? '⏹️ Detener grabación' : '🗣️ Dictar descripción'}
+              </button>
+              {listening && (
+                <span className="registrar__voz-estado">Escuchando...</span>
               )}
+            </div>
+          )}
           <span className={`registrar__contador2 ${caracteresRestantes < 50 ? 'registrar__contador2--alerta' : ''}`}>
             {caracteresRestantes} caracteres restantes
           </span>
@@ -259,6 +268,7 @@ export default function EducacionMedioAmbiental() {
           <p>No hay artículos disponibles en esta categoría.</p>
         </div>
       )}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
     </main>
   )
 }
