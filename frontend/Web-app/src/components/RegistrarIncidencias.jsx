@@ -408,7 +408,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
         <div className="registrar__font-controls">
           <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
           <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
-          <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.5, t + 0.1))}>🗚+</button>
+          <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
         </div>
       </div>
 

@@ -67,6 +67,7 @@ export default function RecompensasCiudadano() {
   const [insignias, setInsignias] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
+  const [tamañoLetra,setTamañoLetra]=useState(1);
   const valor=localStorage.getItem('puntos')
   useEffect(() => {
     async function cargarInsignias() {
@@ -88,14 +89,18 @@ export default function RecompensasCiudadano() {
   const desbloqueadas = insignias.filter(i => i.desbloqueada)
   const pendientes = insignias.filter(i => !i.desbloqueada)
   return (
-    <main className="recompensas">
+    <main className="recompensas" style={{ '--font-scale': tamañoLetra }}>
       <div className="recompensas__header">
         <h2 className="recompensas__title">Área de Recompensas</h2>
-        <p className="recompensas__subtitle">
-          Esta es el área en la cuál vas a poder ver tus insignias y los premios que mereces por obtener cada 1.
-        </p>
+        <div className="registrar__font-controls">
+          <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
+          <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
+          <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
+        </div>
       </div>
-
+      <p className="recompensas__subtitle">
+          Esta es el área en la cuál vas a poder ver tus insignias y los premios que mereces por obtener cada 1.
+      </p>
       {cargando && <p className="recompensas__estado">Cargando insignias...</p>}
       {error && <p className="recompensas__estado recompensas__estado--error">{error}</p>}
 
