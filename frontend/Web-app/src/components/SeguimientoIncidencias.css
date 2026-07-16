@@ -9,7 +9,7 @@
   font-size: calc(1.5rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: 20px;
+  margin:0;
 }
 
 /* Panel de Métricas */
@@ -454,6 +454,8 @@
   justify-content: space-between;
   flex-wrap:wrap;
   width:100%;
+  margin-bottom:20px;
+  align-items:center;
 }
 .registrar__font3-controls button:hover {
   background: var(--color-accent-green-light);

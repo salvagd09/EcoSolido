@@ -29,7 +29,9 @@
 .recomendaciones_header{
   display:flex;
   justify-content: space-between;
+  align-items:center;
   width:100%;
+  margin-bottom:20px;
   flex-wrap:wrap;
 }
 .registrar__font2-controls button:hover {
@@ -121,7 +123,7 @@
   font-weight: 700;
   width:50%;
   color: var(--color-text);
-  margin-bottom: 5px;
+  margin:0;
 }
 .educacion_buttonOR{
   cursor:pointer;

@@ -6,9 +6,10 @@
 }
 
 .recompensas__header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   display:flex;
   justify-content: space-between;
+  align-items:center;
 }
 .registrar__font-controls {
   display: flex;
@@ -34,7 +35,7 @@
   font-size: calc(1.5rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-text);
-  margin-bottom: 8px;
+  margin:0;
 }
 .recompensas_seccion_texto{
   color:rgb(20, 20, 61);
