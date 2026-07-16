@@ -50,7 +50,25 @@ export function IconSeguimiento() {
     </svg>
   )
 }
-
+export function IconDashboard() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="13" y="4" width="7" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="13" y="10" width="7" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="4" y="13" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  )
+}
+export function IconIncidencias() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 4L21 19H3L12 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M12 10v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="16.5" r="0.75" fill="currentColor" stroke="currentColor" strokeWidth="0.5" />
+    </svg>
+  )
+}
 export function IconEducacion() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">

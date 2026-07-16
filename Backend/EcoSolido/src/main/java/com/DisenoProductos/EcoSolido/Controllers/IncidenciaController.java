@@ -32,6 +32,10 @@ public class IncidenciaController {
         String userName = authentication.getName();
         return ResponseEntity.ok(incidenciaService.mostrarIncidencias(userName));
     }
+    @GetMapping("/mostrarT")
+    public ResponseEntity<?> mostrarTodoIncidencias() {
+        return ResponseEntity.ok(incidenciaService.mostrarIncidenciasTotales());
+    }
     @PostMapping("/registrar")
     public ResponseEntity<?> logroRegistrarIncidencia(
             @RequestPart("incidencia") @Valid IncidenciaRequestDTO incidenciaDTO,

@@ -3,6 +3,7 @@ package com.DisenoProductos.EcoSolido.Services;
 import com.DisenoProductos.EcoSolido.Integrations.RENIECIntegration;
 import com.DisenoProductos.EcoSolido.Models.DTOs.*;
 import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
+import com.DisenoProductos.EcoSolido.Models.States.Rol;
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
 import com.DisenoProductos.EcoSolido.Security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class UsuarioService {
         usuario.setCorreoElectronico(usuarioRequestDTO.getCorreoElectronico());
         usuario.setPreguntaSeguridad(usuarioRequestDTO.getPreguntaSeguridad());
         usuario.setRespuestaPregunta(usuarioRequestDTO.getRespuestaPregunta().toLowerCase());
+        usuario.setRol(Rol.CIUDADANO);
         if (!reniecIntegration.validarDni(usuario.getDni(),
                 usuario.getNombreCompleto(),
                 usuario.getApellidoCompleto())) {
@@ -56,7 +58,7 @@ public class UsuarioService {
             throw new RuntimeException("Contraseña incorrecta");
         }
         String nuevoToken = jwtUtil.generarToken(usuario.getNombreUsuario());
-        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario(), usuario.getPuntos());
+        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario(),usuario.getRol(),usuario.getPuntos());
     }
     public VerificarCorreoTelResponseDTO verificarCorreoOTelefono(VerificarCorreoTelRequestDTO requestDTO) {
         boolean existe;
