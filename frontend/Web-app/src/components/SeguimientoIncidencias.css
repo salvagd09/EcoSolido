@@ -167,12 +167,45 @@
 }
 
 .seguimiento__search {
+  width:50%;
+  display:flex;
+  flex-wrap:wrap;
+  align-items: center;
   flex: 1;
   min-width: 200px;
+  gap:8px;
 }
-
+.registrar__voz3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0;
+}
+.registrar__btn3--voz {
+    padding: 8px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    background: white;
+    color: #4caf50;
+    cursor: pointer;
+    font-size:  calc(0.95rem * var(--font-scale, 1));
+}
+.registrar__btn3--voz--activo {
+    background: #4caf50;
+    color: white;
+    animation: pulsar 1.5s infinite;
+}
+.registrar__voz3-estado {
+    color: #e53e3e;
+    font-size: calc(0.85rem * var(--font-scale, 1));
+    font-style: italic;
+}
+[data-theme="dark"] .registrar__btn2--voz{
+  color: var(--color-text) !important;
+  background: var(--color-bg-white) !important;
+}
 .seguimiento__search-input {
-  width: 100%;
+  width: 80%;
   padding: 10px 16px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -432,9 +465,18 @@
   font-size: calc(0.85rem*var(--font-scale,1));
     color: #888;
 }
+.registrar__help2-btn {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size:  calc(0.95rem * var(--font-scale, 1));
+    cursor: pointer;
+    opacity: 0.7;
+}
 .registrar__font3-controls {
   display: flex;
-  width:50%;
+  width:20%;
   justify-content: right;
 }
 .registrar__font3-controls button {

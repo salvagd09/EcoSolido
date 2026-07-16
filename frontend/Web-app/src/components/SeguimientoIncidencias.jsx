@@ -1,6 +1,7 @@
 import { useState, useMemo,useEffect } from 'react'
 import './SeguimientoIncidencias.css'
-
+import HelpModal from './HelpModal'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 // Iconos SVG inline
 const IconTotal = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,6 +52,8 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
   const [metricas, setMetricas] = useState({ total: 0, enProceso: 0, pendientes: 0, resueltos: 0 })
   const [cargandoMetricas, setCargandoMetricas] = useState(false)
   const [incidencias, setIncidencias] = useState(INCIDENCIAS_FALSAS)
+  const [showHelpModal,setShowHelpModal]=useState(false)
+  const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   useEffect(() => {
     async function obtenerMetricas() {
       try {
@@ -116,6 +119,13 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     <main className="seguimiento" style={{ '--font-scale': tamañoLetra }}>
       <div className="recomendaciones_header">
         <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
+        <button
+          type="button"
+          className="registrar__help2-btn"
+          onClick={() => setShowHelpModal(true)}
+        >
+          ¿Cómo funciona?
+        </button>
         <div className="registrar__font3-controls">
             <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
             <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
@@ -183,10 +193,32 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           <input
             type="text"
             placeholder="Buscar por fecha, titulo o ubicacion..."
-            value={busqueda}
+            value={listening ? transcript:busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="seguimiento__search-input"
           />
+          {browserSupportsSpeechRecognition && (
+                <div className="registrar__voz3">
+                  <button
+                    type="button"
+                    className={`registrar__btn3--voz ${listening ? 'registrar__btn3--voz--activo' : ''}`}
+                    onClick={() => {
+                      if (listening) {
+                        SpeechRecognition.stopListening();
+                        if (transcript) {
+                          const busquedaLimpia = transcript.trim().replace(/\.+$/, '');    
+                          setBusqueda(busquedaLimpia);
+                        }
+                      } else {
+                        resetTranscript();
+                        SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
+                      }
+                    }}
+                  >
+                    {listening ? '⏹' : '🎤'}
+                  </button>
+                </div>
+              )}
         </div>
         
         <div className="seguimiento__filtros">
@@ -247,6 +279,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           </div>
         )}
       </div>
+       {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
     </main>
   )
 }
