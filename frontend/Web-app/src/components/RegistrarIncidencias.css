@@ -129,7 +129,7 @@
   }
 
   .registrar__title {
-    font-size: 1.5rem;
+    font-size: calc(1.5rem * var(--font-scale, 1));
     margin-bottom: 24px;
   }
 
@@ -138,11 +138,11 @@
   }
 
   .registrar__fotos-info {
-    font-size: 0.8rem;
+    font-size: calc(0.88rem * var(--font-scale, 1));
   }
 
   .registrar__field label {
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .registrar__btn {
@@ -254,7 +254,7 @@
   border: none;
   border-radius: 50%;
   background: var(--color-btn-danger);
-  font-size: 1rem;
+  font-size: calc(1rem * var(--font-scale, 1));
   line-height: 1;
   cursor: pointer;
   color: #fff;
@@ -406,7 +406,7 @@
   border: 1px solid var(--color-btn-danger);
   background: var(--color-accent-red-light);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: calc(0.9rem * var(--font-scale, 1));
   line-height: 1.6;
   color: var(--color-btn-danger);
 }
@@ -448,7 +448,7 @@
 .registrar__ia-tecnico code {
   background: var(--color-bg);
   padding: 2px 6px;
-  font-size: 0.85rem;
+  font-size: calc(0.85rem * var(--font-scale, 1));
   border-radius: var(--radius-sm);
   font-family: 'Courier New', monospace;
 }
@@ -526,7 +526,7 @@
   }
 
   .registrar__title {
-    font-size: 1.35rem;
+    font-size: calc(1.35rem * var(--font-scale, 1));
     margin-bottom: 20px;
   }
 
@@ -535,7 +535,7 @@
   }
 
   .registrar__fotos-info {
-    font-size: 0.75rem;
+    font-size: calc(0.75rem * var(--font-scale, 1));
     margin-bottom: 10px;
   }
 
@@ -544,7 +544,7 @@
   }
 
   .foto-slot__upload-text {
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .foto-slot__preview {
@@ -562,7 +562,7 @@
   .registrar__field select,
   .registrar__field textarea {
     padding: 10px 12px;
-    font-size: 0.9rem;
+    font-size: calc(0.9rem * var(--font-scale, 1));
   }
 
   .registrar__field textarea {
@@ -571,18 +571,18 @@
   }
 
   .registrar__textarea-wrapper .registrar__contador {
-    font-size: 0.75rem;
+    font-size: calc(0.75rem * var(--font-scale, 1));
     bottom: 8px;
     right: 10px;
   }
 
   .registrar__ia-loading {
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .registrar__ia-tecnico {
     padding: 12px 14px;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .registrar__actions {
@@ -594,7 +594,7 @@
   .registrar__btn {
     width: 100%;
     padding: 12px 20px;
-    font-size: 0.9rem;
+    font-size: calc(0.9rem * var(--font-scale, 1));
   }
 
   .modal {
@@ -609,12 +609,12 @@
   }
 
   .registrar__title {
-    font-size: 1.2rem;
+    font-size: calc(1.2rem * var(--font-scale, 1));
     margin-bottom: 16px;
   }
 
   .registrar__fotos legend {
-    font-size: 0.8rem;
+    font-size: calc(0.8rem * var(--font-scale, 1));
   }
 
   .foto-slot__btn {
@@ -627,24 +627,24 @@
   }
 
   .foto-slot__upload-text {
-    font-size: 0.8rem;
+    font-size: calc(0.8rem * var(--font-scale, 1));
   }
 
   .foto-slot__remove {
     width: 24px;
     height: 24px;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .registrar__field select,
   .registrar__field textarea {
     padding: 8px 10px;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
 
   .registrar__btn {
     padding: 10px 16px;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
     min-width: 140px;
   }
 }
@@ -665,6 +665,7 @@
   border: 1px solid var(--color-border);
   background: var(--color-bg-white);
   border-radius: 8px;
+  font-size:1.25rem;
   padding: 4px 10px;
   cursor: pointer;
   font-weight: 600;
@@ -699,7 +700,7 @@
 
 .registrar__voz-estado {
     color: #e53e3e;
-    font-size: 0.85rem;
+    font-size: calc(0.85rem * var(--font-scale, 1));
     font-style: italic;
 }
 

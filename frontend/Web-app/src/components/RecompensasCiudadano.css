@@ -7,27 +7,51 @@
 
 .recompensas__header {
   margin-bottom: 24px;
+  display:flex;
+  justify-content: space-between;
+}
+.registrar__font-controls {
+  display: flex;
+  justify-content:right;
+  padding:10px;
+  gap: 8px;
 }
 
+.registrar__font-controls button {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-white);
+  font-size:1.25rem;
+  border-radius: 8px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.registrar__font-controls button:hover {
+  background: var(--color-accent-green-light);
+}
 .recompensas__title {
-  font-size: 1.5rem;
+  font-size: calc(1.5rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 8px;
 }
 .recompensas_seccion_texto{
   color:rgb(20, 20, 61);
-  font-size:0.8rem;
+  font-size:calc(0.8rem*var(--font-scale,1));
+}
+[data-theme="dark"] .recompensas_seccion_texto{
+  color:var(--color-text);
 }
 .recompensas__subtitle {
   color: var(--color-text-secondary);
-  font-size: 1rem;
+  font-size: calc(1rem*var(--font-scale,1));
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .recompensas__seccion-title {
-  font-size: 1.15rem;
+  font-size: calc(1.15rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-text);
   margin-bottom: 16px;
@@ -68,7 +92,7 @@
 }
 
 .recompensa-card__icono {
-  font-size: 2.5rem;
+  font-size: calc(2.5rem*var(--font-scale,1));
   line-height: 1;
 }
 
@@ -85,7 +109,7 @@
 }
 
 .recompensa-card__nombre {
-  font-size: 1.15rem;
+  font-size: calc(1.15rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-text);
   margin: 0;
@@ -93,7 +117,7 @@
 }
 
 .recompensa-card__descripcion {
-  font-size: 0.9rem;
+  font-size: calc(0.9rem*var(--font-scale,1));
   color: var(--color-text-secondary);
   line-height: 1.5;
   margin: 0;
@@ -115,19 +139,19 @@
 }
 
 .recompensa-card__recompensa-label {
-  font-size: 0.8rem;
+  font-size: calc(0.8rem*var(--font-scale,1));
   font-weight: 700;
   color: var(--color-btn-primary);
   text-transform: uppercase;
 }
 
 .recompensa-card__recompensa-texto {
-  font-size: 0.85rem;
+  font-size: calc(0.85rem*var(--font-scale,1));
   color: var(--color-text);
 }
 
 .recompensa-card__fecha {
-  font-size: 0.8rem;
+  font-size: calc(0.8rem*var(--font-scale,1));
   color: var(--color-text-secondary);
   margin: 0;
 }
@@ -141,7 +165,7 @@
   box-shadow: var(--shadow-sm);
   border: 2px dashed var(--color-border);
   color: var(--color-text-secondary);
-  font-size: 1.1rem;
+  font-size: calc(1.1rem*var(--font-scale,1));
   font-weight: 500;
 }
 
@@ -161,7 +185,7 @@
   }
 
   .recompensas__title {
-    font-size: 1.25rem;
+    font-size: calc(1.25rem*var(--font-scale,1));
   }
 
   .recompensas__grid {

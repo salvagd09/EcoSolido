@@ -47,7 +47,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
   const INCIDENCIAS_FALSAS = []
-
+  const [tamañoLetra,setTamañoLetra]=useState(1);
   const [metricas, setMetricas] = useState({ total: 0, enProceso: 0, pendientes: 0, resueltos: 0 })
   const [cargandoMetricas, setCargandoMetricas] = useState(false)
   const [incidencias, setIncidencias] = useState(INCIDENCIAS_FALSAS)
@@ -113,9 +113,15 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     return coincideEstado && coincideBusqueda
   })
   return (
-    <main className="seguimiento">
-      <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
-      
+    <main className="seguimiento" style={{ '--font-scale': tamañoLetra }}>
+      <div className="recomendaciones_header">
+        <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
+        <div className="registrar__font3-controls">
+            <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
+            <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
+            <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
+        </div>
+      </div>
       <div className="metricas-panel">
         <div className="metrica-card metrica-card--total">
           <div className="metrica-card__icon">

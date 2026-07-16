@@ -56,8 +56,9 @@ const ARTICULOS = [
 const CATEGORIAS = ['Todas', 'Huella de Carbono', 'Reciclaje', 'Contaminación', 'Energía', 'Compostaje', 'Movilidad']
 const CATEGORIAS2 = ['Orgánicos', 'Inorgánicos no aprovechables', 'Inorgánicos aprovechables']
 export default function EducacionMedioAmbiental() {
-  const MAX_CONTEXTO=200
+  const MAX_CONTEXTO = 200
   const [categoriaActiva, setCategoriaActiva] = useState('Todas')
+  const [tamañoLetra, setTamañoLetra] = useState(1)
   const [articuloSeleccionado, setArticuloSeleccionado] = useState(null)
   const [tipoMaterial, setTipoMaterial] = useState("")
   const [contextoExtra, setContextoExtra] = useState("")
@@ -69,7 +70,7 @@ export default function EducacionMedioAmbiental() {
     const nuevoValor = event.target.value;
     setContextoExtra(nuevoValor);
     setCaracteresRestantes(MAX_CONTEXTO - nuevoValor.length);
-    setError('');  
+    setError('');
   }
   const articulosFiltrados = categoriaActiva === 'Todas'
     ? ARTICULOS
@@ -92,11 +93,18 @@ export default function EducacionMedioAmbiental() {
     }
   }
   return (
-    <main className="educacion">
+    <main className="educacion" style={{ '--font-scale': tamañoLetra }}>
       <div className="recomendaciones_espacio">
-        <h2 className="educacion__title">Recomendaciones para el buen tratamiento de residuos sólidos</h2>
+        <div className="recomendaciones_header">
+          <h2 className="educacion__title">Recomendaciones para el buen tratamiento de residuos sólidos</h2>
+          <div className="registrar__font2-controls">
+            <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
+            <button type="button" onClick={() => setTamañoLetra(1)}>A</button>
+            <button type="button" onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
+          </div>
+        </div>
         <p className="educacion__subtitle">
-          Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
+            Recibe consejos que te enseñen a manejar correctamente residuos sólidos de un tipo específico
         </p>
         <form onSubmit={handleSubmit} className="educacion__form">
           <label className="educacion__label">Selecciona un tipo de residuo sólido <span style={{ color: '#ff7a00' }}>*</span>:</label>
@@ -108,12 +116,12 @@ export default function EducacionMedioAmbiental() {
           </select>
           <label className="educacion__label">Especifica las recomendaciones que deseas en base a la categoría:</label>
           <textarea className="educacion__textarea" name="contexto" value={contextoExtra} maxLength={MAX_CONTEXTO} onChange={handleContextoChange}></textarea>
-           <span className={`registrar__contador2 ${caracteresRestantes < 50 ? 'registrar__contador2--alerta' : ''}`}>
-                {caracteresRestantes} caracteres restantes
-            </span>
+          <span className={`registrar__contador2 ${caracteresRestantes < 50 ? 'registrar__contador2--alerta' : ''}`}>
+            {caracteresRestantes} caracteres restantes
+          </span>
           <button type="submit" className="educacion_buttonOR">Obtener recomendaciones</button>
         </form>
-        <span style={{ color: '#ff7a00',width:'100%',textAlign:'-webkit-left',fontSize:'0.8rem' }}>* Obligatorio a establecer</span>
+        <span style={{ color: '#ff7a00', width: '100%', textAlign: '-webkit-left', fontSize: '0.8rem' }}>* Obligatorio a establecer</span>
         {cargando && <p>Generando recomendaciones...</p>}
         {error && <p className="educacion__error">{error}</p>}
         {recomendaciones.length > 0 && (<>
