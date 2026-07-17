@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
       
       return { success: true, rol: data.rol };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message==="Failed to fetch" ? "Error en el servidor.Vuelva a ingresar más tarde.":error.message };
     }
   }, []);
 

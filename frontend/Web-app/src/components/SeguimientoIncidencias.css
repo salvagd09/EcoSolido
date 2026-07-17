@@ -474,6 +474,64 @@
     cursor: pointer;
     opacity: 0.7;
 }
+.detalle-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.detalle-modal {
+    background: var(--color-bg, white);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 560px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detalle-modal__cerrar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.detalle-modal__imagenes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detalle-modal__imagen {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.incidencia-tarjeta__btn-detalle {
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: var(--color-btn-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: calc(0.85rem*var(--font-scale,1));
+    align-self: flex-start;
+}
 .registrar__font3-controls {
   display: flex;
   width:20%;

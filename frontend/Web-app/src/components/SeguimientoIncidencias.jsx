@@ -1,33 +1,33 @@
-import { useState, useMemo,useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import './SeguimientoIncidencias.css'
 import HelpModal from './HelpModal'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 // Iconos SVG inline
 const IconTotal = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="currentColor"/>
-    <path d="M7 12H9V17H7V12ZM11 7H13V17H11V7ZM15 10H17V17H15V10Z" fill="currentColor"/>
+    <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="currentColor" />
+    <path d="M7 12H9V17H7V12ZM11 7H13V17H11V7ZM15 10H17V17H15V10Z" fill="currentColor" />
   </svg>
 )
 
 const IconProceso = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
-    <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="currentColor"/>
-    <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z" fill="currentColor"/>
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor" />
+    <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="currentColor" />
+    <path d="M12 10C10.9 10 10 10.9 10 12C10 13.1 10.9 14 12 14C13.1 14 14 13.1 14 12C14 10.9 13.1 10 12 10Z" fill="currentColor" />
   </svg>
 )
 
 const IconPendientes = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z" fill="currentColor"/>
+    <path d="M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z" fill="currentColor" />
   </svg>
 )
 
 const IconResueltos = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"/>
-    <path d="M9.29 16.29L5.7 12.7C5.31 12.31 5.31 11.68 5.7 11.29C6.09 10.9 6.72 10.9 7.11 11.29L10 14.17L16.88 7.29C17.27 6.9 17.9 6.9 18.29 7.29C18.68 7.68 18.68 8.31 18.29 8.7L10.7 16.29C10.31 16.68 9.68 16.68 9.29 16.29Z" fill="currentColor"/>
+    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor" />
+    <path d="M9.29 16.29L5.7 12.7C5.31 12.31 5.31 11.68 5.7 11.29C6.09 10.9 6.72 10.9 7.11 11.29L10 14.17L16.88 7.29C17.27 6.9 17.9 6.9 18.29 7.29C18.68 7.68 18.68 8.31 18.29 8.7L10.7 16.29C10.31 16.68 9.68 16.68 9.29 16.29Z" fill="currentColor" />
   </svg>
 )
 
@@ -48,11 +48,12 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
   const INCIDENCIAS_FALSAS = []
-  const [tamañoLetra,setTamañoLetra]=useState(1);
+  const [tamañoLetra, setTamañoLetra] = useState(1);
   const [metricas, setMetricas] = useState({ total: 0, enProceso: 0, pendientes: 0, resueltos: 0 })
   const [cargandoMetricas, setCargandoMetricas] = useState(false)
   const [incidencias, setIncidencias] = useState(INCIDENCIAS_FALSAS)
-  const [showHelpModal,setShowHelpModal]=useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
+  const [incidenciaDetalle, setIncidenciaDetalle] = useState(null)
   const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition()
   useEffect(() => {
     async function obtenerMetricas() {
@@ -76,22 +77,22 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
   }, [])
   useEffect(() => {
     async function mostrarIncidencias() {
-        try {
-            const token = localStorage.getItem('token')
-            const response = await fetch('http://localhost:8080/incidencias/seguir', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            const data2 = await response.json()
-            setIncidencias(data2)
-        } catch (error) {
-            console.error('Error al obtener incidencias', error)
-            setIncidencias(INCIDENCIAS_FALSAS)
-        }
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:8080/incidencias/seguir', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        const data2 = await response.json()
+        setIncidencias(data2)
+      } catch (error) {
+        console.error('Error al obtener incidencias', error)
+        setIncidencias(INCIDENCIAS_FALSAS)
+      }
     }
     mostrarIncidencias()
-}, [])
+  }, [])
   const sinIncidencias = metricas.total === 0
   const formatearFecha = (fechaString) => {
     if (!fechaString) return '';
@@ -102,17 +103,17 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
       year: 'numeric'
     }).format(fecha).replace(/\//g, '-');
   };
-  const porcentajeEnProceso=  metricas.total > 0 ? (metricas.enProceso/metricas.total)*100:0
-  const porcentajePendientes= metricas.total > 0 ? (metricas.pendientes/metricas.total)*100:0
-  const porcentajeResueltos= metricas.total > 0 ? (metricas.resueltos/metricas.total)*100:0
+  const porcentajeEnProceso = metricas.total > 0 ? (metricas.enProceso / metricas.total) * 100 : 0
+  const porcentajePendientes = metricas.total > 0 ? (metricas.pendientes / metricas.total) * 100 : 0
+  const porcentajeResueltos = metricas.total > 0 ? (metricas.resueltos / metricas.total) * 100 : 0
   const incidenciasFiltradas = incidencias.filter(incidencia => {
-    const coincideEstado = filtroEstado === 'todos' || 
-        ESTADOS[incidencia.estado] === filtroEstado
+    const coincideEstado = filtroEstado === 'todos' ||
+      ESTADOS[incidencia.estado] === filtroEstado
     const fechaFormateada = formatearFecha(incidencia.fecha).toLowerCase();
-    const coincideBusqueda = 
-        fechaFormateada.includes(busqueda.toLowerCase()) ||
-        incidencia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
+    const coincideBusqueda =
+      fechaFormateada.includes(busqueda.toLowerCase()) ||
+      incidencia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+      (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
     return coincideEstado && coincideBusqueda
   })
   return (
@@ -127,9 +128,9 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           ¿Cómo funciona?
         </button>
         <div className="registrar__font3-controls">
-            <button type="button"  onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
-            <button type="button"  onClick={() => setTamañoLetra(1)}>A</button>
-            <button type="button"  onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
+          <button type="button" onClick={() => setTamañoLetra(t => Math.max(0.8, t - 0.1))}>🗛-</button>
+          <button type="button" onClick={() => setTamañoLetra(1)}>A</button>
+          <button type="button" onClick={() => setTamañoLetra(t => Math.min(1.7, t + 0.1))}>🗚+</button>
         </div>
       </div>
       <div className="metricas-panel">
@@ -144,19 +145,19 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
             <span className="metrica-card__label">Total Reportadas</span>
           </div>
         </div>
-        
+
         <div className="metrica-card metrica-card--proceso">
           <div className="metrica-card__icon">
             <IconProceso />
           </div>
           <div className="metrica-card__content">
             <span className="metrica-card__numero">
-              {cargandoMetricas ? '...' :`${metricas.enProceso} (${porcentajeEnProceso.toFixed(2)}%)` }
+              {cargandoMetricas ? '...' : `${metricas.enProceso} (${porcentajeEnProceso.toFixed(2)}%)`}
             </span>
             <span className="metrica-card__label">En Proceso</span>
           </div>
         </div>
-        
+
         <div className="metrica-card metrica-card--pendientes">
           <div className="metrica-card__icon">
             <IconPendientes />
@@ -187,40 +188,40 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
           <p>¡Empieza a reportar incidencias y mide tu impacto!</p>
         </div>
       )}
-      
+
       <div className="seguimiento__controls">
         <div className="seguimiento__search">
           <input
             type="text"
             placeholder="Buscar por fecha, titulo o ubicacion..."
-            value={listening ? transcript:busqueda}
+            value={listening ? transcript : busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="seguimiento__search-input"
           />
           {browserSupportsSpeechRecognition && (
-                <div className="registrar__voz3">
-                  <button
-                    type="button"
-                    className={`registrar__btn3--voz ${listening ? 'registrar__btn3--voz--activo' : ''}`}
-                    onClick={() => {
-                      if (listening) {
-                        SpeechRecognition.stopListening();
-                        if (transcript) {
-                          const busquedaLimpia = transcript.trim().replace(/\.+$/, '');    
-                          setBusqueda(busquedaLimpia);
-                        }
-                      } else {
-                        resetTranscript();
-                        SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
-                      }
-                    }}
-                  >
-                    {listening ? '⏹' : '🎤'}
-                  </button>
-                </div>
-              )}
+            <div className="registrar__voz3">
+              <button
+                type="button"
+                className={`registrar__btn3--voz ${listening ? 'registrar__btn3--voz--activo' : ''}`}
+                onClick={() => {
+                  if (listening) {
+                    SpeechRecognition.stopListening();
+                    if (transcript) {
+                      const busquedaLimpia = transcript.trim().replace(/\.+$/, '');
+                      setBusqueda(busquedaLimpia);
+                    }
+                  } else {
+                    resetTranscript();
+                    SpeechRecognition.startListening({ language: 'es-PE', continuous: true });
+                  }
+                }}
+              >
+                {listening ? '⏹' : '🎤'}
+              </button>
+            </div>
+          )}
         </div>
-        
+
         <div className="seguimiento__filtros">
           <button
             className={`seguimiento__filtro-btn ${filtroEstado === 'todos' ? 'seguimiento__filtro-btn--active' : ''}`}
@@ -266,20 +267,59 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
                 </div>
                 <p className="incidencia-tarjeta__fecha">Fecha: {formatearFecha(incidencia.fecha)} </p>
                 <p className="incidencia-tarjeta__descripcion">{incidencia.descripcion}</p>
-                <p className="incidencia-tarjeta__ubicacion">Ubicación: {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
                 {incidencia.urlsImagenes && incidencia.urlsImagenes.length > 0 && (
-                <img 
-                      src={incidencia.urlsImagenes[0]} 
-                      alt={incidencia.titulo}
-                      className="incidencia-tarjeta__imagen"
+                  <img
+                    src={incidencia.urlsImagenes[0]}
+                    alt={incidencia.titulo}
+                    className="incidencia-tarjeta__imagen"
                   />
                 )}
+                <button
+                  type="button"
+                  className="incidencia-tarjeta__btn-detalle"
+                  onClick={() => setIncidenciaDetalle(incidencia)}
+                >
+                  Ver más detalles
+                </button>
               </div>
             ))}
           </div>
         )}
       </div>
-       {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} fontScale={tamañoLetra} />}
+      {incidenciaDetalle && (
+        <div className="detalle-modal-overlay" onClick={() => setIncidenciaDetalle(null)}>
+          <div className="detalle-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="detalle-modal__cerrar"
+              onClick={() => setIncidenciaDetalle(null)}
+            >
+              ×
+            </button>
+            <h3 className="detalle-modal__titulo">{incidenciaDetalle.titulo}</h3>
+            <span className={`incidencia-tarjeta__estado estado--${CLASES_ESTADO[ESTADOS[incidenciaDetalle.estado]]}`}>
+              {incidenciaDetalle.estado}
+            </span>
+            <p><strong>Fecha:</strong> {formatearFecha(incidenciaDetalle.fecha)}</p>
+            <p><strong>Descripción:</strong> {incidenciaDetalle.descripcion}</p>
+            <p><strong>Ubicación:</strong> {incidenciaDetalle.direccionTexto ?? 'No se sabe'}</p>
+
+            {/* Todas las imágenes */}
+            {incidenciaDetalle.urlsImagenes && incidenciaDetalle.urlsImagenes.length > 0 && (
+              <div className="detalle-modal__imagenes">
+                {incidenciaDetalle.urlsImagenes.map((url, index) => (
+                  <img
+                    key={index}
+                    src={url}
+                    alt={`Foto ${index + 1}`}
+                    className="detalle-modal__imagen"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   )
 }
