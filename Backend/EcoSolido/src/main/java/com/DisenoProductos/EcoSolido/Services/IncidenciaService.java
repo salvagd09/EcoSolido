@@ -16,12 +16,14 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import com.DisenoProductos.EcoSolido.Repositories.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -200,6 +202,33 @@ public class IncidenciaService  {
             muestraIncidencia.setDireccionTexto(incidencia.getDireccionTexto());
             return muestraIncidencia;
         }).collect(Collectors.toList());
+    }
+    public SeguirIncidenciaResponseDTO cambiarEstado(Integer idIncidencia, IncidenciaEstados estado){
+        IncidenciaEntity incidencia = incidenciaRepository.findById(idIncidencia)
+                .orElseThrow(() -> new EntityNotFoundException("Incidencia no encontrada: " + idIncidencia));
+
+        if(estado.name().equals("PENDIENTE")){
+            incidencia.setEstado(IncidenciaEstados.EN_PROCESO);
+        } else {
+            incidencia.setEstado(IncidenciaEstados.RESUELTO);
+        }
+
+        IncidenciaEntity guardada = incidenciaRepository.save(incidencia);
+
+        SeguirIncidenciaResponseDTO dto = new SeguirIncidenciaResponseDTO();
+        dto.setIdIncidencia(guardada.getIdIncidencia());
+        dto.setDescripcion(guardada.getDescripcion());
+        dto.setEstado(guardada.getEstado().name());
+        dto.setTitulo(guardada.getTitulo());
+        dto.setFecha(guardada.getFecha().toString());
+        dto.setUrlsImagenes(
+                guardada.getFotos().stream()
+                        .map(foto -> normalizarUrlCloudinary(foto.getUrlFoto()))
+                        .collect(Collectors.toList())
+        );
+        dto.setDireccionTexto(guardada.getDireccionTexto());
+
+        return dto;
     }
     public MetricasResponseDTO obtenerMetricas(String nombreUsuario) {
         long total = incidenciaRepository.countByUsuario_NombreUsuario(nombreUsuario);

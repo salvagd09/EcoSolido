@@ -1,11 +1,9 @@
 package com.DisenoProductos.EcoSolido.Controllers;
 
-import com.DisenoProductos.EcoSolido.Models.DTOs.SeguirIncidenciaResponseDTO;
+import com.DisenoProductos.EcoSolido.Models.DTOs.*;
 import com.DisenoProductos.EcoSolido.Models.Entities.UsuarioEntity;
+import com.DisenoProductos.EcoSolido.Models.States.IncidenciaEstados;
 import com.DisenoProductos.EcoSolido.Services.IncidenciaService;
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosRequestDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.DescribirFotosResponseDTO;
-import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +33,10 @@ public class IncidenciaController {
     @GetMapping("/mostrarT")
     public ResponseEntity<?> mostrarTodoIncidencias() {
         return ResponseEntity.ok(incidenciaService.mostrarIncidenciasTotales());
+    }
+    @PatchMapping("/cambiarEstado/{idIncidencia}")
+    public ResponseEntity<?> cambiarEstadoIncidencia(@PathVariable Integer idIncidencia, @RequestBody CambiarEstadoDTO body){
+        return ResponseEntity.ok(incidenciaService.cambiarEstado(idIncidencia, body.getEstado()));
     }
     @PostMapping("/registrar")
     public ResponseEntity<?> logroRegistrarIncidencia(

@@ -1,5 +1,6 @@
-import { useState, useMemo,useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './SeguimientoIncidencias.css'
+import ChangeStateConfirmModal from './ChangeStateConfirmModal'
 
 
 const ESTADOS = {
@@ -17,27 +18,57 @@ const CLASES_ESTADO = {
 export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
   const [filtroEstado, setFiltroEstado] = useState('todos')
   const [busqueda, setBusqueda] = useState('')
+  const [incidenciaSeleccionada, setIncidenciaSeleccionada] = useState(null)
   const INCIDENCIAS_FALSAS = []
   const [incidencias, setIncidencias] = useState(INCIDENCIAS_FALSAS)
   useEffect(() => {
     async function mostrarIncidencias() {
-        try {
-            const token = localStorage.getItem('token')
-            const response = await fetch('http://localhost:8080/incidencias/mostrarT', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            const data2 = await response.json()
-            setIncidencias(data2)
-        } catch (error) {
-            console.error('Error al obtener incidencias', error)
-            setIncidencias(INCIDENCIAS_FALSAS)
-        }
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:8080/incidencias/mostrarT', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        const data2 = await response.json()
+        setIncidencias(data2)
+      } catch (error) {
+        console.error('Error al obtener incidencias', error)
+        setIncidencias(INCIDENCIAS_FALSAS)
+      }
     }
     mostrarIncidencias()
-}, [])
-  
+  }, [])
+  async function handleCambioEstadoIncidencia(id, estado) {
+    setIncidenciaSeleccionada(null) // cierra el modal
+    const token = localStorage.getItem("token");
+    try {
+      const respuesta = await fetch(`http://localhost:8080/incidencias/cambiarEstado/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ estado })
+      });
+
+      if (!respuesta.ok) {
+        const errorText = await respuesta.text();
+        throw new Error(`Error ${respuesta.status}: ${errorText}`);
+      }
+      const incidenciaActualizada = await respuesta.json();
+
+      setIncidencias(prev =>
+        prev.map(inc =>
+          inc.idIncidencia === incidenciaActualizada.idIncidencia ? incidenciaActualizada : inc
+        )
+      );
+      alert(`Estado actualizado a: ${incidenciaActualizada.estado}`);
+    } catch (error) {
+      console.error(error);
+      alert("Ocurrió un error al cambiar el estado.");
+    }
+  }
   const formatearFecha = (fechaString) => {
     if (!fechaString) return '';
     const fecha = new Date(fechaString);
@@ -48,19 +79,19 @@ export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
     }).format(fecha).replace(/\//g, '-');
   };
   const incidenciasFiltradas = incidencias.filter(incidencia => {
-    const coincideEstado = filtroEstado === 'todos' || 
-        ESTADOS[incidencia.estado] === filtroEstado
+    const coincideEstado = filtroEstado === 'todos' ||
+      ESTADOS[incidencia.estado] === filtroEstado
     const fechaFormateada = formatearFecha(incidencia.fecha).toLowerCase();
-    const coincideBusqueda = 
-        fechaFormateada.includes(busqueda.toLowerCase()) ||
-        incidencia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
+    const coincideBusqueda =
+      fechaFormateada.includes(busqueda.toLowerCase()) ||
+      incidencia.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
+      (incidencia.direccionTexto?.toLowerCase() ?? '').includes(busqueda.toLowerCase())
     return coincideEstado && coincideBusqueda
   })
   return (
     <main className="seguimiento">
       <h2 className="seguimiento__title">Seguimiento de Incidencias</h2>
-      
+
       <div className="seguimiento__controls">
         <div className="seguimiento__search">
           <input
@@ -71,7 +102,7 @@ export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
             className="seguimiento__search-input"
           />
         </div>
-        
+
         <div className="seguimiento__filtros">
           <button
             className={`seguimiento__filtro-btn ${filtroEstado === 'todos' ? 'seguimiento__filtro-btn--active' : ''}`}
@@ -119,17 +150,25 @@ export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
                 <p className="incidencia-tarjeta__descripcion">{incidencia.descripcion}</p>
                 <p className="incidencia-tarjeta__ubicacion">Ubicación: {!incidencia.direccionTexto ? "No se sabe" : incidencia.direccionTexto}</p>
                 {incidencia.urlsImagenes && incidencia.urlsImagenes.length > 0 && (
-                <img 
-                      src={incidencia.urlsImagenes[0]} 
-                      alt={incidencia.titulo}
-                      className="incidencia-tarjeta__imagen"
+                  <img
+                    src={incidencia.urlsImagenes[0]}
+                    alt={incidencia.titulo}
+                    className="incidencia-tarjeta__imagen"
                   />
                 )}
+                {incidencia.estado != "RESUELTO" && (<button type="submit" className="seguimiento__cambio-btn" onClick={() => setIncidenciaSeleccionada(incidencia)}>Cambiar estado de incidencia</button>)}
               </div>
             ))}
           </div>
         )}
       </div>
+      {incidenciaSeleccionada && (
+        <ChangeStateConfirmModal
+          onConfirm={() => handleCambioEstadoIncidencia(incidenciaSeleccionada.idIncidencia, incidenciaSeleccionada.estado)}
+          onCancel={() => setIncidenciaSeleccionada(null)}
+          estado={incidenciaSeleccionada.estado}
+        />
+      )}
     </main>
   )
 }
