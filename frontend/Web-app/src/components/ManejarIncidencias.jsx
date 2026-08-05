@@ -17,6 +17,7 @@ const CLASES_ESTADO = {
 
 export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
   const [filtroEstado, setFiltroEstado] = useState('todos')
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
   const [busqueda, setBusqueda] = useState('')
   const [incidenciaSeleccionada, setIncidenciaSeleccionada] = useState(null)
   const INCIDENCIAS_FALSAS = []
@@ -25,7 +26,7 @@ export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
     async function mostrarIncidencias() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/incidencias/mostrarT', {
+        const response = await fetch(`${API_BASE}/incidencias/mostrarT`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -43,7 +44,7 @@ export default function ManejarIncidencias({ incidencias: propsIncidencias }) {
     setIncidenciaSeleccionada(null) // cierra el modal
     const token = localStorage.getItem("token");
     try {
-      const respuesta = await fetch(`http://localhost:8080/incidencias/cambiarEstado/${id}`, {
+      const respuesta = await fetch(`${API_BASE}/incidencias/cambiarEstado/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
