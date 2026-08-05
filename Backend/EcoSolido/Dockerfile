@@ -26,7 +26,8 @@ ENV SPRING_PROFILES_ACTIVE=prod
 COPY --from=builder /app/target/*.jar /app/app.jar
 
 RUN mkdir -p /app/uploads/products /app/uploads/backups /app/certs
-
+# Forzar la creación de un archivo vacío en caso de que tu código lo requiera al arrancar
+RUN touch /app/certs/ca.pem
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
