@@ -16,6 +16,9 @@ RUN mvn -DskipTests package
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
+RUN apt-get update && apt-get install -y \
+    mysql-client \
+    && rm -rf /var/lib/apt/lists/
 
 ENV PORT=8080
 ENV SPRING_PROFILES_ACTIVE=prod
