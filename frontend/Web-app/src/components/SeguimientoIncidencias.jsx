@@ -46,6 +46,7 @@ const CLASES_ESTADO = {
 
 export default function SeguimientoIncidencias({ incidencias: propsIncidencias }) {
   const [filtroEstado, setFiltroEstado] = useState('todos')
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
   const [busqueda, setBusqueda] = useState('')
   const INCIDENCIAS_FALSAS = []
   const [tamañoLetra, setTamañoLetra] = useState(1);
@@ -59,7 +60,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function obtenerMetricas() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/incidencias/metricas', {
+        const response = await fetch(`${API_BASE}/incidencias/metricas`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -79,7 +80,7 @@ export default function SeguimientoIncidencias({ incidencias: propsIncidencias }
     async function mostrarIncidencias() {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/incidencias/seguir', {
+        const response = await fetch(`${API_BASE}/incidencias/seguir`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

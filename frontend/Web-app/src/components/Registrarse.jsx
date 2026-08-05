@@ -4,6 +4,7 @@ import './Registrarse.css'
 
 export default function Registrarse() {
     const navigate = useNavigate();
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
     const [formData, setFormData] = useState({
         nombre: '',
         apellido: '',
@@ -45,7 +46,7 @@ export default function Registrarse() {
         }
 
         try {
-            const respuesta = await fetch("http://localhost:8080/usuario/registrar", {
+            const respuesta = await fetch(`${API_BASE}/usuario/registrar`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

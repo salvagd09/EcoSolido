@@ -1,6 +1,6 @@
 import { MENSAJE_FOTOS_NO_VISIBLES } from '../utils/iaDescripcion'
 
-const API_BASE = import.meta.env.VITE_API_URL ?? ''
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 const MAX_LADO_PX = 1280
 const CALIDAD_JPEG = 0.82
 function extraerMensajeError(cuerpo, status) {
@@ -63,7 +63,6 @@ export async function describirFotosConIA(imagenesBase64) {
     throw new Error('Respuesta inválida del servidor.', { cause: err })
   }
 }
-
 export function comprimirImagenParaIA(file) {
   return new Promise((resolve, reject) => {
     const img = new Image()
