@@ -282,8 +282,15 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
 
       if (respuesta.puntosGanados) {
         setPuntosGanados(respuesta.puntosGanados)
-        const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
-        updatePuntos(puntosGuardados + PUNTOS_POR_INCIDENCIA)
+        // Consultar los puntos reales al backend (fuente de verdad) en lugar
+        // de sumar sobre un valor de localStorage que puede estar desactualizado
+        try {
+          const puntosReales = await obtenerPuntosUsuario()
+          updatePuntos(puntosReales)
+        } catch {
+          const puntosGuardados = parseInt(localStorage.getItem('puntos') || '0', 10)
+          updatePuntos(puntosGuardados + PUNTOS_POR_INCIDENCIA)
+        }
       }
 
       if (respuesta.nuevasInsignias && respuesta.nuevasInsignias.length > 0) {
@@ -341,7 +348,12 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
     setErrorTecnico('')
 
     try {
-      const urls = await subirFotosACloudinary(fotosSubidas.map((slot) => slot.file))
+      // Se comprimen las fotos antes de subirlas: reduce el peso que el backend
+      // descargará de Cloudinary y acelera el análisis de Gemini
+      const fotosComprimidas = await Promise.all(
+        fotosSubidas.map((slot) => comprimirImagen(slot.file))
+      )
+      const urls = await subirFotosACloudinary(fotosComprimidas)
       setUrlsCloudinary(urls)
 
       const texto = (await describirFotosConIA(urls)).trim()
@@ -543,7 +555,7 @@ export default function RegistrarIncidencias({ onIncidenciaRegistrada }) {
                 <strong>No se pudo conectar con la IA:</strong>
                 <p>{errorTecnico}</p>
                 <p className="registrar__ia-tecnico-hint">
-                  Verifica que el backend esté ejecutándose y que la API Key de Google Vision esté configurada correctamente.
+                  Verifica que el backend esté ejecutándose y que la API Key de Hugging Face esté configurada correctamente.
                 </p>
               </div>
             )}

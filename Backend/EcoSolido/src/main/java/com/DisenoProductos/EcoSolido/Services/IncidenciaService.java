@@ -1,6 +1,7 @@
 package com.DisenoProductos.EcoSolido.Services;
 
 import com.DisenoProductos.EcoSolido.Integrations.CloudinaryIntegration;
+import com.DisenoProductos.EcoSolido.Integrations.GeminiIntegration;
 import com.DisenoProductos.EcoSolido.Integrations.HuggingFaceIntegration;
 import com.DisenoProductos.EcoSolido.Models.DTOs.IncidenciaRequestDTO;
 import com.DisenoProductos.EcoSolido.Models.DTOs.MetricasResponseDTO;
@@ -35,15 +36,18 @@ public class IncidenciaService  {
     @Autowired
     private final HuggingFaceIntegration huggingFaceIntegration;
     @Autowired
+    private final GeminiIntegration geminiIntegration;
+    @Autowired
     public UsuarioRepository usuarioRepository;
     @Autowired
     public InsigniaService insigniaService;
     private static final int PUNTOS_POR_INCIDENCIA = 10;
 
-    public IncidenciaService(IncidenciaRepository incidenciaRepository, CloudinaryIntegration cloudinaryIntegration, HuggingFaceIntegration huggingFaceIntegration, UsuarioRepository usuarioRepository, InsigniaService insigniaService) {
+    public IncidenciaService(IncidenciaRepository incidenciaRepository, CloudinaryIntegration cloudinaryIntegration, HuggingFaceIntegration huggingFaceIntegration, GeminiIntegration geminiIntegration, UsuarioRepository usuarioRepository, InsigniaService insigniaService) {
         this.incidenciaRepository = incidenciaRepository;
         this.cloudinaryIntegration = cloudinaryIntegration;
         this.huggingFaceIntegration = huggingFaceIntegration;
+        this.geminiIntegration = geminiIntegration;
         this.usuarioRepository = usuarioRepository;
         this.insigniaService = insigniaService;
     }
@@ -103,7 +107,7 @@ public class IncidenciaService  {
         Validar longitud de texto para evitar peticiones vacías a la IA (Llama)*/
         if (incidenciaDTO.getDescripcion() != null && incidenciaDTO.getDescripcion().trim().length() > 5) {
             try {
-                titulo = huggingFaceIntegration.generarTitulo(incidenciaDTO.getDescripcion());
+                titulo = geminiIntegration.generarTitulo(incidenciaDTO.getDescripcion());
             } catch (Exception e) {
                 titulo = "Incidencia #" + incidenciaDTO.getCategoria();
             }
@@ -147,8 +151,6 @@ public class IncidenciaService  {
         return insigniaService.evaluarYDesbloquearInsignias(nombreUsuario);
     }
     public String generarDescripcion(List<String> urlFotos){
-        /* Mejora para tener código eficiente:
-        Validar que existan fotos antes de realizar llamadas a la GPU de Hugging Face*/
         if (urlFotos == null || urlFotos.isEmpty()) {
             return "No se proporcionaron imágenes.";
         }
