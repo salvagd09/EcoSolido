@@ -28,7 +28,6 @@ public class HuggingFaceIntegration {
     private String apiUrl;
 
     private final WebClient webClient = WebClient.create();
-
     @Cacheable(value="descripciones",key = "#urlFotos.toString()")
     public String describirFotos(List<String> urlFotos) {
         try {
@@ -37,9 +36,8 @@ public class HuggingFaceIntegration {
             content.add(Map.of(
                     "type", "text",
                     "text", "Describe estas imágenes en español en 2 oraciones como si fuera el reporte " +
-                            "de una incidencia urbana sobre residuos o basura. " +
-                            "SOLO si la imagen está completamente en negro, es ilegible o no contiene " +
-                            "ningún objeto visible, responde EXACTAMENTE con: " +
+                            "de una incidencia urbana. Si las imágenes son demasiado borrosas, pixeleadas o no " +
+                            "puedes distinguir claramente su contenido, responde EXACTAMENTE con: " +
                             "'Lo siento, no pude ver muy bien las fotos por lo cual no puedo describirlas. " +
                             "¿Podrías volver a pasarlas o cambiar de fotos?'"
             ));
@@ -56,12 +54,12 @@ public class HuggingFaceIntegration {
 
                 content.add(Map.of(
                         "type", "image_url",
-                        "image_url", Map.of("url", dataUri)
+                        "image_url", Map.of("url", dataUri)  // ← Data URI en lugar de URL
                 ));
             }
 
             Map<String, Object> body = Map.of(
-                    "model", "Qwen/Qwen3-VL-30B-A3B-Instruct",
+                    "model", "google/gemma-4-31B-it",
                     "messages", List.of(
                             Map.of("role", "user", "content", content)
                     )
@@ -74,7 +72,7 @@ public class HuggingFaceIntegration {
                     .bodyValue(body)
                     .retrieve()
                     .bodyToMono(Map.class)
-                    .timeout(Duration.ofSeconds(60))
+                    .timeout(Duration.ofSeconds(60))    // ← timeout agregado
                     .block();
             List<Map> choices = (List<Map>) response.get("choices");
             Map message = (Map) choices.get(0).get("message");
