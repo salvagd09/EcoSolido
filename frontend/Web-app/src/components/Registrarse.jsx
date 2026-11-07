@@ -1,7 +1,17 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Registrarse.css'
-
+import LocationPicker from './LocationPicker'
+const GIROS = [
+    { valor: 'COMERCIO', etiqueta: 'Comercio / Bodega / Tienda' },
+    { valor: 'RESTAURANTE', etiqueta: 'Restaurante' },
+    { valor: 'MERCADO', etiqueta: 'Mercado / Puesto de mercado' },
+    { valor: 'HOTEL', etiqueta: 'Hotel / Hospedaje' },
+    { valor: 'INSTITUCION_EDUCATIVA', etiqueta: 'Institución educativa privada' },
+    { valor: 'OFICINA', etiqueta: 'Oficina / Servicios' },
+    { valor: 'MANUFACTURA', etiqueta: 'Fábrica / Taller (muebles, metalmecánica, textil...)' },
+    { valor: 'OTRO', etiqueta: 'Otro' },
+];
 export default function Registrarse() {
     const navigate = useNavigate();
     const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -10,17 +20,22 @@ export default function Registrarse() {
         apellido: '',
         email: '',
         telefono: '',
-        RUC: '',
+        ruc: '',
+        giro: '',
         nombreUsuario: '',
         contrasena: '',
         confirmarContrasena: '',
         pregunta: '',
-        respuesta: ''
+        respuesta: '',
+        latitud: ubicacion.lat,
+        longitud: ubicacion.lng,
+        direccionTexto: ubicacion.address,
     });
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [verContra, setVerContra] = useState(false)
     const [verContraRepetida, setVerContraRepetida] = useState(false)
+    const [ubicacion, setUbicacion] = useState(null);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -39,12 +54,22 @@ export default function Registrarse() {
             setError('Las contraseñas no coinciden');
             return;
         }
-
+        if (!ubicacion) {
+            setError('Debe seleccionar y confirmar la ubicación de su local');
+            return;
+        }
         if (formData.contrasena.length < 6) {
             setError('La contraseña debe tener al menos 6 caracteres');
             return;
         }
-
+        if (!/^\d{11}$/.test(formData.ruc)) {
+            setError('El RUC debe tener 11 dígitos numéricos');
+            return;
+        }
+        if (!/^(10|15|17|20)/.test(formData.ruc)) {
+            setError('El RUC debe empezar con 10, 15, 17 o 20');
+            return;
+        }
         try {
             const respuesta = await fetch(`${API_BASE}/usuario/registrar`, {
                 method: "POST",
@@ -52,7 +77,8 @@ export default function Registrarse() {
                 body: JSON.stringify({
                     nombreCompleto: formData.nombre,
                     apellidoCompleto: formData.apellido,
-                    RUC: formData.RUC,
+                    ruc: formData.ruc,
+                    giro:formData.giro,
                     telefono: formData.telefono,
                     correoElectronico: formData.email,
                     nombreUsuario: formData.nombreUsuario,
@@ -66,8 +92,8 @@ export default function Registrarse() {
                 const errorText = await respuesta.text();
                 throw new Error(errorText);
             }
-
-            setSuccess('¡Registro exitoso! Redirigiendo al login...');
+            const usuarioCreado = await respuesta.json(); 
+            setSuccess(`¡Registro exitoso como ${usuarioCreado.razonSocial}! Redirigiendo al login...`);
             setTimeout(() => {
                 navigate("/login");
             }, 2000);
@@ -84,7 +110,7 @@ export default function Registrarse() {
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                     <h1 className="registrarse__title">EcoSólido</h1>
-                    <p className="registrarse__subtitle">Crea tu cuenta para gestionar incidencias</p>
+                   <p className="registrarse__subtitle">Registra tu empresa para reportar residuos reciclables</p>
                 </div>
 
                 {error && (
@@ -153,18 +179,34 @@ export default function Registrarse() {
                             required
                         />
                     </div>
-                    <div className="registrarse__field">
-                        <label htmlFor="DNI">RUC<span style={{ color: '#ff7a00' }}>*</span></label>
+                   <div className="registrarse__field">
+                        <label htmlFor="ruc">RUC<span style={{ color: '#ff7a00' }}>*</span></label>
                         <input
                             type="text"
-                            id="RUC"
-                            name="RUC"
+                            id="ruc"
+                            name="ruc"
+                            inputMode="numeric"
                             maxLength="11"
-                            placeholder="Establezca su RUC"
-                            value={formData.RUC}
+                            placeholder="11 dígitos (la razón social se obtiene de SUNAT)"
+                            value={formData.ruc}
                             onChange={handleChange}
                             required
                         />
+                    </div>
+                    <div className="registrarse__field">
+                        <label htmlFor="giro">Giro del negocio<span style={{ color: '#ff7a00' }}>*</span></label>
+                        <select
+                            id="giro"
+                            name="giro"
+                            value={formData.giro}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="" disabled>Seleccione el giro</option>
+                            {GIROS.map(g => (
+                                <option key={g.valor} value={g.valor}>{g.etiqueta}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="registrarse__field">
                         <label htmlFor="nombreUsuario">Nombre de usuario<span style={{ color: '#ff7a00'}}>*</span></label>
@@ -177,6 +219,12 @@ export default function Registrarse() {
                             onChange={handleChange}
                             required
                         />
+                    </div>
+                    <div className="registrar__field">
+                        <LocationPicker
+                        key={leafletKey}
+                        value={ubicacion}
+                        onConfirm={setUbicacion}/>
                     </div>
                     <div className="registrarse__field">
                         <label htmlFor="pregunta">Pregunta de seguridad<span style={{ color: '#ff7a00' }}>*</span></label>
@@ -202,19 +250,7 @@ export default function Registrarse() {
                             required
                         />
                     </div>
-                    {/*<div className="registrarse__field">
-                        <label htmlFor="tipoUsuario">Tipo de usuario</label>
-                        <select
-                            id="tipoUsuario"
-                            name="tipoUsuario"
-                            value={formData.tipoUsuario}
-                            onChange={handleChange}
-                        >
-                            <option value="ciudadano">Ciudadano</option>
-                            <option value="tecnico">Técnico</option>
-                            <option value="administrador">Administrador</option>
-                        </select>
-                    </div>*/}
+
 
                     <div className="registrarse__field">
                         <label htmlFor="contrasena">Contraseña<span style={{ color: '#ff7a00' }}>*</span></label>
@@ -257,7 +293,7 @@ export default function Registrarse() {
                                 type="button"
                                 className="registrarse_toogle_pass"
                                 onClick={() => setVerContraRepetida(prev => !prev)}
-                                aria-label={verContra ? "Ocultar contraseña" : "Ver contraseña"}
+                                aria-label={verContraRepetida ? "Ocultar contraseña" : "Ver contraseña"}
                             >
                                 <span className="material-symbols-outlined">
                                     {verContraRepetida ? "visibility" : "visibility_off"}

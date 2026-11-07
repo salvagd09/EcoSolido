@@ -240,7 +240,7 @@ export default function LocationPicker({ value, onConfirm, fontScale = 1 }) {
           <div className="location-picker-modal__map-container">
             <LeafletMap
               key={leafletKey}
-              initialPosition={coords.lat ? { lat: parseFloat(coords.lat), lng: parseFloat(coords.lng) } : { lat: -12.093456, lng: -77.021345 }}
+              initialPosition={coords.lat ? { lat: parseFloat(coords.lat), lng: parseFloat(coords.lng) } : { lat: -11.87, lng: -77.03 }}
               onSelect={handleMapSelect}
               onSearchResult={handleSearchResult}
               onSearchError={handleSearchError}
