@@ -10,7 +10,7 @@ export default function Registrarse() {
         apellido: '',
         email: '',
         telefono: '',
-        DNI: '',
+        RUC: '',
         nombreUsuario: '',
         contrasena: '',
         confirmarContrasena: '',
@@ -52,7 +52,7 @@ export default function Registrarse() {
                 body: JSON.stringify({
                     nombreCompleto: formData.nombre,
                     apellidoCompleto: formData.apellido,
-                    dni: formData.DNI,
+                    RUC: formData.RUC,
                     telefono: formData.telefono,
                     correoElectronico: formData.email,
                     nombreUsuario: formData.nombreUsuario,
@@ -154,14 +154,14 @@ export default function Registrarse() {
                         />
                     </div>
                     <div className="registrarse__field">
-                        <label htmlFor="DNI">DNI<span style={{ color: '#ff7a00' }}>*</span></label>
+                        <label htmlFor="DNI">RUC<span style={{ color: '#ff7a00' }}>*</span></label>
                         <input
                             type="text"
-                            id="DNI"
-                            name="DNI"
-                            maxLength="8"
-                            placeholder="Establece el DNI"
-                            value={formData.DNI}
+                            id="RUC"
+                            name="RUC"
+                            maxLength="11"
+                            placeholder="Establezca su RUC"
+                            value={formData.RUC}
                             onChange={handleChange}
                             required
                         />
