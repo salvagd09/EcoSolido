@@ -1,7 +1,9 @@
 package com.DisenoProductos.EcoSolido.Models.Entities;
 
+import com.DisenoProductos.EcoSolido.Models.States.GiroNegocio;
 import com.DisenoProductos.EcoSolido.Models.States.Rol;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name="usuario")
@@ -14,13 +16,27 @@ public class UsuarioEntity {
     private String nombreCompleto;
     @Column(name = "apellido_completo")
     private String apellidoCompleto;
-    private String dni;
+    @Column(name = "ruc", unique = true, length = 11)
+    private String ruc;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "giro", length = 30)
+    private GiroNegocio giro;
+
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
+    @Column(name="razon_social")
+    private String razonSocial;
+    @Column(name = "direccion_texto")
+    private String direccionTexto;
     private String telefono;
     @Column(name="correo_electronico")
     private String correoElectronico;
-    @Column(name = "nombre_usuario",unique=true)
+    @Column(name = "nombre_usuario")
     private String nombreUsuario;
-    @Column(name="contrasena",unique=true)
+    @Column(name="contrasena")
     private String contrasena;
     @Column(name = "pregunta_seguridad")
     private String preguntaSeguridad;
@@ -55,11 +71,11 @@ public class UsuarioEntity {
     public void setApellidoCompleto(String apellidoCompleto) {
         this.apellidoCompleto = apellidoCompleto;
     }
-    public String getDni() {
-        return dni;
+    public String getRuc() {
+        return ruc;
     }
-    public void setDni(String dni) {
-        this.dni = dni;
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
     }
     public String getTelefono() {
         return telefono;
@@ -91,4 +107,44 @@ public class UsuarioEntity {
     public void setCorreoElectronico(String correoElectronico) {this.correoElectronico = correoElectronico;}
     public Integer getPuntos() {return puntos;}
     public void setPuntos(Integer puntos) {this.puntos = puntos;}
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public String getDireccionTexto() {
+        return direccionTexto;
+    }
+
+    public void setDireccionTexto(String direccionTexto) {
+        this.direccionTexto = direccionTexto;
+    }
+
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public GiroNegocio getGiro() {
+        return giro;
+    }
+
+    public void setGiro(GiroNegocio giro) {
+        this.giro = giro;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
 }

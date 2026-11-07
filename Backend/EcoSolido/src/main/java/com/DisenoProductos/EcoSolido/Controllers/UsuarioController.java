@@ -23,7 +23,7 @@ public class UsuarioController {
     public ResponseEntity<?> registrarUsuario(@RequestBody CrearUsuarioRequestDTO usuarioRequestDTO) {
         try {
             UsuarioEntity usuario = usuarioService.registrarUsuario(usuarioRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(CrearUsuarioResponseDTO.desde(usuario));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
