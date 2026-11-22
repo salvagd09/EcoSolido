@@ -11,7 +11,7 @@ const MENU_ITEMS = [
     icon: IconRegistro, 
     path: '/registro',
     enabled: true,
-    roles: ['CIUDADANO']
+    roles: ['EMPRESA']
   },
   { 
     id: 'seguimiento', 
@@ -19,26 +19,26 @@ const MENU_ITEMS = [
     icon: IconSeguimiento, 
     path: '/seguimiento',
     enabled:true,
-    roles: ['CIUDADANO'] // ← Habilitado para acceso directo
+    roles: ['EMPRESA'] // ← Habilitado para acceso directo
   },
   { 
     id: 'recompensas', 
-    label: 'Recompensas al Ciudadano', 
+    label: 'Recompensas a la Empresa', 
     icon: IconInsignia, 
     path: '/recompensas',
     enabled: true,
-    roles: ['CIUDADANO']
+    roles: ['EMPRESA']
   },
     { 
     id: 'gestion', 
-    label: 'Gestión de ciudadanos', 
+    label: 'Gestión de Reportes', 
     icon: IconIncidencias, 
     path: '/gestion',
     enabled: true,
     roles: ['ADMIN']
   },{
     id:"Dashboard",
-    label:'Dashboard de incidencias',
+    label:'Dashboard de reportes',
     icon:IconDashboard,
     path:'/dashboard',
     enabled:true,

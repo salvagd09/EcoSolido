@@ -113,8 +113,8 @@ function RegistrarConLayout() {
 }
 
 function SeguimientoConLayout() {
-  const { incidencias } = useOutletContext();
-  return <SeguimientoIncidencias incidencias={incidencias} />;
+const { reportes } = useOutletContext();
+return <SeguimientoIncidencias incidencias={reportes}/>
 }
 
 export default App;

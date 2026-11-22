@@ -27,9 +27,10 @@ export function AuthProvider({ children }) {
     const puntos = parseInt(localStorage.getItem('puntos') || '0', 10);
     const savedPermissions = localStorage.getItem('permissions');
     const rol = localStorage.getItem('rol');
+    const giro = localStorage.getItem('giro');
     if (token && nombreUsuario) {
       setIsAuthenticated(true);
-      setUser({ nombreUsuario, puntos, rol }); 
+      setUser({ nombreUsuario, puntos, rol, giro });
       if (savedPermissions) {
         setPermissions(JSON.parse(savedPermissions));
       } else {
@@ -64,7 +65,12 @@ export function AuthProvider({ children }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('nombreUsuario', data.nombreUsuario);
       localStorage.setItem('puntos', 0);
-      localStorage.setItem('rol', data.rol); 
+      localStorage.setItem('rol', data.rol);
+      if (data.giro) {
+       localStorage.setItem('giro', data.giro);
+      } else {
+       localStorage.removeItem('giro');
+      }
       // Guardar permisos (pueden venir del backend o ser por defecto)
       const userPermissions = data.permissions || {
         canRegister: true,
@@ -75,14 +81,14 @@ export function AuthProvider({ children }) {
       localStorage.setItem('permissions', JSON.stringify(userPermissions));
       
       setIsAuthenticated(true);
-      setUser({ nombreUsuario: data.nombreUsuario, puntos: 0, rol: data.rol });
+      setUser({ nombreUsuario: data.nombreUsuario, puntos: 0, rol: data.rol, giro: data.giro ?? null });
       setPermissions(userPermissions);
       
       return { success: true, rol: data.rol };
     } catch (error) {
       return { success: false, error: error.message==="Failed to fetch" ? "Error en el servidor.Vuelva a ingresar más tarde.":error.message };
     }
-  }, []);
+  },[]);
 
   // Función de logout
   const logout = useCallback(() => {
@@ -90,7 +96,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('nombreUsuario');
     localStorage.removeItem('puntos');
     localStorage.removeItem('permissions');
-    
+    localStorage.removeItem('rol');
+  localStorage.removeItem('giro');
     setIsAuthenticated(false);
     setUser(null);
     setPermissions({
@@ -106,10 +113,10 @@ export function AuthProvider({ children }) {
   if (!isAuthenticated || !user?.rol) return false;
 
   const modulePermissions = {
-    registro: ['CIUDADANO'],
-    seguimiento: ['CIUDADANO'],
-    educacion: ['CIUDADANO'],
-    insignias: ['CIUDADANO'],
+    registro: ['EMPRESA'],
+    seguimiento: ['EMPRESA'],
+    educacion: ['EMPRESA'],
+    insignias: ['EMPRESA'],
     gestion: ['ADMIN'],
     dashboard: ['ADMIN'],
   };
