@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { IconRegistro, IconSeguimiento, IconEducacion, IconCerrarMenu, IconMenu, IconInsignia, IconIncidencias, IconDashboard } from './icons'
+import { IconRegistro, IconSeguimiento, IconCerrarMenu, IconMenu, IconInsignia, IconIncidencias, IconDashboard } from './icons'
 import './Sidebar.css'
 import { useAuth } from '../hooks/useAuth'
 
@@ -20,14 +20,6 @@ const MENU_ITEMS = [
     path: '/seguimiento',
     enabled:true,
     roles: ['CIUDADANO'] // ← Habilitado para acceso directo
-  },
-  { 
-    id: 'educacion', 
-    label: 'Educación Medio Ambiental', 
-    icon: IconEducacion, 
-    path: '/educacion',
-    enabled: true,// ← Habilitado para acceso directo
-    roles: ['CIUDADANO']  
   },
   { 
     id: 'recompensas', 

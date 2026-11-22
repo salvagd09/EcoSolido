@@ -3,9 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useOutletCont
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Login from './components/Login'
-import RegistrarIncidencias from './components/RegistrarIncidencias'
+import RegistrarReportes from './components/RegistrarReporte'
 import SeguimientoIncidencias from './components/SeguimientoIncidencias'
-import EducacionMedioAmbiental from './components/EducacionMedioAmbiental'
 import RecompensasCiudadano from './components/RecompensasCiudadano'
 import './App.css'
 import Registrarse from './components/Registrarse'
@@ -20,7 +19,7 @@ import DefaultRedirect from './components/DefaultRedirect'
 // Componente de diseño para el layout principal (con Header y Sidebar)
 function MainLayout() {
   const [menuAbierto, setMenuAbierto] = useState(false)
-  const [incidencias, setIncidencias] = useState([])
+  const [reportes, setReportes] = useState([])
   const navigate = useNavigate()
 
   function toggleMenu() {
@@ -32,8 +31,8 @@ function MainLayout() {
   }
 
   // Función para agregar nueva incidencia (será pasada como prop)
-  function agregarIncidencia(nuevaIncidencia) {
-    setIncidencias(prev => [...prev, nuevaIncidencia])
+  function agregarReporte(nuevoReporte) {
+    setReportes(prev => [...prev, nuevoReporte])
   }
 
   // Atajos de navegación con teclado
@@ -50,7 +49,7 @@ function MainLayout() {
       <div className="app__body">
         <Sidebar isOpen={menuAbierto} onClose={cerrarMenu} />
         <div className="app__content">
-          <Outlet context={{ incidencias, agregarIncidencia }} />
+          <Outlet context={{ reportes, agregarReporte }} />
         </div>
       </div>
     </div>
@@ -92,11 +91,6 @@ function App() {
               < Dashboard/>
             </ProtectedRoute>
           } />
-          <Route path="/educacion" element={
-            <ProtectedRoute module="educacion">
-              <EducacionMedioAmbiental />
-            </ProtectedRoute>
-          } />
           <Route path="/recompensas" element={
             <ProtectedRoute module="insignias">
               <RecompensasCiudadano />
@@ -114,8 +108,8 @@ function App() {
 
 // Componentes wrapper para acceder al contexto del layout
 function RegistrarConLayout() {
-  const { incidencias, agregarIncidencia } = useOutletContext();
-  return <RegistrarIncidencias onIncidenciaRegistrada={agregarIncidencia} />;
+  const { agregarReporte } = useOutletContext();
+  return <RegistrarReportes onReporteRegistrado={agregarReporte} />;
 }
 
 function SeguimientoConLayout() {

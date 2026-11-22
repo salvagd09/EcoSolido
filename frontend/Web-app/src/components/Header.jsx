@@ -5,7 +5,7 @@ import CerrarSesionModal from './CerrarSesionModal'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import logo from '../assets/LOGO ECOSOLIDO.png'
-import { obtenerPuntosUsuario } from '../services/incidenciasApi'
+import { obtenerPuntosUsuario } from '../services/reportesApi'
 const obtenerTemaInicial = () => {
     const temaGuardado = localStorage.getItem('theme');
     if (temaGuardado) {

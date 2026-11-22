@@ -2,7 +2,7 @@ import { useRef, useState, lazy, Suspense } from 'react'
 import { registrarReporte } from '../services/reportesApi'
 import { useAuth } from '../hooks/useAuth'
 import { IconNube } from './icons'
-import './RegistrarIncidencias.css'
+import './RegistrarReporte.css'
 import HelpModal from './HelpModal'
 
 const SuccessModal = lazy(() => import('./SuccessModal'))
@@ -46,7 +46,7 @@ const SIN_ERRORES = {
   declaracion: false,
 }
 
-export default function RegistrarReportes({ onIncidenciaRegistrada }) {
+export default function RegistrarReportes({ onReporteRegistrado }) {
   // Fotos del comprobante
   const [fotos, setFotos] = useState([])
   const [isDragging, setIsDragging] = useState(false)
@@ -184,7 +184,7 @@ export default function RegistrarReportes({ onIncidenciaRegistrada }) {
     try {
       const fotosComprimidas = await Promise.all(fotos.map(f => comprimirImagen(f.file)))
       const reporteCreado = await registrarReporte(datos, [], fotosComprimidas)
-      if (onIncidenciaRegistrada) onIncidenciaRegistrada(reporteCreado)
+      if (onReporteRegistrado) onReporteRegistrado(reporteCreado)
       setShowSuccessModal(true)
     } catch (err) {
       // Sin modo offline: un reporte sin backend no sirve como evidencia

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { obtenerInsigniasUsuario} from '../services/incidenciasApi'
+import { obtenerInsigniasUsuario} from '../services/reportesApi'
 import primerInsignia from '../assets/PRIMER INSIGNIA.png'
 import segundaInsignia from '../assets/SEGUNDA INSIGNIA.png'
 import tercerInsignia from '../assets/TERCER INSIGNIA.png'
