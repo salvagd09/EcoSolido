@@ -1,5 +1,6 @@
 package com.DisenoProductos.EcoSolido.Models.DTOs;
 
+import com.DisenoProductos.EcoSolido.Models.States.GiroNegocio;
 import com.DisenoProductos.EcoSolido.Models.States.Rol;
 
 public class LoginResponseDTO {
@@ -7,11 +8,13 @@ public class LoginResponseDTO {
     private String nombreUsuario;
     private Rol rol;
     private Integer puntos;
-    public LoginResponseDTO(String token, String nombreUsuario,Rol rol, Integer puntos) {
+    private GiroNegocio giro;
+    public LoginResponseDTO(String token, String nombreUsuario,Rol rol, Integer puntos,GiroNegocio giro) {
         this.token = token;
         this.nombreUsuario = nombreUsuario;
         this.puntos = puntos;
         this.rol=rol;
+        this.giro=giro;
     }
     public Rol getRol() {
         return rol;
@@ -20,6 +23,8 @@ public class LoginResponseDTO {
         this.rol = rol;
     }
     public String getNombreUsuario() {return nombreUsuario;}
+    public GiroNegocio getGiro() {return giro;}
+    public void setGiro(GiroNegocio giro) {this.giro = giro;}
     public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
     public String getToken() {
         return token;

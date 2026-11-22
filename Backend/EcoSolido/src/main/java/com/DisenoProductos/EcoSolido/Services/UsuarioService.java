@@ -79,7 +79,7 @@ public class UsuarioService {
             throw new RuntimeException("Contraseña incorrecta");
         }
         String nuevoToken = jwtUtil.generarToken(usuario.getNombreUsuario());
-        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario(),usuario.getRol(),usuario.getPuntos());
+        return new LoginResponseDTO(nuevoToken, usuario.getNombreUsuario(), usuario.getRol(), usuario.getPuntos(), usuario.getGiro());
     }
     public VerificarCorreoTelResponseDTO verificarCorreoOTelefono(VerificarCorreoTelRequestDTO requestDTO) {
         boolean existe;
